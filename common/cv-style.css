@@ -1,0 +1,438 @@
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap");
+
+html,
+body {
+  background: #eee;
+}
+
+@media print {
+  .print-actions {
+    display: none;
+  }
+
+  .page {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+  }
+}
+
+.print-actions {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.page {
+  --year-colomn-width: 10mm;
+  --event-margin-top: 2mm;
+  --event-line-height: 5mm;
+  --event-bullet-thickness: 2.5mm;
+
+  --arrow-thickness: 1mm;
+  --arrow-border-radius: calc(var(--arrow-thickness) / 2);
+  --arrow-head-length: 5mm;
+  --skills-column-width: 40mm;
+
+  font-family: "EB Garamond", serif;
+  font-size: 4mm;
+  margin: 0 auto;
+  background: #fff;
+  width: 210mm;
+  height: 297mm;
+  padding: 10mm;
+  padding-right: 5mm;
+  box-sizing: border-box;
+}
+
+.page > header {
+  display: flex;
+  gap: 5mm;
+  margin-bottom: 7.5mm;
+}
+
+.page > header > picture {
+  height: 30mm;
+  border: solid 0.25mm #000;
+}
+
+.page > header > picture > img {
+  height: 100%;
+}
+
+.page > header > .informations {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.page > header > .informations a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page > header .name {
+  font-size: 6mm;
+}
+
+.page > header .title {
+  font-size: 8mm;
+}
+
+.grid {
+  display: grid;
+  grid-template-rows:
+    [years] auto
+    [arrow] auto
+    [year-2023-1 year-2023-last] auto
+    [year-2023-end year-2022-1 year-2022-last] auto
+    [year-2022-end year-2021-1 year-2021-last] auto
+    [year-2021-end year-2020-1 year-2020-last] auto
+    [year-2020-end year-2019-1 year-2019-last] auto
+    [year-2019-end year-2018-1] auto [year-2018-2] auto [year-2018-3] auto [year-2018-4] auto [year-2018-5 year-2018-last] auto
+    [year-2018-end year-2017-1] auto [year-2017-2] auto [year-2017-3 year-2017-last] auto
+    [year-2017-end year-2016-1] auto [year-2016-2] auto [year-2016-3 year-2016-last] auto
+    [year-2016-end year-2015-1 year-2015-last] auto
+    [year-2015-end year-2014-1 year-2014-last] auto
+    [year-2014-end year-2013-1 year-2013-last] auto
+    [year-2013-end rows-end];
+
+  grid-template-columns:
+    [year-2013] var(--year-colomn-width)
+    [year-2014] var(--year-colomn-width)
+    [year-2015] var(--year-colomn-width)
+    [year-2016] var(--year-colomn-width)
+    [year-2017] var(--year-colomn-width)
+    [year-2018] var(--year-colomn-width)
+    [year-2019-2021] var(--year-colomn-width)
+    [year-2022] var(--year-colomn-width)
+    [year-2023] var(--year-colomn-width)
+    [empty] 1fr
+    [skills] var(--skills-column-width)
+    [columns-end];
+}
+
+/* arrow */
+.arrow {
+  grid-area: arrow / year-2013 / year-2023-1 / skills;
+  position: relative;
+  display: flex;
+  height: 5mm;
+  width: calc(100% + var(--skills-column-width) / 2);
+}
+
+.arrow-body {
+  height: var(--arrow-thickness);
+  background-color: #000;
+  flex-grow: 1;
+
+  border-top-left-radius: var(--arrow-border-radius);
+  border-bottom-left-radius: var(--arrow-border-radius);
+}
+.arrow-head {
+  position: relative;
+  width: var(--arrow-head-length);
+  height: var(--arrow-thickness);
+  background-color: #000;
+  border-top-right-radius: var(--arrow-border-radius);
+  border-bottom-right-radius: var(--arrow-border-radius);
+}
+
+.arrow-head::after,
+.arrow-head::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: var(--arrow-thickness);
+  right: calc(var(--arrow-thickness) * cos(45deg) * -1 / 2);
+  background-color: #000;
+  border-radius: var(--arrow-border-radius);
+}
+
+.arrow-head::after {
+  top: calc(var(--arrow-thickness) / 2);
+  transform: rotate(45deg);
+  transform-origin: top right;
+}
+
+.arrow-head::before {
+  top: calc(var(--arrow-thickness) / 2 * -1);
+  transform: rotate(-45deg);
+  transform-origin: bottom right;
+}
+
+/* years & lines */
+.year {
+  text-align: center;
+}
+
+.year-line::after {
+  content: "";
+  display: block;
+  height: calc(100% + var(--event-line-height));
+  width: 0;
+  margin: 0 auto;
+  border: solid 0.25mm black;
+}
+
+.year.y-2013 {
+  grid-area: years / year-2013 / arrow / year-2014;
+}
+
+.year-line.y-2013 {
+  grid-area: arrow / year-2013 / year-2013-last / year-2014;
+}
+
+.year.y-2014 {
+  grid-area: years / year-2014 / arrow / year-2015;
+}
+
+.year-line.y-2014 {
+  grid-area: arrow / year-2014 / year-2014-last / year-2015;
+}
+
+.year.y-2016 {
+  grid-area: years / year-2016 / arrow / year-2017;
+}
+
+.year-line.y-2016 {
+  grid-area: arrow / year-2016 / year-2016-last / year-2017;
+}
+
+.year.y-2017 {
+  grid-area: years / year-2017 / arrow / year-2018;
+}
+
+.year-line.y-2017 {
+  grid-area: arrow / year-2017 / year-2017-last / year-2018;
+}
+
+.year.y-2018 {
+  grid-area: years / year-2018 / arrow / year-2019-2021;
+}
+
+.year-line.y-2018 {
+  grid-area: arrow / year-2018 / year-2018-last / year-2019-2021;
+}
+
+.year.y-2022 {
+  grid-area: years / year-2022 / arrow / year-2023;
+}
+
+.year-line.y-2022 {
+  grid-area: arrow / year-2022 / year-2022-last / year-2023;
+}
+
+.year.y-2023 {
+  grid-area: years / year-2023 / arrow / empty;
+}
+
+.year-line.y-2023 {
+  grid-area: arrow / year-2023 / year-2023-last / empty;
+}
+
+/* events */
+
+.event {
+  position: relative;
+  padding-left: var(--year-colomn-width);
+  margin-top: var(--event-margin-top);
+  line-height: var(--event-line-height);
+}
+
+.event a {
+  color: inherit;
+}
+
+.event span.badge {
+  display: inline-block;
+  padding: 0.33mm 1mm;
+  border: solid 0.33mm #000;
+  border-radius: 1mm;
+  font-size: 3.5mm;
+  line-height: 3.5mm;
+  margin: 0 1mm;
+}
+
+.event ul {
+  margin: 0;
+  padding: 0 5mm;
+}
+
+.event::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--event-line-height) / 2 - var(--event-bullet-thickness) / 2);
+  left: calc(var(--year-colomn-width) / 2 - var(--event-bullet-thickness) / 2);
+
+  display: block;
+  height: var(--event-bullet-thickness);
+  width: var(--event-bullet-thickness);
+  background: #000;
+
+  border-radius: calc(var(--event-bullet-thickness) / 2);
+}
+
+.event.diploma::before {
+  content: "";
+  text-align: center;
+  position: absolute;
+  top: calc(
+    var(--event-line-height) / 2 - var(--event-bullet-thickness) * 2 / 2
+  );
+  left: calc(
+    var(--year-colomn-width) / 2 - var(--event-bullet-thickness) * 2.5 / 2
+  );
+
+  display: block;
+  height: calc(var(--event-bullet-thickness) * 2);
+  width: calc(var(--event-bullet-thickness) * 2.5);
+
+  background: #fff url("./graduation-cap.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 0;
+}
+
+.event.research::before {
+  content: "";
+  position: absolute;
+  top: calc(
+    var(--event-line-height) / 2 - var(--event-bullet-thickness) * 2 / 2
+  );
+  left: calc(
+    var(--year-colomn-width) / 2 - var(--event-bullet-thickness) * 2 / 2
+  );
+
+  display: block;
+  height: calc(var(--event-bullet-thickness) * 2);
+  width: calc(var(--event-bullet-thickness) * 2);
+
+  background: #fff url("./light-bulb.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  /* transform: rotate(15deg); */
+  border-radius: 0;
+}
+
+ul.skills {
+  margin: 0;
+  padding: 0;
+  margin-top: var(--event-margin-top);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1mm;
+  align-content: flex-start;
+}
+
+ul.skills li {
+  display: inline-block;
+  padding: 0.33mm 1mm;
+  border: solid 0.33mm #000;
+  border-radius: 1mm;
+  font-size: 3.5mm;
+}
+
+/* 2023 events */
+.event.y-2023-1 {
+  grid-area: year-2023-1 / year-2023 / year-2022-1 / skills;
+}
+
+/* 2022 events */
+.event.y-2022-1 {
+  grid-area: year-2022-1 / year-2022 / year-2022-end / skills;
+}
+
+.skills.y-2022-1 {
+  grid-area: year-2022-1 / skills / year-2022-end / columns-end;
+}
+
+/* 2018 events */
+.event.y-2018-1 {
+  grid-area: year-2018-1 / year-2018 / year-2018-2 / skills;
+}
+
+.event.y-2018-2 {
+  grid-area: year-2018-2 / year-2018 / year-2018-3 / skills;
+}
+
+.skills.y-2018-2 {
+  grid-area: year-2018-2 / skills / year-2018-4 / columns-end;
+}
+
+.event.y-2018-3 {
+  grid-area: year-2018-3 / year-2018 / year-2018-4 / skills;
+}
+
+.event.y-2018-4 {
+  grid-area: year-2018-4 / year-2018 / year-2018-5 / skills;
+}
+
+.event.y-2018-5 {
+  grid-area: year-2018-5 / year-2018 / year-2018-end / skills;
+}
+
+/* 2017 events */
+.event.y-2017-1 {
+  grid-area: year-2017-1 / year-2017 / year-2017-2 / skills;
+}
+
+.skills.y-2017-1 {
+  grid-area: year-2017-1 / skills / year-2017-3 / columns-end;
+}
+
+.event.y-2017-2 {
+  grid-area: year-2017-2 / year-2017 / year-2017-3 / skills;
+}
+
+.event.y-2017-3 {
+  grid-area: year-2017-3 / year-2017 / year-2017-end / skills;
+}
+
+.skills.y-2017-3 {
+  grid-area: year-2017-3 / skills / year-2017-end / columns-end;
+}
+
+/* 2016 events */
+.event.y-2016-1 {
+  grid-area: year-2016-1 / year-2016 / year-2016-2 / skills;
+}
+
+.event.y-2016-2 {
+  grid-area: year-2016-2 / year-2016 / year-2016-3 / skills;
+}
+
+.skills.y-2016-2 {
+  grid-area: year-2016-2 / skills / year-2016-3 / columns-end;
+}
+
+.event.y-2016-3 {
+  grid-area: year-2016-3 / year-2016 / year-2016-end / skills;
+}
+
+.skills.y-2016-3 {
+  grid-area: year-2016-3 / skills / year-2016-end / columns-end;
+}
+
+/* 2014 events */
+.event.y-2014-1 {
+  grid-area: year-2014-1 / year-2014 / year-2014-end / skills;
+}
+
+.skills.y-2014-1 {
+  grid-area: year-2014-1 / skills / year-2014-end / columns-end;
+}
+
+/* 2013 events */
+.event.y-2013-1 {
+  grid-area: year-2013-1 / year-2013 / year-2013-end / skills;
+}
+
+.skills.y-2013-1 {
+  grid-area: year-2013-1 / skills / year-2013-end / columns-end;
+}
