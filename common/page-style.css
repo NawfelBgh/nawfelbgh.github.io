@@ -1,0 +1,11 @@
+html {
+  min-height: 100vh;
+  background: #eee;
+}
+
+body {
+  line-height: 1.4;
+  font-size: 18px;
+  max-width: 50rem;
+  margin: 0 auto;
+}
