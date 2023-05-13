@@ -51,19 +51,21 @@ body {
   display: flex;
   gap: 5mm;
   margin-bottom: 7.5mm;
+  margin-right: 5mm;
 }
 
-.page > header > picture {
+.page > header > picture.photo {
   height: 30mm;
   border: solid 0.25mm #000;
 }
 
-.page > header > picture > img {
+.page > header > picture.photo > img {
   height: 100%;
 }
 
 .page > header > .informations {
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -79,6 +81,15 @@ body {
 
 .page > header .title {
   font-size: 8mm;
+}
+
+.page > header > .qrcode {
+  height: 25mm;
+  align-self: center;
+}
+
+.page > header > .qrcode > picture > img {
+  height: 100%;
 }
 
 .grid {
