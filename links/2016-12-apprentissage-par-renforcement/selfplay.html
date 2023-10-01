@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Jeu Mountain–Car Task joué par un algorithme d'apprentissage par renforcement</title>
+        <style>
+            #root { position: relative; height: 500px; width: 500px; }
+            #root > * { position: absolute; z-index: 1; }
+            #root > span { background: white; }
+            body > div { float: left; margin: 10px; }
+            #left, #right, #nothing { border: solid 1px black; margin: 5px; }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h5>Paramètres de l'algorithme <a href="./index.html#__RefHeading___Toc1523_834395304">SARSA(λ)</a></h5>
+            <label>α = <input type="number" min="0" max="1" step="0.01" id="alpha" /></label><br>
+            <label>γ = <input type="number" min="0" max="1" step="0.01" id="gamma" /></label><br>
+            <label>ε = <input type="number" min="0" max="1" step="0.01" id="epsilon" /></label><br>
+            <label>λ = <input type="number" min="0" max="1" step="0.01" id="lambda" /></label>
+        </div>
+        <div id="root">
+            <canvas id="canvas"></canvas>
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAAeCAYAAABwmH1PAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwXDysfIoqEpAAABSlJREFUWMPdmV9MU3cUxz/3IlBoKVCrRhJWo40NkjqjAmM8SBOSVQETQ2YWHZrIEh41Gh/2QPTROXwh4WXbg7qoGDdAQJgzmpiYPhgrQijJSglZhIpQoUb+lK707IVuY0KFQYvum9yn37m/8/vc359zfufC0rUDeA3IGjw/sUpatwzbciA1Ly+PjIwMRIRYS1VVenp68Hq9uYAZ8BAnJQCtgPh8PgmFQhIMBmP+hMNhqa+vF2B27oPHTTmAx2azSbzl9Xojy7oWSFzxqlnG/t124sQJ4i29Xo/NZgOwAynxAE4CbKqqYrfb4w6ckpLC/v37AXKB7HgBl9ntdrRabdyBVVWloKAAnU4HUBkP4B2AqbS0FI1Gw1rIYrGQk5MDUBUP4GMGg4Fdu3ahKMqaAG/atAmr1QpgBPbEGvhLi8WCxWJhLWW32yMr7KtYAhcqipK+e/du1q9fv6bABw4cIDU1FaBspZnW94u0hYACjUazJqfzv6XVatm3bx9NTU0bgK+BH4DR/9LXYvlrGBCDwSChUEjeB92+fXve2AA38A2QByzpgFEAKS4upqamhkAgMP9LiGAwGCgsLOR9UVtbG3fu3MHhcDA6Oorf72d6ehpgGvgFaAccwBjgBwJvAVdWVnL16lU+NLlcLpxOJ0+fPsXlctHb24vX6400dwNPgE7ABfQCLxVAjhw5wrVr1/iQNTY2xosXL3j+/DkPHz7k3r17OJ3OSLMPGAb6mAOW/5NCoZDMzMyI3++XhoYGqaioEJ1OJ0Bw2TM8MjLC/fv3aWxsZGRkBJPJREVFBTabDb1eH7fZ9Hq9DAwMoNPp2L59O0ajkeTk5EXfOXToEM3NzX8sa4bb29vFYrFI5PQ2m82SlpYmgBQVFcmzZ89iPnuXL1+WnTt3zosoiqJIVVWVuN3uRd8rKysTILhk4I6ODsnMzBRVVaWurk66urrE7XbL48ePpaamRgDJzs6WoaGhmMGePn1aAMnIyJDz589LY2OjXLlyRcrLywUQs9ksHo9n5cDj4+NSXFwsgDgcjgVtLl26JKqqSklJSUxgr1+/LhqNRrZs2SJDQ0MyOzs7b89evHhRVFUVq9X6buCjR49GdfbgwQNRVVVOnjwZ1c5qtYpWq5Xe3t5VhZ2ZmZGSkhIBpL+/f1G78vJySUxMlBs3bizYBgTXAfj9fgYGBiIBfH5moig4HA7C4TDV1dXRr1XHjnH27FlaWlpITEwkGAyu+IBSFAWPx0N3dzcHDx5k69ati9peuHCB1tZWmpqayM/Pn5dIvXnz5u/EQ6fTsXnzZsLh8IId+f1+Xr16xdjYGJmZmYs6vHXrFocPH8ZoNK5aZVNRFAKBAIODg9TW1nLmzJl32qemppKVlTXP//DwMJOTk6wDOiYmJujr64vWTxbw8eDgYFTg/v5+gLDP5+vy+XzeZdTM3qUMYM/U1FTSUoynpqZeejyeJwv4n12qwyLgdXV1ddS9Nhey/MC2VQ69JsC1d+/eqP7b2toiF4tvV1w8nEvMpbm5+S1H4XBYzp07JwkJCQL8HKN840dAbt68uSDsxMREJD5PAp+uhsN8YFyj0cipU6fk7t270tnZKS0tLXL8+HFJTk4WoAfYECPgXGA8LS1N6urqZHJy8i9Yp9MppaWlkStj/Wo6tQK/AZKeni4bN24UvV4fyXh+BT6KcVb5CRBISkoSk8kkBQUFkpubK0ajMTKG7+aqrKsqBfh87gfXo7ml9lkcL0YGoAGY+Ud6+TvwxVKKAH8CLZ9ajbanEjQAAAAASUVORK5CYII="></img>
+            <span>
+                Score: <output></output>,
+                <input type="checkbox" id="fastforward" /><label for="fastforward">Fast forward</label>
+            </span>
+        </div>
+        <div>
+            <h3>Fonctions valeur d'état-action</h3>
+            Les graphes ci-dessous représentent les fonctions de valeurs état-action
+            des actions (respectivement):
+            <ul>
+                <li>Accelerer vers la gauche</li>
+                <li>Ne rien faire</li>
+                <li>Accelerer vers la droite</li>
+            </ul>
+            Dans ces graphes, l'axe x représente la position et l'axe y représente la vitesse.
+            L'état courent est coloré en rouge. A chaque état, l'agent favorise l'action
+            lui donnant la meilleur valeur d'état-action.<br>
+            <canvas id="left"></canvas>
+            <canvas id="nothing"></canvas>
+            <canvas id="right"></canvas>
+        </div>
+        <script>
+var canvas = document.querySelector("#canvas");
+var context = canvas.getContext("2d");
+var car = document.querySelector("#root > img");
+var output = document.querySelector("#root > span > output");
+var fastForwardCheckbox = document.querySelector("#fastforward");
+
+var acceleration = 0;
+var speed = 0;
+var position = 0;
+var score = 0;
+var animationDT = 50;//ms
+var simulationDT = 50;//ms
+
+// SARSA parameters
+var alpha = 0.1;
+var gamma = 0.9;
+var epsilon = 0.05;
+var lambda = 0.95;
+
+var alphaInput = document.querySelector("#alpha");
+var gammaInput = document.querySelector("#gamma");
+var epsilonInput = document.querySelector("#epsilon");
+var lambdaInput = document.querySelector("#lambda");
+
+alphaInput.value = alpha;
+gammaInput.value = gamma;
+epsilonInput.value = epsilon;
+lambdaInput.value = lambda;
+
+alphaInput.addEventListener("change", function (event) {
+    var v = +alphaInput.value;
+    if (v >= 0 && v <= 1) alpha = v;
+});
+gammaInput.addEventListener("change", function (event) {
+    var v = +gammaInput.value;
+    if (v >= 0 && v <= 1) gamma = v;
+});
+epsilonInput.addEventListener("change", function (event) {
+    var v = +epsilonInput.value;
+    if (v >= 0 && v <= 1) epsilon = v;
+});
+lambdaInput.addEventListener("change", function (event) {
+    var v = +lambdaInput.value;
+    if (v >= 0 && v <= 1) lambda = v;
+});
+
+// draw grid
+canvas.height = 500;
+canvas.width = 500;
+context.beginPath();
+for (var i = 0; i <= 50; i += 2) {
+    context.moveTo(0, i * 10);
+    context.lineTo(500, i * 10);
+    context.moveTo(i * 10, 0);
+    context.lineTo(i * 10, 500);
+}
+context.strokeStyle = "rgb(200, 200, 255)";
+context.stroke();
+
+// draw ring
+context.beginPath();
+context.moveTo(0, 0);
+for (var i = -25; i <= 25; ++i) {
+    context.lineTo(250 + i*10, 500 - 20 - i * i * 1.35);
+}
+for (var i = 25; i >= -25; --i) {
+    context.lineTo(250 + i*10, 500 + 40 - i * i);
+}
+context.fillStyle = "gray";
+context.fill();
+
+// draw goal
+context.beginPath();
+context.arc(250 + 200, 500 - 400 - 40, 5, 0, Math.PI * 2);
+context.fillStyle = "red";
+context.fill();
+
+// fast forward
+fastForwardCheckbox.checked = false;
+fastForwardCheckbox.addEventListener("change", function (event) {
+    if (fastForwardCheckbox.checked) {
+        simulationDT = 0;
+    } else {
+        simulationDT = animationDT;
+    }
+});
+
+// world physics
+function advanceTime() {
+    var gravityAcceleration = 80 * Math.atan(2 * position / 10);
+    var deltaT = 1/20;// seconds
+    speed += (acceleration - gravityAcceleration) * deltaT;
+    speed *= 0.98;// friction
+    position += (speed * deltaT);
+    position = Math.min(position, 200);
+    position = Math.max(position, -200);
+
+    // teleport to start point
+    if (position == 200) {
+        position = 0;
+        speed = 0;
+        acceleration = 0;
+        score += 1;
+    }
+}
+
+// sarsa loop
+var XSize = 400;
+var XSizeSqrt = 20;
+var cellSize = 20;
+var theta = [];
+var eligibility = [];
+var S = [];
+var S2 = [];
+var actionCount = 3;
+var action = 0;
+var cached_score = 0;
+
+for (var i = 0; i < XSize; ++i) {
+    S2[i] = S[i] = 0;
+}
+for (var i = 0; i < XSize * actionCount; ++i) {
+    theta[i] = 0;
+    eligibility[i] = 0;
+}
+
+function captureState(XS) {
+    for (var i = 0; i < XSize; ++i) {
+        XS[i] = 0;
+    }
+    var x = ((position / cellSize) | 0) + XSizeSqrt/2;
+    x = Math.max(x, 0);
+    x = Math.min(x, XSizeSqrt - 1);
+    var y = ((speed / cellSize) | 0) + XSizeSqrt/2;
+    y = Math.max(y, 0);
+    y = Math.min(y, XSizeSqrt - 1);
+    XS[x * XSizeSqrt + y] = 1;
+}
+
+function q(state, action, theta) {
+    var value = 0;
+    for (var i = 0; i < XSize; ++i) {
+        value += theta[XSize * action + i] * state[i];
+    }
+    return value;
+}
+
+function chooseAction(state) {
+    var x = Math.random();
+    if (x < (1 - epsilon)) {
+        var q0, q1, q2;
+        q0 = q(state, 0, theta);
+        q1 = q(state, 1, theta);
+        q2 = q(state, 2, theta);
+        return (q0 >= q1 && q0 >= q2)? 0 :
+            (q1 >= q0 && q1 >= q2)? 1 : 2;
+    } else {
+        return (Math.random() * (actionCount - 1)) | 0;
+    }
+}
+
+function applyAction(action) {
+    if (action == 0) {
+        acceleration = -80;
+    } else if (action == 1) {
+        acceleration = 80;
+    } else if (action == 2) {
+        acceleration = 0;
+    } else {
+        alert("error");
+    }
+}
+
+captureState(S);
+action = chooseAction(S);
+applyAction(action);
+
+function SARSA() {
+        captureState(S2);
+        var r = (score == cached_score)? - 1 : 1;
+        cached_score = score;
+        var action2 = chooseAction(S2);
+        var newEstimate = r + gamma * q(S2, action2, theta);
+        var error = newEstimate - q(S, action, theta);
+        for (var a = 0; a < actionCount; ++a) {
+            for (var i = 0; i < XSize; ++i) {
+                eligibility[a * XSize + i] = eligibility[a * XSize + i] * lambda * gamma + ((action == a)? S[i] : 0);
+            }
+        }
+        for (var i = 0; i < XSize * actionCount; ++i) {
+            theta[i] += alpha * error * eligibility[i];
+        }
+        var tmp = S;
+        S = S2;
+        S2 = tmp;
+        action = action2;
+        applyAction(action);
+}
+
+var position2 = (position / cellSize) | 0;
+var speed2 = (speed / cellSize) | 0;
+var timeout = 0;
+
+// simulation
+setTimeout(function simulation() {
+    var repeat = (simulationDT == 0)? 200 : 1;
+    while (repeat--) {
+        advanceTime();
+        timeout += 1;
+        if (speed2 != ((speed/cellSize)|0) || position2 != ((position/cellSize)|0)) {
+            position2 = (position / cellSize) | 0;
+            speed2 = (speed / cellSize) | 0;
+            timeout = 0;
+            SARSA();
+        } else if (timeout == 5) {// 10 step stuck in a state (0.25s if 1step=50ms)
+            timeout = 0;
+            SARSA();
+        }
+    }
+    setTimeout(simulation, simulationDT);
+}, simulationDT);
+
+// action value functions
+var leftCanvas = document.querySelector("#left");
+var rightCanvas = document.querySelector("#right");
+var nothingCanvas = document.querySelector("#nothing");
+var leftContext = leftCanvas.getContext("2d");
+var rightContext = rightCanvas.getContext("2d");
+var nothingContext = nothingCanvas.getContext("2d");
+nothingCanvas.width = leftCanvas.width = rightCanvas.width = 10 * XSizeSqrt;
+nothingCanvas.height = leftCanvas.height = rightCanvas.height = 10 * XSizeSqrt;
+
+// animation
+setInterval(function () {
+    car.style.left = 250 - 30 + position + "px";
+    car.style.top = 500 - 40 - (position/10)*(position/10) + "px";
+    car.style.transform = "rotate(" + (-Math.atan(2 * position/100) * 180 / Math.PI) + "deg)";
+    output.textContent = score;
+
+    // action value functions
+    leftContext.clearRect(0, 0, 10 * XSizeSqrt, 10 * XSizeSqrt);
+    rightContext.clearRect(0, 0, 10 * XSizeSqrt, 10 * XSizeSqrt);
+    var max   = -Infinity, min   = +Infinity;
+    for (var i = 0; i < XSize; ++i) {
+        max = Math.max(max, theta[0 * XSize + i], theta[1 * XSize + i], theta[2 * XSize + i]);
+        min = Math.min(min, theta[0 * XSize + i], theta[1 * XSize + i], theta[2 * XSize + i]);
+    }
+    for (var i = 0; i < XSizeSqrt; ++i) {
+        for (var j = 0; j < XSizeSqrt; ++j) {
+            var value, grayLevel;
+            value = (theta[0 * XSize + i * XSizeSqrt + j] - min) / (max - min);
+            grayLevel = (Math.pow(value, 0.1) * 255)|0;
+            leftContext.fillStyle = "rgb(" + grayLevel + "," + grayLevel + "," + grayLevel + ")";
+            leftContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+
+            value = (theta[1 * XSize + i * XSizeSqrt + j] - min) / (max - min);
+            grayLevel = (Math.pow(value, 0.1) * 255)|0;
+            rightContext.fillStyle = "rgb(" + grayLevel + "," + grayLevel + "," + grayLevel + ")";
+            rightContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+
+            value = (theta[2 * XSize + i * XSizeSqrt + j] - min) / (max - min);
+            grayLevel = (Math.pow(value, 0.1) * 255)|0;
+            nothingContext.fillStyle = "rgb(" + grayLevel + "," + grayLevel + "," + grayLevel + ")";
+            nothingContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+
+            if (S[i * XSizeSqrt + j] == 1) {
+                nothingContext.fillStyle = rightContext.fillStyle = leftContext.fillStyle = "red";
+                leftContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+                rightContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+                nothingContext.fillRect(i * 10, 190 - j * 10, 10, 10);
+            }
+        }
+    }
+}, animationDT);
+
+        </script>
+        <div>Copyright Nawfel BENGHERBIA</div>
+    </body>
+</html>

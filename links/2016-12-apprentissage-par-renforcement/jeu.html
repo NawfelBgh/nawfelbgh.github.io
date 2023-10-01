@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Mountain–Car Task</title>
+        <style>
+            #root { position: relative; height: 500px; width: 500px; }
+            #root > * { position: absolute; z-index: 1; }
+            #root > span { background: white; }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+            <canvas id="canvas"></canvas>
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAAeCAYAAABwmH1PAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4AwXDysfIoqEpAAABSlJREFUWMPdmV9MU3cUxz/3IlBoKVCrRhJWo40NkjqjAmM8SBOSVQETQ2YWHZrIEh41Gh/2QPTROXwh4WXbg7qoGDdAQJgzmpiYPhgrQijJSglZhIpQoUb+lK707IVuY0KFQYvum9yn37m/8/vc359zfufC0rUDeA3IGjw/sUpatwzbciA1Ly+PjIwMRIRYS1VVenp68Hq9uYAZ8BAnJQCtgPh8PgmFQhIMBmP+hMNhqa+vF2B27oPHTTmAx2azSbzl9Xojy7oWSFzxqlnG/t124sQJ4i29Xo/NZgOwAynxAE4CbKqqYrfb4w6ckpLC/v37AXKB7HgBl9ntdrRabdyBVVWloKAAnU4HUBkP4B2AqbS0FI1Gw1rIYrGQk5MDUBUP4GMGg4Fdu3ahKMqaAG/atAmr1QpgBPbEGvhLi8WCxWJhLWW32yMr7KtYAhcqipK+e/du1q9fv6bABw4cIDU1FaBspZnW94u0hYACjUazJqfzv6XVatm3bx9NTU0bgK+BH4DR/9LXYvlrGBCDwSChUEjeB92+fXve2AA38A2QByzpgFEAKS4upqamhkAgMP9LiGAwGCgsLOR9UVtbG3fu3MHhcDA6Oorf72d6ehpgGvgFaAccwBjgBwJvAVdWVnL16lU+NLlcLpxOJ0+fPsXlctHb24vX6400dwNPgE7ABfQCLxVAjhw5wrVr1/iQNTY2xosXL3j+/DkPHz7k3r17OJ3OSLMPGAb6mAOW/5NCoZDMzMyI3++XhoYGqaioEJ1OJ0Bw2TM8MjLC/fv3aWxsZGRkBJPJREVFBTabDb1eH7fZ9Hq9DAwMoNPp2L59O0ajkeTk5EXfOXToEM3NzX8sa4bb29vFYrFI5PQ2m82SlpYmgBQVFcmzZ89iPnuXL1+WnTt3zosoiqJIVVWVuN3uRd8rKysTILhk4I6ODsnMzBRVVaWurk66urrE7XbL48ePpaamRgDJzs6WoaGhmMGePn1aAMnIyJDz589LY2OjXLlyRcrLywUQs9ksHo9n5cDj4+NSXFwsgDgcjgVtLl26JKqqSklJSUxgr1+/LhqNRrZs2SJDQ0MyOzs7b89evHhRVFUVq9X6buCjR49GdfbgwQNRVVVOnjwZ1c5qtYpWq5Xe3t5VhZ2ZmZGSkhIBpL+/f1G78vJySUxMlBs3bizYBgTXAfj9fgYGBiIBfH5moig4HA7C4TDV1dXRr1XHjnH27FlaWlpITEwkGAyu+IBSFAWPx0N3dzcHDx5k69ati9peuHCB1tZWmpqayM/Pn5dIvXnz5u/EQ6fTsXnzZsLh8IId+f1+Xr16xdjYGJmZmYs6vHXrFocPH8ZoNK5aZVNRFAKBAIODg9TW1nLmzJl32qemppKVlTXP//DwMJOTk6wDOiYmJujr64vWTxbw8eDgYFTg/v5+gLDP5+vy+XzeZdTM3qUMYM/U1FTSUoynpqZeejyeJwv4n12qwyLgdXV1ddS9Nhey/MC2VQ69JsC1d+/eqP7b2toiF4tvV1w8nEvMpbm5+S1H4XBYzp07JwkJCQL8HKN840dAbt68uSDsxMREJD5PAp+uhsN8YFyj0cipU6fk7t270tnZKS0tLXL8+HFJTk4WoAfYECPgXGA8LS1N6urqZHJy8i9Yp9MppaWlkStj/Wo6tQK/AZKeni4bN24UvV4fyXh+BT6KcVb5CRBISkoSk8kkBQUFkpubK0ajMTKG7+aqrKsqBfh87gfXo7ml9lkcL0YGoAGY+Ud6+TvwxVKKAH8CLZ9ajbanEjQAAAAASUVORK5CYII="></img>
+            <span>
+                Score: <output></output>
+            </span>
+        </div>
+        <script>
+var canvas = document.querySelector("#canvas");
+var context = canvas.getContext("2d");
+var car = document.querySelector("#root > img");
+var output = document.querySelector("#root > span > output");
+
+var acceleration = 0;
+var speed = 0;
+var position = 0;
+var score = 0;
+var simulationDT = 50;//ms
+
+// draw grid
+canvas.height = 500;
+canvas.width = 500;
+context.beginPath();
+for (var i = 0; i <= 50; i += 2) {
+    context.moveTo(0, i * 10);
+    context.lineTo(500, i * 10);
+    context.moveTo(i * 10, 0);
+    context.lineTo(i * 10, 500);
+}
+context.strokeStyle = "rgb(200, 200, 255)";
+context.stroke();
+
+// draw ring
+context.beginPath();
+context.moveTo(0, 0);
+for (var i = -25; i <= 25; ++i) {
+    context.lineTo(250 + i*10, 500 - 20 - i * i * 1.35);
+}
+for (var i = 25; i >= -25; --i) {
+    context.lineTo(250 + i*10, 500 + 40 - i * i);
+}
+context.fillStyle = "gray";
+context.fill();
+
+// draw goal
+context.beginPath();
+context.arc(250 + 200, 500 - 400 - 40, 5, 0, Math.PI * 2);
+context.fillStyle = "red";
+context.fill();
+
+// control
+var leftPressed = false, rightPressed = false;
+function computeAcceleration() {
+    return (rightPressed && leftPressed)? 0 :
+    (!rightPressed && !leftPressed)? 0 :
+    rightPressed ? 80 :
+    leftPressed ? -80 : 0;
+}
+document.addEventListener("keyup", function (event) {
+    var left = 37, right = 39;
+    if (event.keyCode == left) {
+        leftPressed = false;
+    } else if (event.keyCode == right) {
+        rightPressed = false;
+    }
+    acceleration = computeAcceleration();
+});
+document.addEventListener("keydown", function (event) {
+    var left = 37, right = 39;
+    if (event.keyCode == left) {
+        leftPressed = true;
+    } else if (event.keyCode == right) {
+        rightPressed = true;
+    }
+    acceleration = computeAcceleration();
+});
+
+// world physics
+function advanceTime() {
+    var gravityAcceleration = 80 * Math.atan(2 * position / 10);
+    var deltaT = 1/20;// seconds
+    speed += (acceleration - gravityAcceleration) * deltaT;
+    speed *= 0.98;// friction
+    position += (speed * deltaT);
+    position = Math.min(position, 200);
+    position = Math.max(position, -200);
+
+    // teleport to start point
+    if (position == 200) {
+        position = 0;
+        speed = 0;
+        acceleration = 0;
+        score += 1;
+    }
+}
+
+// game loop
+setInterval(function () {
+    advanceTime();
+    // animation
+    car.style.left = 250 - 30 + position + "px";
+    car.style.top = 500 - 40 - (position/10)*(position/10) + "px";
+    car.style.transform = "rotate(" + (-Math.atan(2 * position/100) * 180 / Math.PI) + "deg)";
+    output.textContent = score;
+}, simulationDT);
+
+        </script>
+        <div>Copyright Nawfel BENGHERBIA</div>
+    </body>
+</html>
