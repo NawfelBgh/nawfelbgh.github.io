@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Les réseaux de neurones convolutifs dans la vision par ordinateur</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <!--
+      Note to self: Generated with the command:
+      pandoc -f latex --bibliography=library.bib -M reference-section-title=Bibliographie --mathjax  -t html rapport.tex -s -o index.html
+  -->
+</head>
+<body>
+
+
+<h1>Les réseaux de neurones convolutifs dans la vision par ordinateur</h1>
+
+<hr />
+<p><span class="smallcaps">Centre de recherche sur l’information scientifique et technique</span><br />
+    <span class="smallcaps">École nationale supérieure d’informatique</span><br />
+    <span class="smallcaps">Rapport de la première année doctorat</span><br />
+    <span class="smallcaps">Intitulé: Détection de mouvement de foules dans les lieux publics</span><br />
+    </p>
+
+<p><em>Auteur:</em>Nawfel <span class="smallcaps">Bengherbia</span></p>
+
+<p><em>Promoteur:</em> Dr. Abdelkrim <span class="smallcaps">Meziane</span></p>
+
+<p><em>4 septembre 2017</em></p>
+
+<p><a href="./rapport.pdf">Télécharger en version PDF</a></p>
+<hr />
+
+
+<h2 id="introduction-générale" class="unnumbered unnumbered">Introduction générale</h2>
+
+<p>Dans le transport public, il est souhaitable de connaitre le nombre de voyageurs à tout instant afin de bien gérer l’accès aux espaces publics (muses, stades, transports...) en limitant l’accès aux endroits de capacités limitées et en régularisant la fréquence des rames des métro, tramway, ou des bus de transport public.</p>
+<p>Les systèmes de vidéo surveillance qui deviennent de plus en plus utilisés pour assurer la sécurité des endroits publics peuvent être utilisés pour compter les passagers.</p>
+<p>Dans ce document, nous présentons des travaux de détection, de suivi et de comptage d’objets dans les images et les séquences vidéo. Nous considérons surtout les méthodes récentes qui ont eu les meilleures places dans les benchmarks de la vision par ordinateur.</p>
+<p>Ce document est composé de deux parties. La première consiste en étude bibliographique en 3 chapitres. Le premier d’entre eux donne une formulation des problèmes de la vision par ordinateur et présente les benchmarks existants. Le chapitre 2 examine des concepts d’apprentissage automatique qui sont au cœur des méthodes utilisées en traitement d’image. Le chapitre 3 explique quelques approches qui représentent l’état de l’art de la vision par ordinateur. Dans la partie 2, nous abordons le coté applicatif en présentant dans le chapitre 4 le système de développement que nous avons configuré, et dans le chapitre 5 les expériences que nous avons effectuées.</p>
+<h1 id="étude-bibliographique">Étude bibliographique</h1>
+<h2 id="notions-de-la-vision-par-ordinateur">Notions de la vision par ordinateur</h2>
+
+
+
+
+<h3 id="introduction" class="unnumbered unnumbered">Introduction</h3>
+
+<p>Le but ultime du domaine de la vision par ordinateur est de produire des programmes capables de comprendre les scènes réelles numérisée généralement sous forme d’images ou de vidéos. Plusieurs problèmes de vision par ordinateur ont été formulé et multiples bases de données d’images/vidéos annotées ont été publiées pour permettre de tester les méthodes développées et de les comparer entre elles.</p>
+<p>Dans ce chapitre, nous commençons par présenter une formulation simple des images et des vidéos (section <a href="#representation-image" data-reference-type="ref" data-reference="representation-image">1.1</a>), et d’expliquer les problèmes de classification, détection, segmentation, segmentation sémantique des images et suivi (ou tracking) des objets dans les vidéos (section <a href="#problemes-types" data-reference-type="ref" data-reference="problemes-types">1.2</a>). Et nous finissons par présenter un ensemble de benchmarks d’évaluation des méthodes (section <a href="#benchmarks" data-reference-type="ref" data-reference="benchmarks">1.3</a>).</p>
+<h3 id="representation-image">Représentation des images et des vidéos</h3>
+<p>Nous proposons dans cette section une représentation simple des images et des vidéos à suivre dans le reste du document.</p>
+<p>Une image en niveau de gris de taille <span class="math inline">\(W \times H\)</span> pixels (<span class="math inline">\(W\)</span> étant la largeur de l’image en pixels et <span class="math inline">\(H\)</span> étant sa hauteur) est représentée par une matrice <span class="math inline">\(I\)</span> de taille <span class="math inline">\(W \times H\)</span> où <span class="math inline">\(I_{i,j}\)</span> donne l’intensité lumineuse de l’image au pixel de coordonnées <span class="math inline">\((i,j)\)</span>. Cette intensité est représentée par une valeur numérique généralement entre <span class="math inline">\(0\)</span> (noir) et <span class="math inline">\(255\)</span> (blanc).</p>
+<p>Une image en couleurs est représentée par un ensemble de matrices (généralement trois) chacune appelée un canal. L’ensemble de canaux RGB (Red, Green, Blue) est la représentation la plus utilisée pour les images en couleurs: L’image de taille <span class="math inline">\(W \times H\)</span> pixels est représentée par 3 matrices: <span class="math inline">\(I = \{R, G, B\}\)</span>: <span class="math inline">\(R_{i,j}\)</span>, <span class="math inline">\(G_{i,j}\)</span> et <span class="math inline">\(B_{i,j}\)</span> donne l’intensité de la couleur rouge, vert et bleu (respectivement) dans le pixel de coordonnées <span class="math inline">\((i,j)\)</span>. La figure <a href="#rgb" data-reference-type="ref" data-reference="rgb">[rgb]</a> visualise une image et ses composantes RGB.</p>
+
+<figure>
+<img src="rgb.png" alt="Exemple des canaux RGB composant une image (https://commons.wikimedia.org/wiki/File:Beyoglu_4671_tricolor.png)" /><figcaption>Exemple des canaux RGB composant une image (<a href="https://commons.wikimedia.org/wiki/File:Beyoglu_4671_tricolor.png" class="uri">https://commons.wikimedia.org/wiki/File:Beyoglu_4671_tricolor.png</a>)<span label="rgb"></span></figcaption>
+</figure>
+<p>Il y a plusieurs combinaisons de canaux (autres que RGB) pour représenter les images en couleurs comme YUV, CMYK et HSV. Ce concept de canaux peut aussi être employé pour ajouter plus d’informations sur les pixels. Par exemple, les caméras Kinect enregistrent la distance de chaque pixel dans un canal <span class="math inline">\(D\)</span> (depth ou profondeur en français). On parle dans ce cas des images RGB-D.</p>
+<p>Quant aux vidéos, nous les représentons par une suite d’images en niveau de gris ou en couleur. On appelle chacune de ces image <em>Frame</em>.</p>
+<h3 id="problemes-types">Les problèmes types de la vision par ordinateur</h3>
+<p>Parmi les problèmes de la vision par ordinateur au cœur de notre projet, nous citons:</p>
+<ul>
+<li><p><strong>La classification</strong>: Pour chaque classe appartenant à un ensemble pré-défini de classes, prédire si un exemple de cette classe figure dans l’image en question. Soit <span class="math inline">\(N\)</span> le nombre de classes. Le classifieur <span class="math inline">\(C\)</span> est fonction qui prend en entrée une image et produit en sortie un <span class="math inline">\(N\)</span>-vecteur de booléens à valeur vrai dans les positions <span class="math inline">\(i\)</span> tel qu’un objet de la <span class="math inline">\(i^{ème}\)</span> classe apparait dans l’image.</p></li>
+<li><p><strong>La détection</strong>: Trouver dans une image la boîte de délimitation (bounding box) et l’étiquette de chaque objet appartenant à un ensemble de classes données. Il y a deux variantes de la détection : (1) La détection de tous les objets de la même classe ensembles et (2) la détection de chaque instance d’objet individuellement. Dans les deux cas, le détecteur <span class="math inline">\(D\)</span> est une fonction acceptant en entrée une image et produisant une liste de taille variable où chaque élément est un 5-uplet : Le numéro de la classe (un nombre entier) et les coordonnées des cotés supérieur-gauche et inférieur-droite de la boite de délimitation (2 entiers pour chacun des 2 cotés).</p></li>
+<li><p><strong>La segmentation</strong>: Trouver dans une image les objets appartenant à un ensemble de classes données et affecter à chaque pixel de l’image la classe d’objet dont il fait partie. Cette tache est appelée segmentation sémantique. Il y a aussi une 2<sup>ème</sup> variante de segmentation appelée segmentation d’instances où on différencie entre les instances d’objets de la même classe. Un programme de segmentation <span class="math inline">\(S\)</span> prend en entrée une image et génère en sortie une liste de couples: Numéro de classe (un nombre entier) et Masque (matrice booléenne de même taille que l’image en entrée, et qui possède des Vrai aux pixels où l’objet est détecté et des Faux ailleurs).</p>
+<p>Les figures <a href="#figure-classification" data-reference-type="ref" data-reference="figure-classification">[figure-classification]</a>, <a href="#figure-detection" data-reference-type="ref" data-reference="figure-detection">[figure-detection]</a> et <a href="#figure-segmentation" data-reference-type="ref" data-reference="figure-segmentation">[figure-segmentation]</a> illustrent la différence entre la classification, la détection et la segmentation.</p>
+<figure>
+<img src="figure-classification.png" alt="Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite)." /><figcaption>Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite).<span label="figure-segmentation"></span></figcaption>
+</figure>
+<figure>
+<img src="figure-detection.png" alt="Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite)." /><figcaption>Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite).<span label="figure-segmentation"></span></figcaption>
+</figure>
+<figure>
+<img src="figure-segmentation.png" alt="Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite)." /><figcaption>Exemple du résultat de la segmentation (à gauche) et de la segmentation d’instance (à droite).<span label="figure-segmentation"></span></figcaption>
+</figure></li>
+<li><p><strong>Le comptage d’objets</strong>: Compter le nombre d’instances d’un objet dans une image (par exemple: Le nombre de personnes). Il y a deux façons pour approcher ce problème: Dans la première, le programme de comptage <span class="math inline">\(C\)</span> retourne un nombre entier représentant combien y a t’il d’objet dans l’image. Dans la deuxième approche qu’on utilisera dans ce document, le programme de comptage <span class="math inline">\(C\)</span> génère une carte de densité (density map): Il s’agit d’une matrice de même taille que l’image mais contenant des nombres réels tel que l’intégrale (ou la somme des valeurs de pixels) sur toute région de la carte de densité donne le nombre d’objet dans cette région <span class="citation" data-cites="Lempitsky2010">(Lempitsky and Zisserman 2010)</span>. La figure <a href="#crowd-counting" data-reference-type="ref" data-reference="crowd-counting">[crowd-counting]</a> donne deux exemples d’images de foules avec les cartes de densité correspondantes.</p>
+<figure>
+<img src="crowd-counting.png" alt="Exemples d’images de foules avec les cartes de densité correspondantes. Figure 2 prise sans autorisation de (Zhang et al. 2016) " /><figcaption>Exemples d’images de foules avec les cartes de densité correspondantes. Figure 2 prise sans autorisation de <span class="citation" data-cites="Zhang2016">(Zhang et al. 2016)</span> <span label="crowd-counting"></span></figcaption>
+</figure></li>
+<li><p><strong>Human pose estimation</strong>: L’estimation de la posture des personnes figurants dans une image peut être réalisée en détectant la position de leurs visages, extrémités et articulations principales (genoux, épaules et couds) et en rattachant ensuite les points appartenant à chaque personne comme dans <span class="citation" data-cites="Cao2016">Cao et al. (2016)</span>. La sotie d’un estimateur de posture peut être vue comme un graphe non orienté où les nœuds sont les zones d’intérêt détectées (articulations, tête, etc.) et les arcs représentent les liaisons entres elles. La figure <a href="#lsp" data-reference-type="ref" data-reference="lsp">[lsp]</a> donne un exemple de tels graphes pris du benchmark <em>Leads Sports Pose</em>.</p>
+<figure>
+<img src="leads-sports-pose.png" alt="Exemple d’estimation des postures pris du benchmark Leads Sports Pose" /><figcaption>Exemple d’estimation des postures pris du benchmark <em>Leads Sports Pose</em><span label="lsp"></span></figcaption>
+</figure></li>
+<li><p><strong>Le suivi (ou Tracking)</strong>: Suivre le mouvement de cibles (des point appartenant à des objets) dans des images consécutives d’une vidéo. On cherche à trouver une suite de coordonnées représentant la position de chaque cible à travers la séquence d’images. Cette suite est appelée track. Ce problème est relié à la ré-identification des objets dans plusieurs images différentes.</p></li>
+</ul>
+
+<h3 id="benchmarks">Les benchmarks de la vision par ordinateur</h3>
+<p>Les benchmarks sont des tests dont le but est d’évaluer et comparer les performances des systèmes informatiques. Dans le domaine de la vision par ordinateur il y a plusieurs benchmarks qui viennent sous forme de bases de données publiques d’images et vidéos annotées. Les annotations dépend du problème visé par le benchmark. Par exemple, il s’agit des classes des images dans la classification, et des masques des objets figurant dans les images dans la segmentation. Le but des chercheurs travaillant dans ce domaine est de produire des programme capable de générer les bonnes annotations à partir des images avec le minimum possible d’erreurs.</p>
+<p>La plupart d’algorithmes employés dans la vision par ordinateur sont basés sur l’apprentissage automatique (L’objet du chapitre suivant). C’est à dire que le programme de classification (ou de détection, de segmentation, etc.) est généré après entrainement sur une base de données d’exemples. L’entrainement peut être vu comme un calibrage des paramètres du programme de sorte à ce que sa sortie soit la plus similaire au annotations réelles. Comme c’est de la tricherie d’évaluer un programme sur la base de données de laquelle il a été généré, les benchmarks fournissent au moins deux bases de données: Une appelée base d’apprentissage (utilisée pour l’apprentissage) et l’autre appelée base de test (utilisée <strong>uniquement</strong> pour tester la performance des systèmes finaux).</p>
+<p>Nous citons ici quelques benchmarks:</p>
+<ul>
+<li><p><strong>Benchmarks de classification:</strong></p>
+<ul>
+<li><p><strong>MNIST</strong> <span id="MNIST" label="MNIST">[MNIST]</span>: Images en niveau de gris de taille <span class="math inline">\(28\times 28\)</span> pixels contenant de chiffres écrits à la main, avec 60000 images d’apprentissage et 10000 images de test <span class="citation" data-cites="Deng2012">(Deng 2012)</span>. MNIST est relativement facile à résoudre, il est présenté quand même ici parce qu’il représente un bon exercice d’apprentissage et un moyen de tester les méthodes et obtenir des résultat dans peu de temps.</p></li>
+<li><p><strong>CIFAR-10</strong> <span id="CIFAR-10" label="CIFAR-10">[CIFAR-10]</span>: Images en couleur de taille <span class="math inline">\(32 \times 32\)</span> pixels appartenant à 10 classes, avec 6000 images par classe. Il y a 50000 images d’entrainement et 10000 images de test. Les 10 classes sont: airplane, automobile, bird, cat, deer, dog, frog, horse, ship et truck <span class="citation" data-cites="Krizhevsky2009">(Krizhevsky and Hinton 2009)</span>.</p></li>
+<li><p><strong>CIFAR-100</strong> <span id="CIFAR-100" label="CIFAR-100">[CIFAR-100]</span>: Images en couleur de taille <span class="math inline">\(32 \times 32\)</span> pixels appartenant à 100 classes, avec 600 images par classe. Il y a 50000 images d’entrainement et 10000 images de test. Les 100 classes sont regroupées en les 20 superclasses: aquatic mammals, fish, flowers, food containers, fruit and vegetables, household electrical devices, household furniture, insects, large carnivores, large man-made outdoor things, large natural outdoor scenes, large omnivores and herbivores, medium-sized mammals, non-insect invertebrates, people (avec comme sous classes: baby, boy, girl, man, woman), reptiles, small mammals, trees, vehicles 1 (avec somme sous classes: bicycle, bus, motorcycle, pickup truck, train) et vehicles 2 <span class="citation" data-cites="Krizhevsky2009">(Krizhevsky and Hinton 2009)</span>.</p></li>
+<li><p><strong>STL-10</strong> <span id="STL-10" label="STL-10">[STL-10]</span>: Images en couleur de taille <span class="math inline">\(96 \times 96\)</span> pixels appartenant à 10 classes, avec 500 images d’entrainement et 800 images de test par classe. Les 10 classes sont: airplane, bird, car, cat, deer, dog, horse, monkey, ship, truck <span class="citation" data-cites="Coates2011">(Coates, Ng, and Lee 2011)</span>.</p></li>
+</ul></li>
+<li><p><strong>Benchmarks de détection et de suivi:</strong></p>
+<ul>
+<li><p><strong>Caltech Pedestrian</strong>  10 heurs de vidéos de <span class="math inline">\(640 \times 480\)</span> pixels et 30Hz, prises avec un véhicule circulant dans un environnement urbain. Ce qui fait envirent 250000 frames (chaque vidéo est de  137 minutes) avec un total de 350000 fenêtre de délimitage (bounding boxes) et 2300 piétons uniques annotés <span class="citation" data-cites="Dollar2012">(Dollar, Wojek, and Schiele 2012)</span>.</p></li>
+<li><p><strong>INRIA Persons</strong>: 1805 images de taille <span class="math inline">\(64 \times 128\)</span> pixels extraites de photos personnelles contenant des personnes <span class="citation" data-cites="Dalal2005">(Dalal and Triggs 2005)</span>.</p></li>
+<li><p><strong>MOT Challenge</strong>: (Multiple Object tracking Challenge) benchmark pour le suivi des objets multiples dans le but de créer un cadre pour l’évaluation standardisée des méthodes de suivi des objets multiples <span class="citation" data-cites="Milan2016">(Milan et al. 2016)</span>.</p></li>
+</ul></li>
+<li><p><strong>Benchmarks d’estimation de posture</strong>:</p>
+<ul>
+<li><p><strong>Leeds Sports Pose Dataset</strong>: 2000 images annotées de sportifs rassemblées de Flickr et qui ont été mises à l’échelle de telle sorte que la personne la plus en vue soit d’environ 150 pixels de longueur. Chaque image a été annotée avec 14 emplacements communs. Les articulations gauche et droite sont étiquetées à partir d’un point de vue centré sur la personne <span class="citation" data-cites="Johnson2010">(Johnson and Everingham 2010)</span>.</p></li>
+</ul></li>
+<li><p><strong>Benchmarks traitants plusieurs problèmes:</strong></p>
+<ul>
+<li><p><strong>PASCAL Visual Object Classes</strong> (ou PASCAL VOC) consiste en deux composantes : (i) une base de données publique de 19,737 images annotées (en 2010) et un logiciel d’évaluation standard, et (ii) une compétition organisée annuellement depuis 2005. A partir de 2012, il y a 3 challenges principaux : <strong>classification</strong>, <strong>détection</strong> et <strong>segmentation</strong> avec 20 classes d’objets : Aeroplanes, Bicycles, Birds, Boats, Bottles, Buses, Cars, Cats, Chairs, Cows, Dining tables, Dogs, Horses, Motorbikes, People, Potted plants, Sheep, Sofas, Trains, TV/Monitors.</p>
+<p>De plus il y a 2 challenges supplémentaires : détection d’actions (où les actions incluent jumping, phoning, riding a bike, etc.) et la détection des têtes, mains et pieds des personnes <span class="citation" data-cites="Everingham2015">(Everingham, Eslami, and Gool 2015)</span>.</p></li>
+<li><p><strong>ILSVRC</strong> <span id="ImageNet" label="ImageNet">[ImageNet]</span>: un benchmark de classification et de détection d’objets de millions d’images de 1000 catégories. Similairement à PASCAL VOC, ILSVRC consiste en : (i) une base de données publique de 14,197,122 images annotées (en Aout 2014) et (ii) une compétition annuelle depuis 2010 jusqu’à présent. ILSVRC contient 3 challenges : la <strong>classification</strong> (2010-2014), la localisation d’un objet seul (2011-2014) et la <strong>détection</strong> d’objets (2013-2014) <span class="citation" data-cites="Russakovsky2015">(Russakovsky et al. 2015)</span>.</p></li>
+<li><p><strong>PETS</strong>: à partir de 2016, ce benchmark traite plusieurs défis de vision définis dans l’atelier PETS 2016 et correspondant à différentes étapes dans un système de compréhension vidéo: Analyse de vidéo à bas-niveau (<strong>détection</strong> et <strong>suivi d’objets</strong>), analyse de vidéo à moyen niveau (détection d’événement simple: La reconnaissance du comportement d’un acteur unique) et l’analyse de haut niveau (détection de l’événement complexe: le comportement et la reconnaissance de l’interaction de plusieurs acteurs) <span class="citation" data-cites="Patino2016">(Patino, Cane, and Vallee 2016)</span>.</p></li>
+<li><p><strong>Microsoft COCO</strong> (Common Objects in Context): La base de données COCO contient 2.5 million instances d’objets dans un total de 328,000 images labellisées et segmentées, et elle comprend 91 catégories d’objets reconnaissables par un enfant de 4 ans. En contraste avec ImageNet, COCO possède mois de catégories mais plus d’instances par catégorie pour permettre d’entrainer des algorithmes de localisation exacte. De plus, COCO contient plus d’instances d’objets par image (7.7 en moyenne) par rapport à PASCAL (2.3) et ImageNet (3.0) <span class="citation" data-cites="Lin2014">(Lin et al. 2014)</span>. COCO offre des annotations de <strong>segmentation d’instance</strong> (permettant ainsi la <strong>détection</strong>) et à partir de 2017, elle présente des annotations des <strong>postures humaines</strong>.</p></li>
+</ul></li>
+</ul>
+
+<p>Nous remarquons dans les <em>Leader Boards</em> des benckmarks présentés ci-dessus et dans <span class="citation" data-cites="RodrigoBenenson2016">Rodrigo Benenson (2016)</span><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> que la plupart des (voir toutes les) approches bien classées emploient des techniques comme les réseaux de neurones artificiels convolutifs profonds.</p>
+<h3 id="conclusion" class="unnumbered unnumbered">Conclusion</h3>
+
+<p>Nous avons présenté dans ce chapitre une formulation des images et des vidéos. Ensuite nous avons expliqué les problèmes de vision: la classification, la détection, la segmentation, le comptage d’objets, l’estimation de la pose et le suivi d’objets. Puis nous avons présenté quelques unes des bases de données les plus utilisées pour évaluer et comparer les méthodes. Nous entamons dans le chapitre suivant l’apprentissage automatique qui est au cœur des méthodes employées dans la vision par ordinateur.</p>
+<h2 id="lapprentissage-automatique">L’apprentissage automatique</h2>
+<h3 id="introduction-1" class="unnumbered unnumbered">Introduction</h3>
+
+<p>Dès les années 1970, les chercheurs ont rendait compte qu’il est très difficile d’explicitement programmer des logiciels capables de comprendre les images naturelles. Ils sont donc réorientés vers l’apprentissage automatique <span class="citation" data-cites="Welch2016">(Welch 2016)</span>.</p>
+<p>Dans ce chapitre, nous définissons l’apprentissage automatique supervisé et non supervisé (section <a href="#ML" data-reference-type="ref" data-reference="ML">2.1</a>) et nous explorons plus en détail sa variante supervisée en décrivant deux types d’algorithmes: Les réseaux de neurones artificiels (section <a href="#ANN" data-reference-type="ref" data-reference="ANN">2.2</a>) et les arbres de décisions et de régression (section <a href="#DecisionTrees" data-reference-type="ref" data-reference="DecisionTrees">2.3</a>). Ensuite, nous abordons dans la section <a href="#Aggregation" data-reference-type="ref" data-reference="Aggregation">2.4</a> quelques méthodes d’amélioration des performances des modèles d’apprentissage supervisé.</p>
+<h3 id="ML">Définitions</h3>
+<p>L’apprentissage automatique est le sous-domaine de l’informatique qui permet à l’ordinateur d’apprendre à faire des prédictions à partir des données. Il y a plusieurs types d’apprentissage automatique. Nous nous limitons ici aux apprentissages supervisé et non supervisé.</p>
+<h4 id="lapprentissage-non-supervisé">L’apprentissage non supervisé</h4>
+<p>L’apprentissage non supervisé consiste à découvrir la structure cachée des données d’apprentissage (données non étiquetées <span class="math inline">\(D = \{x^{(i)}\}_{ x^{(i)} \in X }\)</span> où chaque donnée est un vecteur d’attributs <span class="math inline">\(x^{(i)} = (x^{(i)}_1, ..., x^{(i)}_k)^T\)</span>). Parmi les problèmes usuellement traités par l’apprentissage non supervisé, nous citons:</p>
+<ul>
+<li><p><strong>Le clustering</strong>: Le but du clustering est de partitionner les données en <span class="math inline">\(k\)</span> classes de telle sorte que (1) les éléments du même cluster (partition) soient le plus similaires possible, (2) et ceux des clusters différents soient le moins similaires possible. Les algorithmes de clustering utilisent une fonction de distance pour quantifier la similitude.</p>
+<p>K-Means fait partie des algorithmes de clustering les plus connus. Il fonctionne comme suit: À partir d’un clustering initial généré aléatoirement (ou par un autre algorithme), on calcule les centres de chaque cluster, puis on refait le clustering des données en mettant chaque donnée dans le cluster du centre le plus similaire. Le processus est répété jusqu’à la stabilisation des clusters (c’est à dire qu’ils ne changent pas d’une itération à l’autre) ou au dépassement d’un nombre d’itérations maximal <span class="citation" data-cites="Neyman1967">(Neyman 1967)</span>.</p></li>
+<li><p><strong>La réduction de dimensionnalité</strong>: La réduction de dimensionnalité permet d’amoindrir le nombre d’attributs des données. Elle est souvent employée avant une autre technique d’apprentissage et peut avoir comme objectif de simplifier le problème à étudier, diminuer le temps de calcul, permettre de visualiser les données ou supprimer les corrélations entre les différentes caractéristiques des données.</p>
+<p>Il y a une multitude d’algorithmes de réduction de dimensionnalité, nous citons par exemple l’analyse en composantes principales (ACP) qui consiste à transformer les attributs liés entre eux (ou corrélés) en nouveaux attributs décorrélés les uns des autres. Ces nouveaux attributs (appelés composantes principales) sont construits par des combinaisons linéaires des anciens attributs. L’ACP permet au praticien de réduire le nombre d’attributs en ne considérant que les composantes principales où les données détiennent une variance importante <span class="citation" data-cites="Pearson1901">(Pearson 1901)</span>.</p></li>
+</ul>
+<h4 id="lapprentissage-supervisé">L’apprentissage supervisé</h4>
+<p>L’apprentissage supervisé est la tâche d’inférer une fonction à partir d’une base de données d’entraînement labellisées. Formellement, un algorithme d’apprentissage supervisé prend en entrée une base de données d’apprentissage (un ensemble d’exemples <span class="math inline">\(S = \{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}\)</span>), où les <span class="math inline">\(x^{(i)} \in X\)</span> sont des objets d’entrée (généralement: des vecteurs dans un espace multidimensionnel) et à chacun d’eux correspond une valeur de sortie <span class="math inline">\(y^{(i)} \in Y\)</span> (<span class="math inline">\(y^{(i)}\)</span> est le label de <span class="math inline">\(x^{(i)}\)</span>).</p>
+<p>On suppose que les exemples d’apprentissages (l’ensemble <span class="math inline">\(S\)</span>) ont été échantillonnés d’une distribution <span class="math inline">\(D\)</span> de couples <span class="math inline">\((X, Y)\)</span>. La loi que suit la distribution <span class="math inline">\(D\)</span> n’est pas connue et on n’a accès qu’à l’échantillon <span class="math inline">\(S\)</span>. L’objectif de l’algorithme d’apprentissage est d’inférer la loi de la distribution <span class="math inline">\(D\)</span>, en construisant une fonction <span class="math inline">\(h\)</span> (appelée <em>modèle</em>) qui génère pour toute entrée <span class="math inline">\(x^{(j)}\)</span> (pas nécessairement présente dans <span class="math inline">\(S\)</span>) une valeur <span class="math inline">\(h(x^{(j)})\)</span> similaire à <span class="math inline">\(y^{(j)}\)</span>. Il s’agit alors d’un problème d’optimisation qui stipule à la recherche d’une fonction <span class="math inline">\(h^\star\)</span> minimisant une fonction objectif (<em>loss function</em>): <span class="math inline">\(L(h(x^{(j)}), y^{(j)})\)</span> pour tout <span class="math inline">\((x^{(j)}, y^{(j)}) \in D\)</span> (pas seulement <span class="math inline">\(\in S\)</span>).</p>
+<p>Pour résoudre ce problème, on cherche la fonction <span class="math inline">\(h^\star\)</span> faisant aussi peu de fautes que possible lors de la prédiction des sorties disponibles dans <span class="math inline">\(S\)</span>, mais qui se généralise au-delà de cet ensemble d’apprentissage.</p>
+<p>Lorsque le domaine de sortie <span class="math inline">\(Y\)</span> est discret énumérable, on dit que c’est un problème de classification, et lorsqu’il est continu, on parle de problème de régression.</p>
+<h5 id="exemples">Exemples</h5>
+<p>L’exemple type de <strong>classification</strong> est celui de la détection des messages non désirables: les <span class="math inline">\(X\)</span> représentent des messages email et <span class="math inline">\(Y = \{Spam, Non~Spam\}\)</span>. à partir d’une base de données d’exemples de messages spam et non spam, il est possible d’inférer une fonction qui prédit avec bonne précision si un nouveau message est spam ou pas.</p>
+<p>Pour <strong>la régression</strong>, prenons l’exemple du problème de prédiction des prix des maisons. <span class="math inline">\(X\)</span> contient les caractéristiques de la maison comme sa taille, le nombre de chambre et son adresse, et <span class="math inline">\(Y\)</span> donne son prix. Étant donné une base de données d’exemples de maisons avec leurs prix, on peut inférer les prix d’autres maisons en voyant uniquement leurs caractéristiques.</p>
+<h5 id="mesurePerformance">Mesure de qualité des modèles entrainés</h5>
+<p>Le but de l’entrainement est de construire (ou calibrer) un modèle qui (1) minimise l’erreur de prédictions dans les données d’entrainement et (2) qui fait de bonnes prédictions avec d’autres exemples (généralisation). Si on produit un modèle très simple, il se peut qu’il ne soit pas capable d’expliquer les données d’apprentissage, et si on le produit très compliqué, il risque d’être très spécialisé à la base d’apprentissage (problème de <strong>sur-apprentissage</strong> ou <em>overfitting</em>). On cherche alors un compromit entre ces deux extrêmes.</p>
+<p>Usuellement en apprentissage automatique, une petite partie des données labellisées (par exemple 10%) n’est pas utilisée pour l’apprentissage. Après la fin de l’entrainement du modèle, il est évalué sur les données retenues pour voir s’il se généralise. Ces données sont appelées: données de test.</p>
+<p>Cette technique est employée aussi pour savoir quelle degrés de complexité est nécessaire pour un problème d’apprentissage particulier. Une autre partie des données labellisées est mise de coté durant l’apprentissage, et est utilisée pour évaluer plusieurs modèles et sélectionner celui qui se généralise le mieux. Ces données s’appellent: les données de validation.</p>
+<p>Pour plus de détails sur la mesure de la qualité des modèle, nous vous référons à <span class="citation" data-cites="Abu-Mostafa2012">(Abu-Mostafa, Magdon-Ismail, and Lin 2012)</span>.</p>
+<h5 id="algorithmes">Algorithmes</h5>
+<p>Parmi les algorithmes d’apprentissage supervisé, nous citons:</p>
+<ul>
+<li><p>les réseaux de neurones artificiels (section <a href="#ANN" data-reference-type="ref" data-reference="ANN">2.2</a>), dont la régression linière et les SVM (Support vector machines) font un cas particuliers, et</p></li>
+<li><p>les arbres de classification et de régression (section <a href="#DecisionTrees" data-reference-type="ref" data-reference="DecisionTrees">2.3</a>).</p></li>
+</ul>
+<h3 id="ANN">Les réseaux de neurones artificiels</h3>
+<p>Les réseaux de neurones artificiels (ou ANN pour Artificial Neural Networks) est un modèle d’apprentissage automatique qui prend son nom du parallèle entre lui et le système cérébral des animaux. Les réseaux de neurones sont un ensemble de nœuds (neurones artificiels) reliés entre eux et avec le reste du système avec des liaisons par le billet desquelles ils communiquent de l’information. Ces neurones artificiels et leurs liaisons ressemblent aux cellules nerveuses qui sont l’unité fonctionnelle de base du cerveau animal où chaque cellule reçoit les signaux électriques des cellules voisines sur ses Dendrites et envoient à son tour des signaux électriques avec son Axone comme représenté dans la figure <a href="#neurones" data-reference-type="ref" data-reference="neurones">[neurones]</a>.</p>
+
+<figure>
+<img src="brain_neural_net.jpg" alt="Schéma des neurones biologiques adjacents, pris sans autorisation de https://octaviansima.wordpress.com/2010/12/30/artificial-neural-networks-ann-introduction/" /><figcaption>Schéma des neurones biologiques adjacents, pris sans autorisation de <a href="https://octaviansima.wordpress.com/2010/12/30/artificial-neural-networks-ann-introduction/" class="uri">https://octaviansima.wordpress.com/2010/12/30/artificial-neural-networks-ann-introduction/</a><span label="neurones"></span></figcaption>
+</figure>
+<p>Les réseaux de neurones artificiels sont rangés comme un ensemble multicouche de neurones artificiels. Chaque neurone possède une valeur numérique qu’il calcule en fonction des valeurs des neurones de la couche précédente pondérées par les poids des liaisons (car chaque liaison entre deux neurone possède son propre poids). Les neurones de la première couche sont un cas particulier car leurs valeurs sont déterminées par l’entrée du réseau et la dernière couche représente la sortie du réseau. Tout cela est montré dans la figure <a href="#reseau-de-neurones" data-reference-type="ref" data-reference="reseau-de-neurones">[reseau-de-neurones]</a>.</p>
+
+<figure>
+<img src="reseau-de-neurones.png" alt="Schéma d’un réseau de neurones artificiels" /><figcaption>Schéma d’un réseau de neurones artificiels<span label="reseau-de-neurones"></span></figcaption>
+</figure>
+<p>Tout réseau de neurones artificiels calcule une fonction définie par:</p>
+<ol>
+<li><p>son architecture: Le nombre de couches, le nombre de neurones par couche et la façon avec laquelle les neurones sont reliées,</p></li>
+<li><p>les poids de chaque liaison et</p></li>
+<li><p>la fonction calculée par chaque neurone.</p></li>
+</ol>
+<p>La fonction calculée par le réseau admet en entrée un vecteur d’entrée <span class="math inline">\(x \in X\)</span> et génère en sortie une valeur <span class="math inline">\(y \in Y\)</span>. Le vecteur d’entrée est copié par l’utilisateur sur la couche d’entrée du réseau et la valeur de sortie est récupéré de la dernière couches du réseau après la propagation des valeurs de tous les neurones.</p>
+<p>Le but de l’apprentissage avec les réseaux de neurones artificiels est de déterminer le réseau (la fonction) le plus adéquat pour le problème d’apprentissage en question. C’est à dire déterminer son architecture, les poids des liaisons et les fonctions calculées par les neurones. Bien qu’il existe des chercheurs travaillant sur cette forme générale d’apprentissage <span class="citation" data-cites="Floreano2008">(Floreano, Dürr, and Mattiussi 2008)</span>, nous nous limitons dans ce rapport à la simplification adoptée par la plupart des chercheurs où l’architecture et les fonctions des neurones individuels sont fixée. Dans ce réglage, l’apprentissage se limite à la recherche les poids de liaisons optimaux.</p>
+<h4 id="apprentissage-des-fonctions-linéaires">Apprentissage des fonctions linéaires</h4>
+<p>Commençons dans notre analyse des réseaux de neurones par ceux calculant des fonctions linéaires. Un réseau de neurones où les neurones calculent la somme pondérée de leurs entrées représente par définition une fonction linéaire quelque soit son architecture<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. Donc, il est inutile d’avoir plus de deux couches: Une couche d’entrée reliée directement à une couche de sortie. Le problème de recherche de la fonction de régression ou de classification des données est donc réduit au calibrage des poids de liaison entre les entrées et la ou les sorties.</p>
+<h5 id="classification-avec-une-fonction-linéaire">Classification avec une fonction linéaire</h5>
+<p>Commençons par le cas de classification à deux classes (représentées par <span class="math inline">\(1\)</span> et <span class="math inline">\(-1\)</span>) et supposant que les entrées à classifier (qui sont vue comme des points dans un espace multidimensionnel) peuvent être séparées par un hyperplan (définie par une fonction linéaire) de sorte que la plupart des points de chaque coté de l’hyperplan appartiennent à la même classe (figure <a href="#lineairement-separables" data-reference-type="ref" data-reference="lineairement-separables">[lineairement-separables]</a>).</p>
+
+<figure>
+<img src="lineairement-separables.png" alt="Exemple de deux classes linéairement séparables" /><figcaption>Exemple de deux classes linéairement séparables<span label="lineairement-separables"></span></figcaption>
+</figure>
+<p>Le modèle de classification est donné par: <span class="math display">\[\text{Classe de x} = C_W(x) =
+    \begin{cases}
+        +1  &amp; \text{si } w_0 \times x_0  + w_1 \times x_1 + ... + w_n \times x_n + w_{n+1} &gt; 0\\
+        -1 &amp; \text{sinon}
+    \end{cases}\]</span></p>
+<p>où <span class="math inline">\(x = (x_0, x_1, ..., x_n)^T\)</span> est le vecteur d’entrée, <span class="math inline">\(W = (w_0, w_1, ..., w_{n+1})^T\)</span> est le vecteur des paramètres du réseau et <span class="math inline">\(C_W(x)\)</span> est la fonction calculée par le réseau.</p>
+<p>L’entrainement de ce modèle revient à trouver les paramètres <span class="math inline">\(w_i\)</span> minimisant l’erreur de classification. Une approche simple pour résoudre ce problème est d’utiliser un algorithme de recherche pour trouver les <span class="math inline">\(w_i\)</span> minimisant la fonction objective: <span class="math display">\[\sum\limits_{(x^{(i)}, y^{(i)}) \in S} (1 - signe( y^{(i)} \times C_W(x^{(i)}) ))/2\]</span></p>
+<p>où <span class="math inline">\(S\)</span> est l’ensemble d’apprentissage, la fonction <span class="math inline">\(signe\)</span> retourne <span class="math inline">\(+1\)</span> si son argument est positif et <span class="math inline">\(-1\)</span> sinon, et <span class="math inline">\(y^{(i)} \in \{-1, 1\}\)</span>. L’intuition derrière cette formule est que <span class="math inline">\((1 - signe( y^{(i)} \times C_W(x^{(i)}) ))/2\)</span> est égale à <span class="math inline">\(+1\)</span> quand l’exemple <span class="math inline">\(x_i\)</span> est mal-classifié et 0 sinon.</p>
+<p>Il y’a d’autres méthodes d’entrainement plus efficaces que la recherche aveugle, citons par exemple <strong>SVM</strong> qui détermine les paramètres <span class="math inline">\(w_i\)</span> de sorte à maximiser la marge d’erreur et qui a plusieurs propriétés théoriques intéressantes <span class="citation" data-cites="Cortes1995">(Cortes and Vapnik 1995)</span>. D’habitude, SVM n’est pas traitée comme un cas particulier des réseaux de neurones comme ici. Nous n’allons pas nous étaler sur cette méthode et nous passerons à un alternatif plus généralisable: <em>Gradient descent</em> (ou l’algorithme du gradient).</p>
+<p><strong>Gradient descent</strong> est un algorithme d’optimisation pour les fonctions objectifs dérivables. Il utilise l’information donnée par la dérivé de la fonction objectif pour converger rapidement vers un minimum local. Il y a des variantes améliorées de cet algorithme comme <strong>Momentum</strong> <span class="citation" data-cites="Rumelhart1986">(Rumelhart, Hinton, and Williams 1986)</span> et <strong>Adam</strong> <span class="citation" data-cites="Kingma2014">(Kingma and Ba 2014)</span> mais nous expliquant ici uniquement sa version simple donnée dans la figure <a href="#GD" data-reference-type="ref" data-reference="GD">[GD]</a>:</p>
+<hr />
+<ol>
+<li><p>Initialiser aléatoirement le vecteur des poids <span class="math inline">\(W = (w_0, ..., w_{n+1})^T\)</span>;</p></li>
+<li><p>Calculer le gradient de la fonction objectif <span class="math inline">\(f\)</span> au point courent <span class="math inline">\(W\)</span>: Càd. la dérivé partielle de <span class="math inline">\(f\)</span> par rapport à chaque composante <span class="math inline">\(w_i\)</span>: <span class="math display">\[\frac{\partial f}{\partial w_0}(W), \frac{\partial f}{\partial w_1}(W), ..., \frac{\partial f}{\partial w_{n+1}}(W)\]</span></p></li>
+<li><p>Mettre à jour le point <span class="math inline">\(W\)</span> dans la direction inverse du gradient. Pour tout <span class="math inline">\(i \in [0, n+1]\)</span>, faire: <span class="math display">\[w_i \gets (1 - \alpha) \times w_i + \alpha \times \frac{\partial f}{\partial w_i}(W)\]</span> (<span class="math inline">\(\alpha \in [0, 1]\)</span> est appelé le taux d’apprentissage ou <em>learning rate</em>).</p></li>
+<li><p>Répéter les étapes (2) et (3) jusqu’à la convergence.</p></li>
+</ol>
+<hr />
+<p>Lorsque la base de données d’apprentissage est de très grande taille qu’il est couteux de calculer le gradient de la fonction objectif incluant toute la base, on échantillonne dans chaque itération de l’algorithme du gradient un sous ensemble à considérer dans le calcule de la fonction objectif. Cette variante est appelée: <em>Stochastic gradient descent</em> (SGD).</p>
+<p>Retournons maintenant à notre problème de classification et reformulons la fonction objectif comme une fonction dérivable. Nous utiliserons la formulation appelée <em>régression linéaire</em> qui est basée sur la fonction sigmoïde suivante: <span class="math display">\[S(x) : \mathbb{R} \to [0, 1]\]</span><span class="math display">\[S(x) = \frac{1}{1 + e^{-x}}\]</span> <span class="math inline">\(S\)</span> est (bijective) et a comme propriétés: <span class="math inline">\(S(0) = 0.5, \lim\limits_{x \to +\infty} S(x) = 1\)</span> et <span class="math inline">\(\lim\limits_{x \to -\infty} S(x) = 0\)</span>.</p>
+<p>On peut interpréter la fonction <span class="math inline">\(S\)</span> appliquée à la sortie de notre réseau comme la probabilité d’appartenance de l’entrée <span class="math inline">\(x\)</span> à la classe 1: Plus la sortie est positive, plus on est sûr que l’entrée appartient à la classe 1. Plus la sortie est négative, plus on est sur que l’entrée n’appartient pas à la classe 1 (elle appartient donc à la classe -1) et si la sortie est nulle la probabilité est de <span class="math inline">\(0.5\)</span>.</p>
+<p>Notre nouvelle fonction objectif dérivable (et donc optimisable par l’algorithme du gradient) est donnée par: <span class="math display">\[\sum\limits_{(x^{(i)}, y^{(i)}) \in S}  (1 - (2 \times S(C_W(x^{(i)})) - 1) \times y^{(i)})/2\]</span></p>
+<p>où <span class="math inline">\((2 \times S(C_W(x^{(i)})) - 1) \times y^{(i)}\)</span> est en sorte la version dérivable de <span class="math inline">\(signe(C_W(x^{(i)}) \times y^{(i)})\)</span> de la fonction objectif précédente.</p>
+<h5 id="régression-avec-une-fonction-linéaire">Régression avec une fonction linéaire</h5>
+<p>Supposant qu’on a un problème de régression où les sorties sont raisonnablement prédites par des fonctions linéaires des entrées (comme dans la figure <a href="#regression-lineaire" data-reference-type="ref" data-reference="regression-lineaire">[regression-lineaire]</a>).</p>
+
+<figure>
+<img src="regression-lineaire.png" alt="Exemple où la relation entrée-sortie est quasi-linéaire" /><figcaption>Exemple où la relation entrée-sortie est quasi-linéaire<span label="regression-lineaire"></span></figcaption>
+</figure>
+<p>Le modèle de régression est donnée par: <span class="math display">\[y = f_W(x) = w_0 \times x_0  + w_1 \times x_1 + ... + w_n \times x_n + w_{n+1}\]</span> où <span class="math inline">\(x = (x_0, x_1, ..., x_n)^T\)</span> est le vecteur d’entrée.</p>
+<p>La méthode de moindres carrés permet de trouver les paramètres <span class="math inline">\(w_i\)</span> décrivant mieux les données. Il s’agit de minimiser la fonction objectif dérivable suivante en utilisant l’algorithme du gradient de la figure <a href="#GD" data-reference-type="ref" data-reference="GD">[GD]</a>:</p>
+<p><span class="math display">\[\sum\limits_{(x_i, y_i) \in S} ( f_W(x_i) - y_i )^2\]</span></p>
+<h4 id="extension-des-fonctions-linéaires-avec-lastuce-du-noyau">Extension des fonctions linéaires avec l’astuce du noyau</h4>
+<p>Les modèles linéaires sont très limités: Un classifieur linéaire ne peut pas séparer deux classes non-linéairement séparables (comme dans la figure <a href="#kernel1" data-reference-type="ref" data-reference="kernel1">[kernel1]</a>) et dans les problèmes de régression, la relation entrée-sortie à apprendre peut ne pas être linéaire. Il reste comme même possible d’utiliser les modèles linéaires (de deux couches) de la section précédente en les opérant non pas sur les données brutes, mais plutôt sur une version transformée des données. L’idée est de projeter les vecteurs d’entrée dans un espace plus adapté à la classification/regréssion linéaire. Nous présentons ici l’astuse du noyau qui permet de faire ça.</p>
+<p>L’astuce du noyau (en anglais <em>Kernel trick</em>) est basée sur la transformation de l’espace de représentation des données d’entrées en un espace de plus grande dimensionnalité, où un classifieur linéaire peut être utilisé et donne de bonnes performances. Cette transformation est réalisée en concaténant au vecteur d’entrées des combinaisons non linéaires de ses composantes.</p>
+<p>Prenons l’exemple artificiel<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> de la figure <a href="#kernel1" data-reference-type="ref" data-reference="kernel1">[kernel1]</a> où les données d’entrées sont des vecteurs à 2 dimensions et on a 2 classes représentées par des cercles et des étoiles. Comme les étoiles se trouvent au milieu des cercles, un hyperplan bidimensionnel (une ligne droite) n’est pas capable de les séparer. Mais si on projette ces données sur 3 dimensions en concaténant aux vecteurs d’entrées <span class="math inline">\(\{ x = (x_0, x_1) \}\)</span> la composante <span class="math inline">\(x_0 \times x_1\)</span>, obtenant ainsi l’ensembles <span class="math inline">\(\{ x&#39; = (x_0, x_1, x_0 \times x_1) \}\)</span> présenté dans la figure <a href="#kernel2" data-reference-type="ref" data-reference="kernel2">[kernel2]</a>, on remarque qu’il y a un plan (hyperplan en 3 dimensions) séparant les deux classes.</p>
+<p>Un désavantage de cette extension des modèles linéaires est que les noyaux sont à modéliser explicitement et ne sont pas appris automatiquement.</p>
+
+<figure>
+<img src="kernel1.png" alt="Exemple de 4 points à classifier." /><figcaption>Exemple de 4 points à classifier.<span label="kernel1"></span></figcaption>
+</figure>
+
+<figure>
+<img src="kernel2.png" alt="Les même 4 points précédents projetés en 3D. Maintenant les deux classes sont séparables par un plan." /><figcaption>Les même 4 points précédents projetés en 3D. Maintenant les deux classes sont séparables par un plan.<span label="kernel2"></span></figcaption>
+</figure>
+<h4 id="apprentissage-des-fonctions-non-linéaires">Apprentissage des fonctions non linéaires</h4>
+<p>Les réseaux de neurones artificiels sont un modèle très puissant quand ça vient à l’apprentissage des fonctions non linéaires. <span class="citation" data-cites="Csaji2001">Csáji (2001)</span> ont démontré que si un réseau de neurones contient 3 couches (la couche d’entrée, une couche intermédiaire dite <strong>couche cachée</strong> et la couche de sortie) tel que la couche intermédiaire contient un nombre suffisant de neurones calculant certaines fonctions non linéaires simples de leurs entrées, alors ce réseau est capable d’approximer n’importe quelle fonction continue.</p>
+<p>Cependant, on utilise généralement des réseaux de neurones de plus de 3 couches car d’autres résultats <span class="citation" data-cites="Liang2016">(Liang and Srikant 2016)</span> ont démontré que les réseaux de neurones à plusieurs couches sont capable d’apprendre beaucoup de fonctions avec un nombre de paramètres (poids à apprendre) réduit par rapport aux réseaux à 3 couches. Cette réduction de paramètres est essentielle car le nombre de données nécessaires pour d’entrainement est une fonction croissante du nombre de paramètres à apprendre <span class="citation" data-cites="Abu-Mostafa2012">(Abu-Mostafa, Magdon-Ismail, and Lin 2012)</span>.<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
+<h5 id="les-fonctions-dactivations">Les fonctions d’activations</h5>
+<p>Les fonctions calculées par les neurones sont généralement une somme pondérée des entrées suivie par <strong>une fonction d’activation</strong> dérivable et non linéaire. Voir la figure <a href="#activation-function" data-reference-type="ref" data-reference="activation-function">[activation-function]</a>.</p>
+
+<figure>
+<img src="activation-function.jpeg" alt="Schéma d’un neurone avec fonction d’activation non linéaire, pris sans autorisation de (Fei-Fei, Karpathy, and Johnson 2016)" /><figcaption>Schéma d’un neurone avec fonction d’activation non linéaire, pris sans autorisation de <span class="citation" data-cites="Fei-Fei2016">(Fei-Fei, Karpathy, and Johnson 2016)</span><span label="activation-function"></span></figcaption>
+</figure>
+<p>Parmi les fonctions d’activations utilisées nous citons:</p>
+<ul>
+<li><p>Les fonctions sigmoïdes comme:</p>
+<ul>
+<li><p>La fonction logistique <span class="math inline">\(f(x) = \frac{1}{1 + e^{-x}}\)</span></p></li>
+<li><p>La tangent hyperbolique <span class="math inline">\(f(x) = tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}\)</span></p></li>
+<li><p>L’arc tangente <span class="math inline">\(f(X) = arctan(x)\)</span></p></li>
+</ul></li>
+<li><p>Les fonctions linéaires rectifiées comme:</p>
+<ul>
+<li><p>RELU (<em>rectified linear unite</em>) <span class="math inline">\(f(x) = \begin{cases}
+            x   &amp; \text{si } x \geq 0\\
+            0   &amp; \text{sinon}
+        \end{cases}\)</span></p></li>
+<li><p>Leaky RELU: <span class="math inline">\(f(x) = \begin{cases}
+            x                   &amp; \text{si } x \geq 0\\
+            \alpha \times x     &amp; \text{sinon}
+        \end{cases}\)</span> avec <span class="math inline">\(0 &lt; \alpha &lt; 0.1\)</span></p></li>
+</ul></li>
+<li><p>Des approximations des fonctions linéaires rectifiées comme ELU (<em>Exponential liear units</em>): <span class="math inline">\(f(x) = \begin{cases}
+    x                   &amp; \text{si } x \geq 0\\
+    a \times (e^x - 1)  &amp; \text{sinon}
+    \end{cases}\)</span> et <span class="math inline">\(a \geq  0\)</span>.</p></li>
+</ul>
+<h5 id="transformations-topologiques-et-apprentissage-de-représentation">Transformations topologiques et apprentissage de représentation</h5>
+<p>Chaque couche du réseau de neurones artificiel transforme ses entrées avec des fonctions non linéaires générant l’entrée de la couche suivante. Ceci est similaire au concept des noyaux où on calcule auparavant des combinaisons non linéaires des entrées pour aider un classifieur linéaire. La différence ici est que les fonctions non linéaires sont apprises automatiquement par le réseau. Chaque couche apprend une transformation de ces entrées pour aider la couche suivante à résoudre le problème. On appelle ce phénomène l’apprentissage de la représentation.</p>
+<p>Ce concept de transformations topologiques est expliqué avec des animations sur la page web: <a href="http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/" class="uri">http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/</a></p>
+<h5 id="apprentissage-des-réseaux-de-neurones-multicouches">Apprentissage des réseaux de neurones multicouches</h5>
+<p>Nous supposant toujours la simplification stipulant que l’architecture du réseau et les fonctions d’activations utilisées sont fixés et dérivables. L’apprentissage revient à chercher les poids de liaisons minimisant une fonctions objectif formulée selon le problème à résoudre (classification, régression, etc.). L’algorithme d’optimisation le plus utilisé pour les réseaux multicouches est la <strong>rétro-propagation</strong> (<em>Back propagation</em>): C’est une variante de l’algorithme du gradient qui calcule le gradient de la fonction objectif en commençant par les dérivés partielles par rapport aux paramètres de la dernière couche, et en reculant couche par couche jusqu’à la première. Ce calcule utilise le théorème de dérivation des fonctions composées (<em>chain rule</em>). La version stochastique de cet algorithme est donnée dans la figure <a href="#Backpropagation" data-reference-type="ref" data-reference="Backpropagation">[Backpropagation]</a>.</p>
+<hr />
+<ol>
+<li><p>Initialiser les poids du réseau aléatoirement;</p></li>
+<li><p>Mettre à l’entrée du réseau un échantillon de la base d’entrainement;</p></li>
+<li><p>Faire une propagations vers l’avant des valeurs de neurones;</p></li>
+<li><p>Calculer le gradient par rapport à chaque paramètre du réseau en commençant par ceux de la dernière couche et en finissant par ceux de la première;</p></li>
+<li><p>Mettre à jour les paramètres du réseaux en avançant leurs valeurs dans le sens inverse du vecteur gradient;</p></li>
+<li><p>Répéter les étapes (2), (3), (4) et (5) jusqu’à la convergence des paramètres.</p></li>
+</ol>
+<hr />
+<h4 id="problèmes-des-réseaux-de-neurones-artificiels">Problèmes des réseaux de neurones artificiels</h4>
+<p>Les réseaux de neurones de grande taille peuvent apprendre des fonctions non linéaires complexes et très spécialisées à la base d’apprentissage (problème de sur-apprentissage). Ce problème peut être résolut de plusieurs manière comme:</p>
+<ul>
+<li><p>Réduire la taille de réseau,</p></li>
+<li><p><em>Early stopping</em>: Arrêter tôt l’algorithme d’apprentissage,</p></li>
+<li><p>Ajouter un facteur de régularisation à la fonction objectif,</p></li>
+<li><p><em>Dropout</em>: Désactiver les neurones de façon aléatoire durant l’apprentissage <span class="citation" data-cites="Srivastava2014">(Srivastava, Hinton, and Krizhevsky 2014)</span>.</p></li>
+</ul>
+<p>Aussi, l’algorithme de rétro-propagation est sensible à l’initialisation et aux problèmes des gradients qui peuvent exploser ou disparaitre (<em>explosing and vanishing gradients</em>). <span class="citation" data-cites="Ioffe2015">Ioffe and Szegedy (2015)</span> ont conçu la technique de <strong>batch normalisation</strong> pour régler ces problèmes. Nous vous référons au cours de <span class="citation" data-cites="Fei-Fei2016">Fei-Fei, Karpathy, and Johnson (2016)</span> qui adresse plus en détails les problèmes pratiques d’entrainement des réseaux de neurones.</p>
+<p>En plus de tout ça, les réseaux de neurones sont considérés comme des boites noires: Ils sont capables de trouver une solution aux problèmes d’apprentissage mais on ne comprend pas vraiment ses solutions. C’est un peu similaire à avoir un expert humain qui prend de bonnes décisions en suivant son intuition, mais il lui même ne comprend pas ce qui se passe dans sa tête. Nous retournons à ce problème d’interprétabilité dans le chapitre suivant.</p>
+<h3 id="DecisionTrees">Les arbres de décision</h3>
+<p>Les arbres de décision sont un modèle d’apprentissage supervisé basé sur la division successive de l’espace des entrées (Les <span class="math inline">\(x \in X\)</span>). À chaque étape, cet espace est devisé en 2 sous-espaces: (1) là où une fonction booléenne sur une variable d’entrée s’évalue à vrai et (2) là où elle s’évalue à faux. Le choix de la fonction de division est fait intelligemment et le processus est répété jusqu’à obtenir des sous-espaces où le problème d’apprentissage est facile à résoudre. Ces modèles peuvent être représentés graphiquement par un arbre (comme dans la figure <a href="#tree" data-reference-type="ref" data-reference="tree">[tree]</a>) d’où leur nom.</p>
+<p>Les arbres de décision sont généralement construits par un algorithme d’entrainement glouton. L’arbre est créé à partir de la racine (qui représente l’espace global des entrées) et à chaque étape est choisie la fonction de division qui maximise une métrique de gain immédiat. Cet algorithme trouve des optimaux locaux mais il s’avère que ce n’est pas un problème car l’arbre avec performance optimale dans la base d’entrainement n’est pas forcement généralisable <span class="citation" data-cites="Welch2016">(Welch 2016)</span>.</p>
+<p>Il y a deux variantes principales des arbres de décisions: Les arbres de régression et les arbres de classifications:</p>
+<p>Dans <strong>les arbres de régression</strong>, le choix des fonctions de division est fait de sorte à minimiser la variance des sorties (les <span class="math inline">\(y\)</span>) à l’intérieur de chaque sous espace.</p>
+<p>Pour <strong>les arbres de décision</strong>, la fonction de division choisie à chaque étape est celle maximisant le gain en homogénéité (toujours des sorties <span class="math inline">\(y\)</span>) à l’intérieur de chaque sous espace. L’homogénéité est mesurée en utilisant l’index de Gini ou l’entropie de Shannon <span class="citation" data-cites="Welch2016">(Welch 2016)</span>.</p>
+
+<figure>
+<img src="tree.png" alt="Un exemple d’un arbre de classification." /><figcaption>Un exemple d’un arbre de classification.<span label="tree"></span></figcaption>
+</figure>
+<p>La figure <a href="#tree" data-reference-type="ref" data-reference="tree">[tree]</a> donne un exemple d’un arbre de décision pour un problème de classification où les entrées sont des vecteurs dans <span class="math inline">\(\mathbb{R}^5\)</span> (<span class="math inline">\(x = (x_0, x_1, x_2, x_3, x_4)^T\)</span>) et les classes sont <span class="math inline">\(\{C_1, C_2\}\)</span>. Nous soulignons les points suivants:</p>
+<ul>
+<li><p>Les fonctions de division n’opère que sur une seule variable d’entrée. Dans le nœud racine par exemple, on divise l’espace des entrées en utilisant la fonction: <span class="math display">\[f(x) = \begin{cases}
+    \text{vrai} &amp; \text{si } x_4 &gt; 30 \\
+    \text{faux} &amp; \text{sinon}
+    \end{cases}\]</span></p>
+<p>Cette restriction d’une seule variable d’entrée limite l’espace de recherche des fonctions de division accélérant ainsi la procédure d’apprentissage. Elle favorise aussi les modèles simples et donc généralisable.</p></li>
+<li><p>L’arbre n’est ni grand ou complet ni équilibré. Généralement, on limite la taille de l’arbre même si cela détériore la performance dans la base d’apprentissage. En fait, sans cette limite, le modèle appris divisera l’espace des entrées jusqu’à avoir une classification parfaite des exemples d’apprentissage. Un tel modèle peut être très complexe et donc ne pas pouvoir se généraliser aux nouvelles données. La taille optimale de l’arbre de décision dépend du problème. Elle est trouvée empiriquement comme expliqué dans la section <a href="#mesurePerformance" data-reference-type="ref" data-reference="mesurePerformance">2.1.2.2</a>.</p></li>
+<li><p>L’arbre de décision est facile à comprendre. Il s’agit d’une <em>boite blanche</em>.</p></li>
+</ul>
+<h4 id="transformations-topologiques">Transformations topologiques</h4>
+<p>Les arbres de décision comme expliquée ci-dessus se basent uniquement sur la division de l’espace d’entrées. Il y a d’autres généralisations qui permet chercher des transformations de l’espace d’entrées qui facilitent la tache d’apprentissage de manière similaire aux réseaux de neurones. Nous citons par exemple:</p>
+<ul>
+<li><p><strong>Les arbres de décision obliques</strong>: On enlève dans cette variante la restriction des fonctions de division à une seule variable d’entrée <span class="citation" data-cites="Heath1993">(Heath, Kasif, and Salzberg 1993)</span>. Cette méthode possède comme inconvénients: (1) l’augmentation de l’espace de recherche des fonctions de division prolongent considérablement la phase d’apprentissage, et (2) le fait que les fonctions de divisions ne partagent pas le calcul.</p></li>
+<li><p><strong>Entropy Nets</strong> et <strong>Neural decision trees</strong>: Dans cette approche, l’arbre de décision est modélisée comme un réseau de neurones artificiel multicouche ce qui permet l’apprentissage des transformations topologiques. Le réseau est entrainé avec l’algorithme de rétro-propagation <span class="citation" data-cites="Sethi1990 Balestriero2017">(Sethi 1990; Balestriero 2017)</span>.</p></li>
+</ul>
+<h3 id="Aggregation">Agrégation des modèles prédictifs</h3>
+<p>Il est possible d’obtenir un modèle prédictif (d’apprentissage supervisé) de très haute précision en combinant plusieurs modèles médiocres qui votent pour donner la réponse du nouveau modèle. Parmi ces méthodes d’agrégation de prédicteurs, citons:</p>
+<ul>
+<li><p><strong>Bootstrap aggregating</strong> (ou <strong>Bagging</strong>) <span class="citation" data-cites="Breiman1996">(Breiman 1996)</span>: <span class="math inline">\(N\)</span> bases de données sont échantillonnées de la base d’entrainement et sur chacune d’elle est entrainé un modèle. Le Baggin permet de minimiser la variance du prédicteur et de réduire le sur-apprentissage.</p></li>
+<li><p><strong>Random Forests</strong> est une extension du Bagging spécialisée pour les arbres de décision. En plus de l’échantillonnage de la base d’apprentissage, et à chaque nœud des arbres, seulement un sous ensemble échantillonné des variables d’entrées est considéré dans le choix de la fonction de division <span class="citation" data-cites="Ho1995">(Ho 1995)</span></p></li>
+<li><p>Le <strong>Staking</strong> <span class="citation" data-cites="Wolpert1992">(Wolpert 1992)</span>: Plusieurs modèles prédictifs sont entrainés. Ensuite, un nouveau modèle est entrainé en utilisant les prédictions des anciens modèles comme variables d’entrées additionnelles.</p></li>
+<li><p>Le <strong>Boosting</strong>: Nous citons ici sa variante <strong>AdaBoost</strong> (<em>Adaptive Boosting</em>) par <span class="citation" data-cites="Reund1996">Reund and Schapire (1996)</span> où un ensemble de modèles est construit élément par élément. Chaque nouveau modèle est entrainé avec une fonction objectif qui met plus de poids sur les exemples mal prédits par l’ensemble de modèles courant. La prédiction de l’ensemble est calculée par une somme pondérée des prédictions de tous les modèles.</p></li>
+</ul>
+<h3 id="conclusion-1" class="unnumbered unnumbered">Conclusion</h3>
+
+<p>L’apprentissage automatique supervisé permet au ordinateurs de faire des prédictions sur les données après avoir vu des exemples d’entrainement. Nous avons présenté deux modèles d’apprentissage: Les réseaux de neurones artificiels et les arbres de décision (Le premier étant boite noire et le deuxième boite blanche). Il est possible d’obtenir des bonnes performances dans la tache d’apprentissage en combinant plusieurs modèles avec des techniques comme le Bagging, le Staking et le Boosting.</p>
+<h2 id="lapprentissage-automatique-appliqué-aux-problèmes-de-vision-par-ordinateur">L’apprentissage automatique appliqué aux problèmes de vision par ordinateur</h2>
+<h3 id="introduction-2" class="unnumbered unnumbered">Introduction</h3>
+
+<p>La plupart des méthodes utilisées dans le domaine de vision par ordinateur se basent sur l’apprentissage automatique comme on verra dans ce chapitre.</p>
+<p>La section <a href="#classic" data-reference-type="ref" data-reference="classic">3.1</a> discute des approches classiques où les images sont pré-traitées pour faciliter l’apprentissage. Ensuite, la section <a href="#cnn" data-reference-type="ref" data-reference="cnn">3.2</a> introduit les réseaux de neurones artificiels convolutifs qui sont devenus récemment l’état de l’art dans les benchmarks. Ils sont expliqués dans le contexte de classification et puis dans les problèmes de comptage des foules, la détection et l’estimation de posture. Enfin, la section <a href="#challenges" data-reference-type="ref" data-reference="challenges">3.3</a> adresse quelques problèmes des méthodes modernes et présente quelques solutions.</p>
+<h3 id="classic">Approches classiques</h3>
+<p>La représentation des images comme des matrices de valeurs d’intensité des pixels n’est pas très adéquate pour l’apprentissage automatique. Il est difficile de trouver des règles simples liant ces informations de bas niveau avec le concept haut niveau à apprendre (La classe de l’objet figurant dans l’image par exemple).</p>
+<p>Les chercheur de vision automatique ont adapté la représentation connue sous le nom de <strong>bag of words</strong> et qui est utilisée dans le domaine du traitement des données textuels. La représentation des documents comme un vecteur des codes ASCII de leurs caractères individuels ne capture pas leur sémantique. Elle est donc inappropriée comme entrée aux algorithmes d’apprentissage classiques. D’où le développement de la représentation <strong>bag of words</strong> (Sac de mots) qui est construite comme suit: On considère un ensemble fixe de mots appellé dictionnaire. Les documents sont représentés par les histogrammes des occurrences des mots du dictionnaire les composants. Par exemple (pris de wikipedia), avec comme dictionnaire: <span class="math display">\[[&quot;John&quot;,&quot;likes&quot;,&quot;to&quot;,&quot;watch&quot;,&quot;movies&quot;,&quot;Mary&quot;,&quot;too&quot;,&quot;also&quot;,&quot;football&quot;,&quot;games&quot;]\]</span> la phrase &quot;John likes to watch movies. Mary likes movies too.&quot; est représentée par l’histogramme (ou vecteur) <span class="math inline">\((1, 2, 1, 1, 2, 1, 1, 0, 0, 0)^T\)</span> et la phrase &quot;John also likes to watch football games.&quot; par <span class="math inline">\((1, 1, 1, 1, 0, 0, 0, 1, 1, 1)^T\)</span>.</p>
+<p>Plusieurs chercheurs ont traité les images de façon similaire aux textes: Un dictionnaire de caractéristiques locales (<em>local features</em>) est définie. Et chaque image est représentée par l’histogramme des caractéristiques y occurrent après leur détection par un extracteur de caractéristiques (<em>feature extractor</em>). De sorte, les images sont vues comme des documents et les caractéristiques représentent ses mots. Comme exemples de caractéristiques, citons <em>les descripteurs SIFT</em> <span class="citation" data-cites="Lowe1999">(Lowe 1999)</span> (la figure <a href="#SIFT" data-reference-type="ref" data-reference="SIFT">[SIFT]</a>) et <em>HOG</em> (Histogram of Oriented Gradients) <span class="citation" data-cites="Dalal2005">(Dalal and Triggs 2005)</span> (la figure <a href="#HOG" data-reference-type="ref" data-reference="HOG">[HOG]</a>). Elle sont extraites et passées comme entrées à l’algorithme d’apprentissage (au lieu des images brutes).</p>
+
+<figure>
+<img src="Sift.jpg" alt="Chaque descripteur SIFT possède un position, une orientation et une échelle. Les positions des descripteurs SIFT extraits de l’image sont représentés par des points. (https://commons.wikimedia.org/wiki/File:Sift_keypoints_filtering.jpg)" /><figcaption>Chaque descripteur SIFT possède un position, une orientation et une échelle. Les positions des descripteurs SIFT extraits de l’image sont représentés par des points. (<a href="https://commons.wikimedia.org/wiki/File:Sift_keypoints_filtering.jpg" class="uri">https://commons.wikimedia.org/wiki/File:Sift_keypoints_filtering.jpg</a>)<span label="SIFT"></span></figcaption>
+</figure>
+
+<figure>
+<img src="hog.png" alt="Exemple des caractéristiques HOG extraites d’une image (Extrait sans autorisation de la figure 6 de (Dalal and Triggs 2005))." /><figcaption>Exemple des caractéristiques HOG extraites d’une image (Extrait sans autorisation de la figure 6 de <span class="citation" data-cites="Dalal2005">(Dalal and Triggs 2005)</span>).<span label="HOG"></span></figcaption>
+</figure>
+
+<figure>
+<img src="haar-features.png" alt="Les caractéristiques Haar sélectionné par l’algorithme (Viola and Jones 2001) pour la détection de visages. (Figure 3 de leur papier prise sans autorisation). La caractéristique Haar est une fonction calculée comme suit: La somme des intensités des pixels à l’intérieure de la région blanche est soustraite de la somme des intensités des pixels de la région noire." /><figcaption>Les caractéristiques Haar sélectionné par l’algorithme <span class="citation" data-cites="Viola2001">(Viola and Jones 2001)</span> pour la détection de visages. (Figure 3 de leur papier prise sans autorisation).<br />
+La caractéristique Haar est une fonction calculée comme suit: La somme des intensités des pixels à l’intérieure de la région blanche est soustraite de la somme des intensités des pixels de la région noire.<span label="Haar"></span></figcaption>
+</figure>
+<p><span class="citation" data-cites="Viola2001">(Viola and Jones 2001)</span> ont proposé une représentation des images appelée: L’image intégrale (<em>Integral image</em>). Dans cette représentation, les caractéristiques pseudo-Haar (<em>Haar-like</em>) peuvent être calculées très rapidement. Leur détecteur de visage est entrainé comme suit: Les images d’entrainement sont transformée en images intégrales. Ces dernières sont passées comme entrées à un arbre de décision qui utilise les caractéristiques pseudo-Haar comme fonctions de division. C’est à dire qu’il cherche les caractéristiques pseudo-Haar permettant de séparer autant que possible les images de visage des autres images. Une variante modifiée de l’algorithme Adaboost est utilisée pour entrainer un deuxième, troisième (et ainsi de suite) détecteurs des faux-positives. Les caractéristiques apprises par leur système sont faciles à interpréter (figure <a href="#Haar" data-reference-type="ref" data-reference="Haar">[Haar]</a>) et efficaces à calculer.</p>
+<h3 id="cnn">Les réseaux de neurones convolutifs</h3>
+<p>Depuis 2012, les réseaux de neurones convolutifs ont commencé à être un composant essentiel des nouvelles méthodes de vision par ordinateur. Ces réseaux sont capables d’apprendre des caractéristiques utiles pour le problème d’apprentissage tout en opérant directement sur les images brutes. Ceci permet de se passer de la programmation manuelle des extracteurs de caractéristiques.</p>
+<p>La représentation typique des images comme trois matrices <span class="math inline">\(R\)</span>, <span class="math inline">\(G\)</span> et <span class="math inline">\(B\)</span> peut être vue comme les sorties de trois détecteurs d’intensité des couleurs rouge, vert et bleu. Les problèmes de vision par ordinateur demandent par contre des détecteur de plus haut niveau.</p>
+<p>Prenons l’exemple de la détection de visages. Un détecteur de visages est facile à concevoir si on se base sur des détecteurs des parties de visage: le nez, la bouche, les yeux, etc. De même, un détecteur des yeux peut être facilement construit en se basant sur des détecteurs de l’iris et des cils. Et en générale, les détecteurs de haut niveau peuvent être construits en prenant comme entrées les sorties des détecteurs de niveau un peu plus bas. Les réseaux de neurones convolutifs fonctionnent de cette façon: Ils apprennent une hiérarchie de détecteurs, de niveaux de plus en plus hauts, telle que la sortie de chaque niveau et l’entrée du suivant.</p>
+<h4 id="les-couches-des-réseaux-de-neurones-convolutifs">Les couches des réseaux de neurones convolutifs</h4>
+<p>Les réseaux de neurones convolutifs sont généralement construits à partir des couches suivantes:</p>
+<ul>
+<li><p><strong>La couche convolutive</strong> représente <span class="math inline">\(N\)</span> détecteurs. Elle accepte en entrée les <span class="math inline">\(c\)</span> canaux (matrices) de sortie de la couche précédente (par exemple: les matrices <span class="math inline">\(R\)</span>, <span class="math inline">\(G\)</span> et <span class="math inline">\(B\)</span> de la première couche) et génère en sortie <span class="math inline">\(N\)</span> canaux, un canal par détecteur. Les canaux de sorties de la couche convolutive sont générés par application de <span class="math inline">\(N\)</span> filtres convolutifs aux canaux d’entrée, comme montré dans la figure <a href="#conv-layer" data-reference-type="ref" data-reference="conv-layer">[conv-layer]</a>.</p>
+<figure>
+<img src="conv.png" alt="Les entrées et les sorties d’une couche convolutive d’un réseau de neurone convolutif" /><figcaption>Les entrées et les sorties d’une couche convolutive d’un réseau de neurone convolutif<span label="conv-layer"></span></figcaption>
+</figure>
+<p>Chaque filtre convolutif prend en entrée un nombre de matrices <span class="math inline">\(M^{(1)}\)</span>, ..., <span class="math inline">\(M^{(c)}\)</span> (les canaux de la couche précédente) et génère en sortie une matrice <span class="math inline">\(M^{sortie}\)</span> tel que: <span class="math display">\[M^{sortie}_{i,j} = f(M^{(1)}_{l,m}, ..., M^{(c)}_{l,m}) |_{ i - k \leq l \leq i + k \text{, } j - k \leq m \leq j + k  }\]</span> <span class="math inline">\(f\)</span> est une fonction linéaire de ses entrées, et <span class="math inline">\(k\)</span> est un paramètre contrôlant la taille du filtre convolutif. Si par exemple <span class="math inline">\(k = 1\)</span> et <span class="math inline">\(c = 3\)</span> on obtient un filtre convolutif de taille <span class="math inline">\(3 \times 3\)</span> (car <span class="math inline">\(2 \times k + 1 = 3\)</span>) tel que:<br />
+<span class="math inline">\(M^{sortie}_{i,j} = a_{0}  +\)</span><br />
+<span class="math inline">\(a_{1}  \times M^{(1)}_{i-1, j-1} +        a_{2}  \times M^{(1)}_{i, j-1}
+    + a_{3}  \times M^{(1)}_{i+1, j-1} + ... +  a_{9}  \times M^{(1)}_{i+1, j+1} +\)</span><br />
+<span class="math inline">\(a_{10} \times M^{(2)}_{i-1, j-1} +        a_{11} \times M^{(2)}_{i, j-1}
+    + a_{12} \times M^{(2)}_{i+1, j-1} + ... +  a_{18} \times M^{(2)}_{i+1, j+1} +\)</span><br />
+<span class="math inline">\(a_{19} \times M^{(3)}_{i-1, j-1} + a_{20} \times M^{(3)}_{i, j-1}
+    + a_{21} \times M^{(3)}_{i+1, j-1} + ... +  a_{27} \times M^{(3)}_{i+1, j+1}\)</span></p>
+<p>Les paramètres <span class="math inline">\(a_{0}\)</span>, ..., <span class="math inline">\(a_{27}\)</span> sont apprises par l’algorithme d’apprentissage (généralement: l’algorithme du gradient). La figure <a href="#calcul-conv" data-reference-type="ref" data-reference="calcul-conv">[calcul-conv]</a> illustre graphiquement les valeurs entrant dans le calcul de <span class="math inline">\(M^{sortie}_{3,3}\)</span>.</p>
+<figure>
+<img src="calcul-conv.png" alt="Les variables entrant dans le calcul de la valeur M^{sortie}_{3,3} de la sortie d’un filtre convolutif" /><figcaption>Les variables entrant dans le calcul de la valeur <span class="math inline">\(M^{sortie}_{3,3}\)</span> de la sortie d’un filtre convolutif<span label="calcul-conv"></span></figcaption>
+</figure></li>
+<li><p><strong>La couche de <em>Max-Pooling</em></strong> génère des versions sous-échantillonnées des canaux en entrée. Chaque canal en entrée est découpé en rectangles de (généralement) <span class="math inline">\(2\times 2\)</span> pixels, ensuite, la valeur maximale à l’intérieure de chaque rectangle est préservée dans le canal de sortie (ce qui revient à une compression d’un facteur de 4). Ceci est illustré dans la figure <a href="#max-pooling" data-reference-type="ref" data-reference="max-pooling">[max-pooling]</a>. Le pooling réduit la taille des canaux, réduisant ainsi la quantité des paramètres et de calcul dans le réseau. .</p>
+<figure>
+<img src="Max_pooling.png" alt="Exemple illustrant le Max-Pooling (https://commons.wikimedia.org/wiki/File:Max_pooling.png)" /><figcaption>Exemple illustrant le Max-Pooling (<a href="https://commons.wikimedia.org/wiki/File:Max_pooling.png" class="uri">https://commons.wikimedia.org/wiki/File:Max_pooling.png</a>)<span label="max-pooling"></span></figcaption>
+</figure></li>
+<li><p><strong>La couche de fonctions d’activation</strong> applique une fonction non linéaire (par exemple <em>RELU</em>) à ses entrées. Généralement, une telle couche est insérée après chaque couche convolutive pour permettre au réseaux d’apprendre des filtres autres que les fonctions linéaires.</p></li>
+<li><p><strong>Les couches entièrement connectées</strong> sont des couche usuelles des réseaux de neurones, comme présenté dans la figure <a href="#reseau-de-neurones" data-reference-type="ref" data-reference="reseau-de-neurones">[reseau-de-neurones]</a>. Ces couches constitue généralement les dernière couches des réseaux de neurones de classification.</p></li>
+</ul>
+<p>Pour un traitement plus général des couches présentées ci-dessus, nous vous référons à <span class="citation" data-cites="Fei-Fei2016">(Fei-Fei, Karpathy, and Johnson 2016)</span>.</p>
+<h4 id="classification-avec-les-réseaux-de-neurones-convolutifs">Classification avec les réseaux de neurones convolutifs</h4>
+<p><span class="citation" data-cites="Krizhevsky2012">Krizhevsky, Sutskever, and Hinton (2012)</span> sont arrivés les premiers dans la compétition de classification ImageNet 2012. Leur approche est simple conceptuellement. Il s’agit d’un réseau de neurones convolutif appris de bout à bout par l’algorithme du rétro-propagation. Une approche très similaire à celle de <span class="citation" data-cites="LeCun1998">LeCun, Bottou, and Bengio (1998)</span>. L’entrainement de leur modèle était possible grâce à la disponibilité d’un volume énorme de données labellisées (la base de donnée ImageNet) et leur utilisation d’un processeur graphique (GPU) pour accélérer l’apprentissage. Dès lors, les réseaux de neurones convolutifs représentent l’état de l’art en classification.</p>
+<p>Les architectures des réseaux de classifications suivent le même patron illustré dans la figure <a href="#cnn-classification" data-reference-type="ref" data-reference="cnn-classification">[cnn-classification]</a>: La première couche du réseau contient les 3 canaux <em>RGB</em> de l’image. La 2<sup>ème</sup> couche est convolutive et génère un nombre de canaux en sortie. Après, il y a une couche de <em>Max-Pooling</em> qui préserve le nombre de canaux mais les réduit en taille poursuivie par une couche calculant la fonction <em>RELU</em>. Cette combinaison Convolution-Pooling-RELU est répétée un certain nombre de fois. La sortie de tout ça est un certain nombre de canaux (qu’on appelle en anglais <em>convolutional feature map</em>) représentant les caractéristiques extraites de l’image. La <em>Convolutional feature map</em> est traitée comme un vecteur et est connectée à l’entrée d’un réseau de neurones usuel (couches entièrement connectées) qui génère <span class="math inline">\(K\)</span> sorties chacune représentant la probabilité de l’appartenance de l’image à la <span class="math inline">\(k^{ème}\)</span> classe. Multiples améliorations de cette architecture ont été proposées. Citons par exemple GoogLeNet <span class="citation" data-cites="Szegedy2014">(Szegedy et al. 2014)</span> et ResNet <span class="citation" data-cites="He2015">(He et al. 2015)</span>.</p>
+
+<figure>
+<img src="reseau-classification.png" alt="Le parton des réseaux de neurones de classification. Conv: couche convolutive, Pool: Couche de Max-Pooling, RELU: Couche calculant la fonction RELU." /><figcaption>Le parton des réseaux de neurones de classification. Conv: couche convolutive, Pool: Couche de Max-Pooling, RELU: Couche calculant la fonction RELU.<span label="cnn-classification"></span></figcaption>
+</figure>
+<h4 id="comptage-des-foules-avec-les-réseaux-de-neurones-convolutifs">Comptage des foules avec les réseaux de neurones convolutifs</h4>
+<p><span class="citation" data-cites="Lempitsky2010">Lempitsky and Zisserman (2010)</span> ont proposé un cadre d’apprentissage supervisé pour les tâches de comptage d’objets visuels tel que les images d’entraînement sont annotées avec des points (un point par objet). On appelle ces annotations la carte de densité (<em>density maps</em>). Ils ont évité la tâche difficile d’apprendre à détecter et à localiser les instances d’objets individuels. Au lieu de cela, ils ont reformulé le problème comme estimation d’une densité d’image dont l’intégrale sur toute région d’image donne le nombre d’objets dans cette région.</p>
+<p><span class="citation" data-cites="Zhang2015">Zhang et al. (2015)</span> ont traité le problème de comptage des foules de manière similaire. Ils ont employé un réseau de neurones pour estimer les cartes de densité des images de foules. <span class="citation" data-cites="Zhang2016 Marsden2017">Zhang et al. (2016; Marsden et al. 2017)</span> ont apporté des améliorations à leur méthode. Nous présentons dans les figures <a href="#cnn-foules" data-reference-type="ref" data-reference="cnn-foules">[cnn-foules]</a> et <a href="#density-maps" data-reference-type="ref" data-reference="density-maps">[density-maps]</a> le réseau de <span class="citation" data-cites="Marsden2017">Marsden et al. (2017)</span> et un exemple des cartes de densités.</p>
+
+<figure>
+<img src="cnn-foules.png" alt="Le réseau de neurone convolutif de détection des foules de Marsden et al. (2017) (figure copiée sans autorisation)" /><figcaption>Le réseau de neurone convolutif de détection des foules de <span class="citation" data-cites="Marsden2017">Marsden et al. (2017)</span> (figure copiée sans autorisation)<span label="cnn-foules"></span></figcaption>
+</figure>
+
+<figure>
+<img src="density-maps.png" alt="Figure copiée sans autorisation de (Marsden et al. 2017). À gauche: les images des foules, au milieu: les cartes de densité (ground truth) et à droite les cartes de densité estimées par la méthode (Marsden et al. 2017)" /><figcaption>Figure copiée sans autorisation de <span class="citation" data-cites="Marsden2017">(Marsden et al. 2017)</span>. À gauche: les images des foules, au milieu: les cartes de densité (ground truth) et à droite les cartes de densité estimées par la méthode <span class="citation" data-cites="Marsden2017">(Marsden et al. 2017)</span><span label="density-maps"></span></figcaption>
+</figure>
+<h4 id="détection-avec-les-réseaux-de-neurones-convolutifs">Détection avec les réseaux de neurones convolutifs</h4>
+<p>La détection peut être implémentée en exécutant un classifieur sur plusieurs fenêtres extraites de l’image. La façon la plus simple pour extraire les fenêtres à classifier est appelée <strong>sliding window</strong>: Essayer toutes (ou presque toutes) les fenêtres possibles. Un exemple de cette approche est la méthode <strong>Overfeat</strong> par <span class="citation" data-cites="Sermanet2013">Sermanet et al. (2013)</span>: Un réseau de neurones convolutif de classification est entrainé (Une classe &quot;arrière plan&quot; est ajoutée en plus des classes des objets). Ce réseau de classification est un ensemble de couches convolutives qui génèrent la <em>convolutional feature map</em>, suivies par des couches entièrement liées générant dans leur sortie les probabilités des classes. Un autre réseau de neurones de couches entièrement liées est connecté à la <em>convolutional feature map</em>. Il est entrainé pour faire la localisation (prédire les coordonnées de la fenêtre de délimitation contenant l’objet classifié). Pour détecter les objets dans une image, les deux réseaux sont exécutés sur des fenêtres recouvrant l’image avec plusieurs échelles. Puis, les prédictions de toutes ses réseaux sont combinées pour donner le résultat final. L’approche de <span class="citation" data-cites="Sermanet2013">Sermanet et al. (2013)</span> exploite le faite que les opérations de convolution peuvent être exécutés une seule fois pour toutes les fenêtres de la même échelle.</p>
+<p>La détection peut être rendue plus rapide en choisissant intelligemment les fenêtres à classifier. Les méthodes d’<strong>object proposals</strong> génèrent un nombre de fenêtres réduit par rapport à <em>sliding window</em> en ne considérant que les régions susceptible à contenir un objet. Parmi ces méthodes, nous citons:</p>
+<ul>
+<li><p>L’algorithme <strong>selective search</strong> <span class="citation" data-cites="Uijlings2012">(Uijlings et al. 2012)</span> segmente l’image hiérarchiquement en commençant des petits groupes de pixels et en combinant récursivement les groupes qui partagent la même propriété comme la couleur ou la texture. Les groupes de pixels générés par cet algorithme sont ensuite passés à un classifieur pour déterminer s’il y a vraiment un objet.</p></li>
+<li><p>La méthode <strong>Edge boxes</strong> <span class="citation" data-cites="Zitnick2014">(Zitnick and Dollár 2014)</span> se base sur les contours extraits de l’image pour estimer la probabilité qu’il y a un objet. Les auteurs ont comparé leur méthode avec plusieurs méthodes antérieures pour démontrer son efficacités et précision.</p></li>
+</ul>
+<p>Dans <strong>R-CNN (Regions with CNN features)</strong> <span class="citation" data-cites="Girshick2014">(Girshick, Donahue, and Darrell 2014)</span>, l’algorithme <em>selective search</em> est employé pour choisir un nombre de fenêtres. Ces fenêtres sont ensuite passée, une à la fois, à un réseau de neurone convolutif. La <em>convolutional feature map</em> de ce réseau (la dernière couche) est connectée à 2 réseaux de neurones de couches entièrement connectées. Un réseau pour donner la classe est un autre pour estimer une fenêtre de délimitation plus étroite.</p>
+<p><span class="citation" data-cites="Girshick2015">Girshick (2015)</span> ont conçu une amélioration de l’approche précédente appelée <strong>Fast R-CNN</strong>. Au lieu d’exécuter le réseau convolutif répétitivement pour chaque fenêtre, toute l’image est passé au réseau convolutif générant une grande <em>convolutional feature map</em>. les régions correspondantes aux fenêtres proposées par <em>selective search</em> sont extraites de la <em>convolutional feature map</em> et leurs tailles sont normalisées avec un opérateur de <em>Pooling</em> appelé <strong>RoI-Pooling (Region of Interest Pooling)</strong> (visualisé dans la figure <a href="#roi-pooling" data-reference-type="ref" data-reference="roi-pooling">[roi-pooling]</a>). Ces régions qui sont de même taille sont ensuite passées, une à la fois, aux deux réseaux de neurones (de classification et de contraction des fenêtres de délimitations).</p>
+
+<figure>
+<img src="roi-pooling.png" alt=" Region of Interest Pooling (prise sans autorisation de https://blog.deepsense.ai/region-of-interest-pooling-explained/): On veut normaliser la taille de la région de la convolutional feature map à 2 \times 2. (a) montre la fenêtre à considérer dans un canal (une des matrices) de la convolutional feature map. (b) montre comment cette fenêtre est découpée et (c) donne le résultat de pooling où la valeur maximale est prise dans chaque région. " /><figcaption> Region of Interest Pooling (prise sans autorisation de <a href="https://blog.deepsense.ai/region-of-interest-pooling-explained/" class="uri">https://blog.deepsense.ai/region-of-interest-pooling-explained/</a>): On veut normaliser la taille de la région de la <em>convolutional feature map</em> à <span class="math inline">\(2 \times 2\)</span>. (a) montre la fenêtre à considérer dans un canal (une des matrices) de la <em>convolutional feature map</em>. (b) montre comment cette fenêtre est découpée et (c) donne le résultat de pooling où la valeur maximale est prise dans chaque région. <span label="roi-pooling"></span></figcaption>
+</figure>
+<p><span class="citation" data-cites="Ren2015a">Ren et al. (2015)</span> ont réalisé une autre amélioration de <em>R-CNN</em> appelée <strong>Faster R-CNN</strong>. Leur idée principale est que les caractéristiques apprises par le réseau de neurone convolutifs peuvent être utilisée pour extraire les <em>Object proposals</em>. L’algorithme <em>selective search</em> est remplacé par des filtres convolutifs de tailles différentes opérant sur la <em>convolutional feature map</em>. Ces filtres sont entrainés pour prédire l’existence des objets. Les activations de ces filtres donnent les <em>Object proposals</em>. L’état de l’art actuel de la détection dans le benchmark Microsoft Coco a été réalisé par un ensemble de réseaux de variantes de <em>Faster R-CNN</em> <span class="citation" data-cites="Huang2016">(Huang et al. 2016)</span>.</p>
+<h4 id="estimation-de-posture-avec-les-réseaux-de-neurones-convolutifs">Estimation de posture avec les réseaux de neurones convolutifs</h4>
+<p><span class="citation" data-cites="Cao2016">Cao et al. (2016)</span> ont produit un système qui fonctionne en temps réel et qui est capable d’estimer les postures de plusieurs personnes dans des images encombrées. Dans leur approche, un réseau convolutif est entrainé pour:</p>
+<ol>
+<li><p>Détecter certaines parties des corps humains comme les visages, les mains, les pieds et les articulations principales (genoux, épaules et couds). Ceci est réalisé en générant <span class="math inline">\(N\)</span> cartes de confiance (<em>confidence maps</em>), une par type de partie (une pour les visages, une autre pour les main, etc.). Ces cartes sont des matrices contenant des 1 la où l’objet concerné est détecté.</p></li>
+<li><p>Estimer l’angle d’inclinaison des membres en générant <span class="math inline">\(K\)</span> matrices donnant pour chaque pixel de l’image un angles entre <span class="math inline">\(0\)</span> et <span class="math inline">\(180^{\circ}\)</span>, <span class="math inline">\(K\)</span> étant le nombre de types de membres considérés (par exemple: la partie entre le genou et le pied).</p></li>
+</ol>
+<p>Après la génération des cartes de confiance et d’inclinaisons des membres, un algorithme glouton est utilisé pour relier les parties appartenant à la même personne. La figure <a href="#cao-exemple" data-reference-type="ref" data-reference="cao-exemple">[cao-exemple]</a> donne un exemple des cartes de confiances et d’inclinaison et le résultat de cet algorithme pour une image.</p>
+
+<figure>
+<img src="cao-exemple.png" alt="Exemple d’estimation de postures avec (Cao et al. 2016) (Figure 2 de leur papier prise sans autorisation). (a) affiche l’image en entrée. (b) visualise 2 cartes de confiance: Une qui détecte les épaules et l’autre les couds. (c) visualise la matrice donnant les angles d’inclinaison des bras. Et (e) donne le résultat final après la liaison de toutes les parties " /><figcaption>Exemple d’estimation de postures avec <span class="citation" data-cites="Cao2016">(Cao et al. 2016)</span> (Figure 2 de leur papier prise sans autorisation). (a) affiche l’image en entrée. (b) visualise 2 cartes de confiance: Une qui détecte les épaules et l’autre les couds. (c) visualise la matrice donnant les angles d’inclinaison des bras. Et (e) donne le résultat final après la liaison de toutes les parties <span label="cao-exemple"></span></figcaption>
+</figure>
+<h4 id="transfer-learning">Apprentissage par transfert</h4>
+<p>L’apprentissage par transfert est la reconnaissance et l’application des connaissances apprises dans une tache sur de nouvelles taches similaires <span class="citation" data-cites="Pan2010">(Pan and Yang 2010)</span>.</p>
+<p>D’après <span class="citation" data-cites="Fei-Fei2016">Fei-Fei, Karpathy, and Johnson (2016)</span>, très peu de chercheurs entrainent les réseaux convolutifs à partir de zéro (avec une initialisation aléatoire), car il est relativement rare d’avoir un ensemble de données de taille suffisante pour effectuer l’entrainement. Au lieu de cela, il est courant de pré-trainer un réseau convolutif sur un ensemble de données très important (par exemple, ImageNet, qui contient 1,2 million d’images avec 1000 catégories), puis utiliser les couches convolutives soit comme amorçage d’une initialisation, soit comme un extracteur de caractéristiques pour la tâche d’intérêt.</p>
+<h3 id="challenges">Challenges des réseaux de neurones convolutifs</h3>
+<h4 id="problèmes-de-sureté">Problèmes de sureté</h4>
+<p><span class="citation" data-cites="Szegedy2013">Szegedy et al. (2013)</span> ont constaté que des légères modifications (indiscernables par les humains) sur les images peuvent les rendre mal classifiées. On appelle la nouvelle image un exemple adversatif (<em>adversarial example</em>). La figure <a href="#adversarial" data-reference-type="ref" data-reference="adversarial">[adversarial]</a> donne un tel exemple.</p>
+
+<figure>
+<img src="adversarial.png" alt="Des exemples adversatifs (Figure 5 de (Szegedy et al. 2013) prise sans autorisation)" /><figcaption>Des exemples adversatifs (Figure 5 de <span class="citation" data-cites="Szegedy2013">(Szegedy et al. 2013)</span> prise sans autorisation)<span label="adversarial"></span></figcaption>
+</figure>
+<p>Une image classifiée correctement comme appartenant à la classe <span class="math inline">\(j\)</span> peut être transformée légèrement pour quelle soit mal classifiée comme image de classe <span class="math inline">\(k\)</span> par l’algorithme d’optimisation suivant: L’image est introduite à l’entrée du réseau de neurones artificiels qui génère dans sa sortie les probabilités de toutes les classes. L’objectif est d’augmenter la probabilité de la classe <span class="math inline">\(k\)</span>. On calcule alors la dérivé partielle de la probabilité de la classe <span class="math inline">\(k\)</span> par rapport à la valeur de chaque pixel de l’image (ceci est possible comme le réseau de neurones représente une fonction dérivable). Ensuite, on mit à jour les valeurs des pixels dans la direction des dérivés partielles. Ces étapes peuvent être répétées jusqu’à générer une image classifiée comme appartenant à la classe <span class="math inline">\(k\)</span> <span class="citation" data-cites="Goodfellow2014">(Goodfellow, Shlens, and Szegedy 2014)</span>.</p>
+<p><span class="citation" data-cites="Szegedy2013">Szegedy et al. (2013)</span> ont montré que les exemples adversatifs construits pour un réseau de neurones convolutif donné peuvent tromper d’autres réseaux d’architectures différentes et entrainés avec des bases de données différentes. De ce fait, ces exemples posent des problèmes de sécurité car ils pourraient être utilisés pour attaquer les systèmes d’apprentissage machine, même si l’adversaire n’a pas accès au modèle de détection utilisé.</p>
+<p><span class="citation" data-cites="Goodfellow2014">Goodfellow, Shlens, and Szegedy (2014)</span> ont conçu une famille de méthodes rapide pour générer les exemples adversatifs et <span class="citation" data-cites="Athalye2017">Athalye and Sutskever (2017)</span> ont montré que ces exemples peuvent être rendus robustes aux transformations (changement d’échelle, d’angle, de perspective et autres) et donc utilisables pour attaquer les systèmes de surveillance et des véhicules auto-pilotés.</p>
+<h4 id="problèmes-de-compréhensibilité">Problèmes de compréhensibilité</h4>
+<p>Les réseaux de neurones convolutifs appartiennent aux approches dites boites noires c’est-à-dire qu’il est difficile de les comprendre. Plusieurs méthodes ont été conçues pour interpréter les filtres appris. Ces méthodes suppose généralement que:</p>
+<ul>
+<li><p>Le réseau convolutif utilise la fonction d’activation <em>RELU</em> (définie par <span class="math inline">\(f(x) = max(0, x)\)</span>). Donc, uniquement les valeurs positives sont propagées. On dit qu’un neurone est excité ou déclenché lorsqu’il génère une valeur positive.</p></li>
+<li><p>Les couches convolutives sont vues comme des neurones qui partagent les mêmes poids mais qui consomme des entrées prises de fenêtres différentes.</p></li>
+</ul>
+<p><span class="citation" data-cites="Zeiler2014">Zeiler and Fergus (2014)</span> ont conçu une méthode permettant de savoir quels genres de motifs déclenchent les neurones. Pour cela, une image est introduite à l’entrée du réseau de neurones et sa sortie est calculée. Ensuite et à partir du neurone à analyser, les opérations effectuées par le réseaux de neurones sont inversées (Opération de <em>déconvolution</em>) pour obtenir les pixels de l’image responsables de son déclenchement.</p>
+<p><span class="citation" data-cites="Yosinski2015">Yosinski et al. (2015)</span> ont présenté une méthode de visualisation basée sur l’optimisation: L’image en entrée du réseau est modifiée de sorte à maximiser le déclenchement d’un neurone donné. L’image résultante donne une idée sur les motifs détectés par ce neurone. L’optimisation est faite sous contraintes de régularisation pour s’assurer que l’image générée semble naturelle (contrairement aux exemples adversatifs vus dans la section précédente).</p>
+<h4 id="problèmes-de-performance">Problèmes de performance</h4>
+<p>Les meilleurs résultats récents ont été obtenus grâce à l’emploie des réseaux de neurones convolutifs profonds. Cette profondeur implique un cout en terme de mémoire pour le stockage des paramètres du réseau et des résultats intermédiaires de calcul, et en terme de temps de calcul pendant l’entrainement et l’exécution du modèle déployé. Par exemple, les réseaux convolutifs de classification modernes prennent 2 à 3 semaines pour s’entraîner sur plusieurs GPU sur la base de données ImageNet <span class="citation" data-cites="Fei-Fei2016">(Fei-Fei, Karpathy, and Johnson 2016)</span>. Après entrainement couteux, les réseaux de neurones peuvent être exécutées en temps réel, mais ils nécessitent l’emploie des processeurs graphiques puissants ce qui limite leurs utilisabilité dans les systèmes embarqués.</p>
+<p>Pour réduire la taille et le temps d’exécution des réseaux de neurones entrainés, <span class="citation" data-cites="Han2015">Han, Mao, and Dally (2015)</span> ont proposé une pipeline de compression en trois étapes (appelé <em>deep compression</em>): l’élagage, la quantification formée et le codage Huffman, qui réduisent les besoins de stockage des paramètres des réseaux de neurones de 35 fois à 49 fois sans affecter leur précision. L’élagage est fait en préservant uniquement les connexions importantes. Ensuite, les poids sont quantifiés ce qui réduit le nombre de bits qui représentent chaque connexion de 32 à 5. Enfin, le codage Huffman est appliqué. Cette méthode a réduit le stockage requis par AlexNet (le réseau de <span class="citation" data-cites="Krizhevsky2012">Krizhevsky, Sutskever, and Hinton (2012)</span>) de 240 Mo à 6,9 Mo, et la taille de VGG-16 <span class="citation" data-cites="Simonyan2014">(Simonyan and Zisserman 2014)</span> de 552 Mo à 11,3 Mo, toujours sans perte de précision. Cela permet de charger le modèle dans le cache SRAM du processeur plutôt que dans la mémoire DRAM gagnant ainsi en terme de vitesse et d’efficacité énergétique. Dans un travail ultérieur, <span class="citation" data-cites="Han2016">Han et al. (2016)</span> ont conçu un matériel spécialisé pour exécuter les modèles compressés qui est plus rapide et plus énergétiquement efficace que les CPUs et les GPUs.</p>
+<p><span class="citation" data-cites="Iandola2016">Iandola et al. (2016)</span> ont créé le réseau de neurone convolutif <strong>SqueezeNet</strong>. Leur modèle a surpassé la précision d’AlexNet dans le benchmark de classification d’ImageNet tout en ayant 50 fois moins de paramètres (4.8 Mo versus 240 Mo). Après l’application de la <em>deep compression</em> <span class="citation" data-cites="Han2015">(Han, Mao, and Dally 2015)</span>, leur réseau devient de 0.5 Mo (soit 510 fois plus petit qu’AlexNet) tout en gardant la même précision. Le réseau SqueezeNet peut être entrainé dans un temps réduit et il est plus rapide au moment d’exécution. La réduction du nombre de paramètres a été réalisée avec une stratégie étonnamment simple: En (1) remplaçant une partie des filtres convolutifs de taille <span class="math inline">\(3 \times 3\)</span> par des filtres de <span class="math inline">\(1 \times 1\)</span> et en (2) réduisant le nombre de canaux d’entrée des filtres <span class="math inline">\(3 \times 3\)</span>. Il est à noter que la performance de <em>SqueezeNet</em> est dépassée par plusieurs modèles plus lourds comme <em>ResNet</em> <span class="citation" data-cites="He2015">(He et al. 2015)</span>.</p>
+<h3 id="conclusion-2" class="unnumbered unnumbered">Conclusion</h3>
+
+<p>L’apprentissage automatique des caractéristiques avec les réseaux de neurones convolutifs est l’ingrédient commun des approches représentant l’état de l’art dans la vision par ordinateur. Ces réseaux ont leurs propres désavantages comme leur vulnérabilité aux exemples adversatifs, leur nature peu interprétable et leur exigence en terme de ressources.</p>
+<h1 id="coté-applicatif">Coté applicatif</h1>
+<h2 id="installation-des-frameworks-de-vision-par-ordinateur">Installation des frameworks de vision par ordinateur</h2>
+<h3 id="introduction-3" class="unnumbered unnumbered">Introduction</h3>
+
+<p>L’objet de ce chapitre est la présentation des bibliothèques et programmes open sources implémentant les algorithmes de traitement d’images et de vidéos et les algorithme d’apprentissage automatique.</p>
+<p>Dans la section <a href="#os" data-reference-type="ref" data-reference="os">1.1</a>, nous expliquons notre choix de système d’exploitation de développement. Ensuite, nous définissons brièvement et donnons les instructions d’installation de la bibliothèque OpenCV (section <a href="#opencv" data-reference-type="ref" data-reference="opencv">1.2</a>), la plateforme SciPy (section <a href="#scipy" data-reference-type="ref" data-reference="scipy">1.3</a>) et enfin la framework Caffe (section <a href="#caffe" data-reference-type="ref" data-reference="caffe">1.4</a>).</p>
+<h3 id="os">Système d’exploitation utilisé</h3>
+<p>Nous avons choisi comme système d’exploitation de développement la distribution Linux <em>Fedora Workstation</em>, développée et sponsorisée par l’entreprise <em>Red Hat</em>, avec l’interface graphique <em>LXDE</em>.</p>
+<p>En fait, le cluster <em>IBNBADIS</em><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> du <em>CERIST</em><a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> utilise la distribution commerciale <strong>Red Hat Linux</strong> qui est basée sur <strong>Fedora</strong>. L’utilisation de cette dernière nous facilitera le passage au cluster IBNBADIS en cas de besoin.</p>
+<p>Quant à l’interface graphique <strong>LXDE</strong> (Lightweight X11 Desktop Environment), nous l’avons choisie car elle utilise peux de ressources processeur et mémoire (Moins de 200 Mo au démarrage). Cette économie d’espace mémoire est très importante vu que les réseaux de neurones profonds en sont très gourmands.</p>
+<h4 id="problème-du-swapping">Problème du Swapping</h4>
+<p>Le système Linux supporte la fonctionnalité de <strong>Swapping</strong> qui permet d’utiliser une partie de la mémoire secondaire appelée <em>Swap</em> comme extension de la RAM. Le Swapping est utile lorsqu’on a besoin de plusieurs programmes qui utilisent ensemble plus de mémoire que disponible et lorsqu’on ne bascule pas souvent entre eux.</p>
+<p>Nous avons désactivé le Swapping dans notre système car il n’est pas compatible avec notre cas d’utilisation: Nous utilisons plusieurs programmes interactifs (la console interactive (<em>REPL: Read–eval–print loop</em>) du langage python, l’éditeur de texte et le navigateur internet) et le programme Caffe qui devient gourmand en terme de ressources si on charge un réseau de neurones de grande taille. Lorsque Caffe utilise plus de mémoire que disponible dans le système, et comme il est le programme utilisant le plus le processeur, il force tous les programmes interactif à être déchargés hors de la RAM rendant le système inutilisable. Et si le modèle chargé dans Caffe est suffisamment grand que les résultats de calcul intermédiaires ne peuvent pas être tenus dans la RAM, en plus du système inutilisable, le calcul lui même devient lent. À cause de tout cela, nous avons décidé de désactiver le Swapping ce qui cause les modèles géants à se planter sans bloquer le système. Le swapping peut être désactivé en utilisant la commande linux: <code>sudo swapoff -a</code></p>
+<h3 id="opencv">La bibliothèque OpenCV</h3>
+<p>OpenCV (pour Open Computer Vision)<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> est une bibliothèque graphique libre supportée par Intel et distribuée sous licence BSD. Elle permet la lecture, l’écriture et l’affichage des images et des vidéos sous plusieurs formats. Elle implémente des algorithmes de traitement d’images comme le filtrage, le seuillage, la segmentation et la détection de visages, et des algorithmes de traitement de vidéos comme la soustraction de l’arrière plan et la poursuite d’objets. OpenCV implémente aussi des algorithmes d’apprentissages supervisés et non supervisés et plusieurs opérations algébriques portant sur les matrices. Elle peut exploiter la puissance calculatoire des GPU Nvidia. Elle est aussi optimisée pour les appareils mobiles <span class="citation" data-cites="Pulli2012">(Pulli, Baksheev, and Kornyakov 2012)</span></p>
+<p>La bibliothèque OpenCV est écrite en C++ et utilisable avec les langages de programmations C++, C, Python et Java. Nous l’avons installée avec la commande:</p>
+<p><code>sudo yum install opencv</code></p>
+<p>Et nous avons installé son interface de programmation sous langage Python avec:</p>
+<p><code>sudo yum install opencv-python</code></p>
+<h3 id="scipy">La distribution SciPy</h3>
+<p>SciPy<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> est une distribution de bibliothèques Python et un environnement de travail scientifique open sources sous licence BSD. Elle offre une console interactive du langage python, une bibliothèque de calcul matriciel (Numpy) optimisée et écrite en langage C, des modules pour la création des graphes et des tableaux et des fonctionnalités similaires à MATLAB, GNU Octave et R.</p>
+<p>Il y a deux versions de la distribution SciPy: Une basée sur la version 2 du langage de programmation Python et une autre basée sur la version 3. Nous avons installé la version Python2 car elle est la seule supportée par Caffe (l’objet de la section suivante). SciPy peut être installée avec les commandes:<br />
+<code> sudo pip install numpy sudo pip install scipy sudo pip install pandas sudo pip install sympy sudo pip install nose sudo pip install jupyter sudo yum install redhat-rpm-config sudo pip install scikit-image sudo pip install ’ipython&lt;6.0’ sudo pip install jupyter </code></p>
+<p>SciPy inclue <strong>Jupyter Notebook</strong>:<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a> Une application web offrant une console interactive Python et permettant de créer et partager des documents contenant du code, équations, visualisations et textes explicatifs. La figure <a href="#jupyter" data-reference-type="ref" data-reference="jupyter">[jupyter]</a> montre l’interface Jupyter notebook qui est ouvrable avec la commande: <code>jupyter notebook</code></p>
+
+<figure>
+<img src="jupyter.png" alt="Jupyter Notebook ouvert dans le navigateur Firefox dans Fedora Workstation LXDE" /><figcaption>Jupyter Notebook ouvert dans le navigateur Firefox dans Fedora Workstation LXDE</figcaption>
+</figure>
+<p>. <span id="jupyter" label="jupyter">[jupyter]</span></p>
+<h4 id="lexécution-de-jupyter-notebook-dans-le-cluster">L’exécution de Jupyter Notebook dans le cluster</h4>
+<p>Comme Jupyter Notebook est un serveur web, il peut (en principe) être installé et lancé dans un nœud de calcul puissant d’un cluster et utilisé depuis une machine de ressources limitées en se connectant à l’adresse IP du nœud de calcul. Cette méthode nécessite soit que ce nœud possède une adresse IP publique ou bien qu’il se trouve dans le même réseau privé que la machine client. <em>IPython</em> est un alternatif de Jupyter Notebook qui fait partie de SciPy et qui fonctionne sous mode texte. Il est donc utilisable à distance via SSH<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a> contournant ainsi le problème de connaissance de l’adresse IP du nœud de calcul. Ipython peut être lancé avec la commande: <code>ipython</code></p>
+<p>Un autre problème avec l’exécution du Jupyter Notebook dans un nœud de cluster est que les fonctions d’ouverture de fenêtres (que nous avons utilisé pour la visualisation des objets détectés dans les vidéos) ne marcheront plus car (1) elles nécessitent que le nœud du cluster puisse afficher une interface graphique et (2) même si c’est le cas, la fenêtre s’ouvrira dans la machine du cluster au lieu de la machine client. Il faudra donc trouver d’autres façons pour visualiser en temps réel les algorithmes. Une possibilité est d’enregistrer les images dans des fichiers et de synchroniser le dossier les contenant avec SSH.</p>
+<h3 id="caffe">La framework Caffe</h3>
+<p>Caffe<a href="#fn11" class="footnote-ref" id="fnref11"><sup>11</sup></a> est une framework d’apprentissage profond. Elle est développée par <em>Berkeley AI Research</em> (BAIR) et la communauté open source sous licence BSD. Elle permet de définir sous format texte l’architecture du réseau de neurones artificiels en combinant des bloques de base pré-définis comme les couches convolutives, complètement connectées et les neurones calculant la fonction objectif. Elle permet aussi l’entrainement des réseaux de neurones sur des bases de données d’apprentissage créées par l’utilisateur et la manipulation pragmatique des architectures grâce à un API<a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> C++ et Python 2.</p>
+<p>Caffe peut exploiter les GPUs NVidia pour accélérer le calcul. Comme nous n’avons pas de tel matériel, nous avons compilé Caffe en mode CPU. Voici ci-dessous les instructions d’installation de Caffe (Cette liste est un peu différente de celle donnée dans le site officiel<a href="#fn13" class="footnote-ref" id="fnref13"><sup>13</sup></a> qui est écrite pour les systèmes Debian):<br />
+<code> sudo yum install protobuf-devel leveldb-devel snappy-devel sudo yum install opencv-devel boost-devel hdf5-devel gflags-devel sudo yum install glog-devel lmdb-devel atlas-devel sudo yum install python-devel python-numpy protobuf-python sudo yum install gcc-c++ # Télécharger et extraire https://github.com/BVLC/caffe dans le dossier &quot;caffe&quot; # TODO: rewrite it in code cd caffe # Modifier les fichiers de configuration pour que Caffe soit en mode CPU # et compatible avec Fedora (Consulter Mlle Setitra Insaf) # TODO: rewrite it in code make all make test make runtest make pycaffe echo ’export PYTHONPATH=/path-to-caffe-directory/python:$PYTHONPATH’ &gt;&gt; \sim/.bashrc </code></p>
+<h4 id="caffe-model-zoo">Caffe Model Zoo</h4>
+<p>La framework Caffe offre le Model Zoo<a href="#fn14" class="footnote-ref" id="fnref14"><sup>14</sup></a>, une collection de réseaux de neurones pré-entrainés pour différents benchmarks. Ces modèles peuvent être utilisés directement ou bien pour initialiser un réseau de neurone traitant un nouveau problème comme expliqué dans la section <a href="#transfer-learning" data-reference-type="ref" data-reference="transfer-learning">3.2.6</a>.</p>
+<h3 id="installation-des-logiciels-dans-le-cluster">Installation des logiciels dans le cluster</h3>
+<p>Le cluster IBNBADIS est composé d’un nœud d’administration, un nœud de visualisation équipé d’un GPU Nvidia Quadro 4000 (6GB, 448 coeurs), et 32 nœuds bi-processeurs Intel(R) Xeon(R) CPU E5-2650 2.00GHz de 8 cœurs chacun. Le système d’exploitation installé est Red Hat (version ?), et les logiciels installés sont: SLURM (pour la gestion des jobs), les compilateurs de C,C++ (version ?) et Fortran et la bibliothèque MPI.</p>
+<p>Comme les utilisateurs simples du cluster n’ont pas droit d’installer les logiciels et les bibliothèques dans les nœuds du cluster, nous avons créé un manuel d’installation pour le passer aux administrateurs du cluster (toutes les commandes commençant par <code>sudo</code> dans ce rapport):<br />
+<code> sudo yum install opencv sudo yum install opencv-python sudo pip install numpy sudo pip install scipy sudo pip install pandas sudo pip install sympy sudo pip install nose sudo pip install jupyter sudo yum install redhat-rpm-config sudo pip install scikit-image sudo pip install ’ipython&lt;6.0’ sudo pip install jupyter sudo yum install protobuf-devel leveldb-devel snappy-devel sudo yum install opencv-devel boost-devel hdf5-devel gflags-devel sudo yum install glog-devel lmdb-devel atlas-devel sudo yum install python-devel python-numpy protobuf-python sudo yum install gcc-c++ </code></p>
+<p>Ce manuel contient les instructions de l’installation de seulement la version CPU de la framework Caffe car nous n’avons pas des machines contenant des GPU Nvidia pour essayer d’installer la version GPU.</p>
+<p>Le système du cluster peut ne pas être suffisamment récent pour pouvoir compiler Caffe. Dans <span class="citation" data-cites="Bengherbia2016">(Bengherbia and Khelil 2016)</span>, le projet C++ développé utilisait des fonctionnalités de la version 2011 du langage C++, il n’était donc pas compilable avec la version du compilateur GCC installée dans le cluster IBNBADIS. Ce problème a été contourné en compilant le projet dans une machine de développement contenant le système Fedora 23, mais le programme généré n’était pas exécutable sur les machine du cluster car la version de la bibliothèque <code>libc</code> installée dans le cluster était ancienne et incompatible avec la version de la machine de développement. Ce deuxième problème a été résolut en reliant la bibliothèque <code>libc</code> statiquement (static linking).</p>
+<p>S’il s’avère que la version de GCC du cluster est très ancienne pour compiler la framework Caffe, il faudra demander aux administrateurs du cluster de mettre à jour le compilateur GCC. Si ce n’est pas possible, on peut la compiler sur une machine externe avec liaison statique de ses bibliothèques (<code>protobuf</code>, <code>leveldb</code>, <code>snappy</code>, <code>opencv</code>, <code>boost</code> (possède une version statique), <code>hdf5</code>, <code>gflags</code>, <code>glog</code>, <code>lmdb</code>, <code>atlas</code>) à condition que les versions statiques de ces bibliothèques existent.</p>
+<h3 id="conclusion-3" class="unnumbered unnumbered">Conclusion</h3>
+
+<p>Dans ce chapitre, nous avons présenté le système de travail que nous avons configuré et qui contient des bibliothèques et logiciels open source sous la licence permissive BSD. Ces logiciels facilitent l’exploration des approche existantes avec un minimum de reprogrammation. Nous avons vu la bibliothèque OpenCV qui permet de décoder les images et les vidéos, la plateforme SciPy qui facilite la création et le partage du code expliqué et bien structuré et la framework Caffe qui permet d’entrainer et d’utiliser les réseaux de neurones artificiels avec son Model Zoo contenant plusieurs réseaux pré-entrainés. Nous avons préciser quels logiciels à installer sur le cluster IBNBADIS et discuté des problèmes potentiels qui peuvent arriver durant la compilation de Caffe dans le cluster.</p>
+<h2 id="tests">Expériences faites</h2>
+<h3 id="introduction-4" class="unnumbered unnumbered">Introduction</h3>
+
+<p>Dans ce chapitre, nous présentons les expériences que nous avons fait (Setitra Insaf et moi) en utilisant les logiciels présentés dans le chapitre précédent. La section <a href="#exp-class" data-reference-type="ref" data-reference="exp-class">2.1</a> entame les réseaux de classification que nous avons essayé et entrainé et la section <a href="#exp-detect" data-reference-type="ref" data-reference="exp-detect">2.2</a> explique les approches de détection.</p>
+<h3 id="exp-class">Classification avec les réseaux de neurones convolutif</h3>
+<p>Nous avons suivi plusieurs exemples qui viennent avec la framework Caffe et qui montrent comment faire la classification, la détection et l’entrainement des réseaux de neurones convolutifs.</p>
+<ul>
+<li><p><code>caffe/examples/00-classification.ipynb</code> présente l’API Python 2 qui permet de faire la classification des images en 1000 classes (du benchmark ImageNet) en utilisant le réseau de neurones pré-entrainé: <code>bvlc_reference_caffenet</code>.</p>
+<p>Nous avons modifié cet exemple pour qu’il classifie une seule image à la fois (<em>batch size = 1</em>) car par défaut il classifie 50 images à la fois nécessitant plus de 4 Go de RAM pour les réseaux profonds. Nous avons essayé les réseaux téléchargés du Model Zoo: <code>bvlc_alexnet</code> (370 ms / image), <code>SqueezeNet</code> (292 ms / image), <code>ResNet-50</code> (1.3 secondes / image) et <code>ResNet-152</code> (2.94 secondes / image).</p></li>
+<li><p><code>caffe/examples/01-learning-lenet.ipynb</code> montre comment entrainé un réseau de neurones convolutif pour résoudre le benchmark MNIST: classification des caractères (<a href="#MNIST" data-reference-type="ref" data-reference="MNIST">[MNIST]</a>). Ce benchmark est relativement facile à résoudre: Le réseau utilisé est de petite taille et il arrive à 90% de précision après quelques minutes d’entrainement sur un CPU Intel I3.</p>
+<p>Nous avons entrainé un réseau de la même architecture sur le benchmark de classification des formes <strong>Mpeg7</strong> en utilisant trois quarts des images pour l’entrainement et un quart pour le test. Nous avons obtenu un taux de précision parfait (100%) après quelques minutes d’entrainement seulement.</p></li>
+<li><p>Dans <code>caffe/examples/net_surgery.ipynb</code>, l’architecture d’un réseau de neurones convolutif de classification déjà entrainé est manipulée en remplaçant les couches complètement connectées par des couches convolutives pour rendre le réseau capable d’accepter les images en entrée avec des tailles variables. La sortie de l’ancien réseau et un vecteur des probabilités d’appartenance de l’image d’entrée à chaque classe. Quant au nouveau réseau, sa sortie est une matrice par classe où les éléments de chaque matrice donnent la probabilité d’appartenance des régions de l’image d’entrée à la classe en question.</p>
+<p>Cet possibilité de manipulation des réseaux entrainés est très intéressante. Par exemple, on peut alléger un réseau pré-entrainé en supprimant les nœuds correspondant aux classes impertinentes à notre problème. Par exemple, en supprimant les centaines de classes des réseaux entrainés sur la base de donnée ImageNet en ne laissant que celles en relation avec les scènes routières.</p></li>
+</ul>
+<p>Nous avons remarqué que la vitesse d’exécution du réseau de neurones dépend de sa profondeur, son architecture et de la taille de l’image en entrée. Que les images d’entrée soient en couleurs ou en niveau de gris ne change que la taille des filtres de la première couche convolutive et a une influence minimale sur la performance du réseau.</p>
+<h3 id="exp-detect">Détection avec les réseaux de neurones convolutif</h3>
+<p><code>caffe/examples/detection.ipynb</code> implémente la méthode R-CNN <span class="citation" data-cites="Girshick2014">(Girshick, Donahue, and Darrell 2014)</span>. L’algorithme Selective Search <span class="citation" data-cites="Uijlings2012">(Uijlings et al. 2012)</span> est implémenté en Matlab et les régions proposées par cet algorithme sont passées à Caffe pour les classifier.</p>
+<p>Nous avons modifié cet exemple pour faire la détection des personnes dans les Vidéos de surveillance de la base de données Virat. Nous avons commencé notre travail en évaluant les classifieur du Model Zoo de Caffe sur ces vidéo. Pour cela, nous avons écrit un programme qui utilise les annotations de Virat pour extraire les régions des vidéos contenant des objets d’intérêt (personnes, voitures, bicyclettes, etc.). Ensuite, nous avons classifié les images extraites avec des réseaux entrainés sur ImageNet. Les résultats de classification était catastrophiques du fait que le problème de classification de ImageNet ne contient pas les classes qui nous intéressent. Il faut donc soit chercher des réseaux entrainés sur des benchmarks plus appropriés comme Pascal VOC ou CIFAR100, ou bien entrainer notre propre réseau de classification.</p>
+<p>En parallèle avec la recherche/création d’un bon classifieur, nous avons attaqué le problème d’extraction des objets en mouvement. Nous avons utilisé l’algorithme <code>Background Subtractor MOG2</code> implémenté dans OpenCV pour extraire les objets mouvant. Nous avons remarqué qu’il y a souvent occlusion des objets qui bougent ensemble. Nous avant donc décidé de les séparer par un algorithme de <em>Object Proposal</em> comme Selective Search ou Edge Boxes <span class="citation" data-cites="Zitnick2014">(Zitnick and Dollár 2014)</span>.</p>
+<h3 id="conclusion-4" class="unnumbered unnumbered">Conclusion</h3>
+
+<p>Dans ce chapitre, nous avons décrit les expériences que nous avons réalisé ou que nous somme en cours de réalisé. Notre expérimentation nous a permit de mettre en pratique les notions présentées dans l’étude bibliographique. Elle nous a permis aussi d’avoir une bonne idée sur les ressources matérielles nécessaires pour l’utilisation des réseaux de neurones convolutifs.</p>
+
+
+
+<h2 id="conclusion-générale" class="unnumbered unnumbered">Conclusion générale</h2>
+
+<p>Due à la complexité inhérente des problèmes de vision par ordinateur, les travaux de ce domaine utilisent des techniques d’apprentissage automatique basées sur les données au lieu de la programmation explicite. Les réseaux de neurones convolutifs sont la technique d’apprentissage utilisée dans les méthodes représentant l’état de l’art dans les problèmes de classification, de détection et de comptage des objets. Nous avons expliqué le principe de fonctionnement de ces réseaux et plusieurs approches les utilisant. Nous avons aussi discuté leurs besoins en terme de ressources et fait un plan pour pouvoir les utiliser dans le cluster IBNBADIS. Enfin, nous avons conduit des expériences de classification et de détection en utilisant les réseaux convolutifs.</p>
+<p>Par rapport à l’échéance 2016, nous n’avons pas concentré sur les méthodes de segmentation d’images car elle représente un problème difficile et demandeur de ressources et qui n’est pas nécessaire pour réaliser notre objectif de détection, de comptage et de suivi. De plus, nous n’avons pas entamé, par manque de temps, le suivit ou la ré-identification des objets en mouvement.</p>
+<p><span>1.15</span></p>
+
+
+<h2 id="remerciements" class="unnumbered unnumbered">Remerciements</h2>
+<p>Tous mes remerciements vont à mes parents envers lesquels je serai toujours redevable, à M. Meziane Abdelkrim pour m’avoir encadré avec une très grande disponibilité, et aux membres du laboratoire CERIST et notamment M<sup>lle</sup> Setitra Insaf pour sa collaboration. Merci également à tous mes enseignants et à l’équipe pédagogique et administrative de l’ESI.</p>
+
+
+<h1 id="bibliography" class="unnumbered">Bibliographie</h1>
+<div id="refs" class="references">
+<div id="ref-Abu-Mostafa2012">
+<p>Abu-Mostafa, YS, M Magdon-Ismail, and HT Lin. 2012. <em>Learning from data</em>. <a href="http://work.caltech.edu/homework/final.pdf" class="uri">http://work.caltech.edu/homework/final.pdf</a>.</p>
+</div>
+<div id="ref-Athalye2017">
+<p>Athalye, Anish, and Ilya Sutskever. 2017. “Synthesizing Robust Adversarial Examples,” July. <a href="http://arxiv.org/abs/1707.07397" class="uri">http://arxiv.org/abs/1707.07397</a>.</p>
+</div>
+<div id="ref-Balestriero2017">
+<p>Balestriero, Randall. 2017. “Neural Decision Trees,” February. <a href="http://arxiv.org/abs/1702.07360" class="uri">http://arxiv.org/abs/1702.07360</a>.</p>
+</div>
+<div id="ref-Bengherbia2016">
+<p>Bengherbia, Nawfel, and Massyl Yacine Khelil. 2016. “La théorie des jeux pour l’optimisation multiobjectif: Application au problème d’affectation de fréquences.” PhD thesis, ESI (L’école nationale supérieure d’informatique).</p>
+</div>
+<div id="ref-Breiman1996">
+<p>Breiman, L. 1996. “Bagging predictors.” <em>Machine Learning</em>. <a href="http://www.springerlink.com/index/L4780124W2874025.pdf" class="uri">http://www.springerlink.com/index/L4780124W2874025.pdf</a>.</p>
+</div>
+<div id="ref-Cao2016">
+<p>Cao, Zhe, Tomas Simon, Shih-En Wei, and Yaser Sheikh. 2016. “Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields,” November. <a href="http://arxiv.org/abs/1611.08050" class="uri">http://arxiv.org/abs/1611.08050</a>.</p>
+</div>
+<div id="ref-Coates2011">
+<p>Coates, A, A Ng, and H Lee. 2011. “An analysis of single-layer networks in unsupervised feature learning.” <em>Of the Fourteenth International Conference on …</em>. <a href="http://www.jmlr.org/proceedings/papers/v15/coates11a.html" class="uri">http://www.jmlr.org/proceedings/papers/v15/coates11a.html</a>.</p>
+</div>
+<div id="ref-Cortes1995">
+<p>Cortes, C, and V Vapnik. 1995. “Support-vector networks.” <em>Machine Learning</em>. <a href="http://www.springerlink.com/index/K238JX04HM87J80G.pdf" class="uri">http://www.springerlink.com/index/K238JX04HM87J80G.pdf</a>.</p>
+</div>
+<div id="ref-Csaji2001">
+<p>Csáji, BC. 2001. “Approximation with artificial neural networks.” <em>Faculty of Sciences, Etvs Lornd University,</em> <a href="https://pdfs.semanticscholar.org/3527/2edb07ee4f0c9957eb0c631d2a74c24fe446.pdf" class="uri">https://pdfs.semanticscholar.org/3527/2edb07ee4f0c9957eb0c631d2a74c24fe446.pdf</a>.</p>
+</div>
+<div id="ref-Dalal2005">
+<p>Dalal, N, and B Triggs. 2005. “Histograms of oriented gradients for human detection.” <em>And Pattern Recognition, 2005. CVPR 2005 …</em>. <a href="http://ieeexplore.ieee.org/abstract/document/1467360/" class="uri">http://ieeexplore.ieee.org/abstract/document/1467360/</a>.</p>
+</div>
+<div id="ref-Deng2012">
+<p>Deng, L. 2012. “The MNIST database of handwritten digit images for machine learning research.” <em>IEEE Signal Processing Magazine</em>. <a href="http://ieeexplore.ieee.org/abstract/document/6296535/" class="uri">http://ieeexplore.ieee.org/abstract/document/6296535/</a>.</p>
+</div>
+<div id="ref-Dollar2012">
+<p>Dollar, P, C Wojek, and B Schiele. 2012. “Pedestrian detection: An evaluation of the state of the art.” <em>IEEE Transactions on</em>. <a href="http://ieeexplore.ieee.org/abstract/document/5975165/" class="uri">http://ieeexplore.ieee.org/abstract/document/5975165/</a>.</p>
+</div>
+<div id="ref-Everingham2015">
+<p>Everingham, M, SMA Eslami, and L Van Gool. 2015. “The pascal visual object classes challenge: A retrospective.” <em>International Journal of</em>. <a href="http://link.springer.com/article/10.1007/s11263-014-0733-5" class="uri">http://link.springer.com/article/10.1007/s11263-014-0733-5</a>.</p>
+</div>
+<div id="ref-Fei-Fei2016">
+<p>Fei-Fei, L, A Karpathy, and Justin Johnson. 2016. “CS231n: Convolutional Neural Networks for Visual Recognition.” <a href="http://cs231n.stanford.edu/" class="uri">http://cs231n.stanford.edu/</a>.</p>
+</div>
+<div id="ref-Floreano2008">
+<p>Floreano, D, P Dürr, and C Mattiussi. 2008. “Neuroevolution: from architectures to learning.” <em>Evolutionary Intelligence</em>. <a href="http://link.springer.com/article/10.1007/s12065-007-0002-4" class="uri">http://link.springer.com/article/10.1007/s12065-007-0002-4</a>.</p>
+</div>
+<div id="ref-Girshick2015">
+<p>Girshick, R. 2015. “Fast r-cnn.” <em>Proceedings of the IEEE International Conference on</em>. <a href="http://www.cv-foundation.org/openaccess/content_iccv_2015/html/Girshick_Fast_R-CNN_ICCV_2015_paper.html" class="uri">http://www.cv-foundation.org/openaccess/content_iccv_2015/html/Girshick_Fast_R-CNN_ICCV_2015_paper.html</a>.</p>
+</div>
+<div id="ref-Girshick2014">
+<p>Girshick, R, J Donahue, and T Darrell. 2014. “Rich feature hierarchies for accurate object detection and semantic segmentation.” <em>Proceedings of the IEEE</em>. <a href="http://www.cv-foundation.org/openaccess/content_cvpr_2014/html/Girshick_Rich_Feature_Hierarchies_2014_CVPR_paper.html" class="uri">http://www.cv-foundation.org/openaccess/content_cvpr_2014/html/Girshick_Rich_Feature_Hierarchies_2014_CVPR_paper.html</a>.</p>
+</div>
+<div id="ref-Goodfellow2014">
+<p>Goodfellow, IJ, J Shlens, and C Szegedy. 2014. “Explaining and harnessing adversarial examples.” <em>arXiv Preprint arXiv:1412.6572</em>. <a href="https://arxiv.org/abs/1412.6572" class="uri">https://arxiv.org/abs/1412.6572</a>.</p>
+</div>
+<div id="ref-Han2016">
+<p>Han, Song, Xingyu Liu, Huizi Mao, Jing Pu, Ardavan Pedram, Mark A Horowitz, and William J Dally. 2016. “EIE: Efficient Inference Engine on Compressed Deep Neural Network.” <a href="https://arxiv.org/pdf/1602.01528.pdf" class="uri">https://arxiv.org/pdf/1602.01528.pdf</a>.</p>
+</div>
+<div id="ref-Han2015">
+<p>Han, Song, Huizi Mao, and William J. Dally. 2015. “Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding,” October. <a href="http://arxiv.org/abs/1510.00149" class="uri">http://arxiv.org/abs/1510.00149</a>.</p>
+</div>
+<div id="ref-He2015">
+<p>He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. 2015. “Deep Residual Learning for Image Recognition,” December. <a href="http://arxiv.org/abs/1512.03385" class="uri">http://arxiv.org/abs/1512.03385</a>.</p>
+</div>
+<div id="ref-Heath1993">
+<p>Heath, David, Simon Kasif, and Steven Salzberg. 1993. “Learning oblique decision trees.” In <em>IJCAI-93</em>, 160:1002.</p>
+</div>
+<div id="ref-Ho1995">
+<p>Ho, TK. 1995. “Random decision forests.” <em>Analysis and Recognition, 1995., Proceedings of the …</em>. <a href="http://ieeexplore.ieee.org/abstract/document/598994/" class="uri">http://ieeexplore.ieee.org/abstract/document/598994/</a>.</p>
+</div>
+<div id="ref-Huang2016">
+<p>Huang, Jonathan, Vivek Rathod, Chen Sun, Menglong Zhu, Anoop Korattikara, Alireza Fathi, Ian Fischer, et al. 2016. “Speed/accuracy trade-offs for modern convolutional object detectors,” November. <a href="http://arxiv.org/abs/1611.10012" class="uri">http://arxiv.org/abs/1611.10012</a>.</p>
+</div>
+<div id="ref-Iandola2016">
+<p>Iandola, Forrest N., Song Han, Matthew W. Moskewicz, Khalid Ashraf, William J. Dally, and Kurt Keutzer. 2016. “SqueezeNet: AlexNet-level accuracy with 50x fewer parameters and,” February. <a href="http://arxiv.org/abs/1602.07360" class="uri">http://arxiv.org/abs/1602.07360</a>.</p>
+</div>
+<div id="ref-Ioffe2015">
+<p>Ioffe, Sergey, and Christian Szegedy. 2015. “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift,” February. <a href="http://arxiv.org/abs/1502.03167" class="uri">http://arxiv.org/abs/1502.03167</a>.</p>
+</div>
+<div id="ref-Johnson2010">
+<p>Johnson, S, and M Everingham. 2010. “Clustered pose and nonlinear appearance models for human pose estimation.” <a href="https://pdfs.semanticscholar.org/ec67/9dfbb450cbf575bc8104b08d3dac23396fd3.pdf" class="uri">https://pdfs.semanticscholar.org/ec67/9dfbb450cbf575bc8104b08d3dac23396fd3.pdf</a>.</p>
+</div>
+<div id="ref-Kingma2014">
+<p>Kingma, Diederik P., and Jimmy Ba. 2014. “Adam: A Method for Stochastic Optimization,” December. <a href="http://arxiv.org/abs/1412.6980" class="uri">http://arxiv.org/abs/1412.6980</a>.</p>
+</div>
+<div id="ref-Krizhevsky2009">
+<p>Krizhevsky, A, and G Hinton. 2009. “Learning multiple layers of features from tiny images.” <a href="http://www.cs.utoronto.ca/$\sim$kriz/learning-features-2009-TR.pdf" class="uri">http://www.cs.utoronto.ca/$\sim$kriz/learning-features-2009-TR.pdf</a>.</p>
+</div>
+<div id="ref-Krizhevsky2012">
+<p>Krizhevsky, A, I Sutskever, and GE Hinton. 2012. “Imagenet classification with deep convolutional neural networks.” <em>Advances in Neural</em>. <a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks" class="uri">http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks</a>.</p>
+</div>
+<div id="ref-LeCun1998">
+<p>LeCun, Y, L Bottou, and Y Bengio. 1998. “Gradient-based learning applied to document recognition.” <em>Proceedings of the</em>. <a href="http://ieeexplore.ieee.org/abstract/document/726791/" class="uri">http://ieeexplore.ieee.org/abstract/document/726791/</a>.</p>
+</div>
+<div id="ref-Lempitsky2010">
+<p>Lempitsky, V, and A Zisserman. 2010. “Learning to count objects in images.” <em>In Neural Information Processing …</em>. <a href="http://papers.nips.cc/paper/4043-learning-to-count-objects-in-images" class="uri">http://papers.nips.cc/paper/4043-learning-to-count-objects-in-images</a>.</p>
+</div>
+<div id="ref-Liang2016">
+<p>Liang, Shiyu, and R. Srikant. 2016. “Why Deep Neural Networks for Function Approximation?” October. <a href="http://arxiv.org/abs/1610.04161" class="uri">http://arxiv.org/abs/1610.04161</a>.</p>
+</div>
+<div id="ref-Lin2014">
+<p>Lin, TY, M Maire, S Belongie, J Hays, and P Perona. 2014. “Microsoft coco: Common objects in context.” <em>On Computer Vision</em>. <a href="http://link.springer.com/chapter/10.1007/978-3-319-10602-1_48" class="uri">http://link.springer.com/chapter/10.1007/978-3-319-10602-1_48</a>.</p>
+</div>
+<div id="ref-Lowe1999">
+<p>Lowe, DG. 1999. “Object recognition from local scale-invariant features.” <em>Computer Vision, 1999. The Proceedings of the</em>. <a href="http://ieeexplore.ieee.org/abstract/document/790410/" class="uri">http://ieeexplore.ieee.org/abstract/document/790410/</a>.</p>
+</div>
+<div id="ref-Marsden2017">
+<p>Marsden, Mark, Kevin Mcguinness, Suzanne Little, and O ’connorNoel E. 2017. “Fully Convolutional Crowd Counting on Highly Congested Scenes.” <a href="https://arxiv.org/pdf/1612.00220.pdf" class="uri">https://arxiv.org/pdf/1612.00220.pdf</a>.</p>
+</div>
+<div id="ref-Milan2016">
+<p>Milan, Anton, Laura Leal-Tai, Ian Reid, Stefan Roth, and Konrad Schindler. 2016. “MOT16: A Benchmark for Multi-Object Tracking.” <a href="https://arxiv.org/pdf/1603.00831.pdf" class="uri">https://arxiv.org/pdf/1603.00831.pdf</a>.</p>
+</div>
+<div id="ref-Neyman1967">
+<p>Neyman, Jerzy. 1967. <em>Proceedings of the Berkeley Symposium on Mathematical Statistics and Probability.</em> University of California Press. <a href="https://projecteuclid.org/euclid.bsmsp/1200512992" class="uri">https://projecteuclid.org/euclid.bsmsp/1200512992</a>.</p>
+</div>
+<div id="ref-Pan2010">
+<p>Pan, SJ, and Q Yang. 2010. “A survey on transfer learning.” <em>IEEE Transactions on Knowledge and Data</em>. <a href="http://ieeexplore.ieee.org/abstract/document/5288526/" class="uri">http://ieeexplore.ieee.org/abstract/document/5288526/</a>.</p>
+</div>
+<div id="ref-Patino2016">
+<p>Patino, L, T Cane, and A Vallee. 2016. “Pets 2016: Dataset and challenge.” <em>Proceedings of the IEEE</em>. <a href="http://www.cv-foundation.org/openaccess/content_cvpr_2016_workshops/w20/html/Patino_PETS_2016_Dataset_CVPR_2016_paper.html" class="uri">http://www.cv-foundation.org/openaccess/content_cvpr_2016_workshops/w20/html/Patino_PETS_2016_Dataset_CVPR_2016_paper.html</a>.</p>
+</div>
+<div id="ref-Pearson1901">
+<p>Pearson, K. 1901. “LIII. On lines and planes of closest fit to systems of points in space.” <em>The London, Edinburgh, and Dublin Philosophical</em>. <a href="http://www.tandfonline.com/doi/pdf/10.1080/14786440109462720" class="uri">http://www.tandfonline.com/doi/pdf/10.1080/14786440109462720</a>.</p>
+</div>
+<div id="ref-Pulli2012">
+<p>Pulli, K, A Baksheev, and K Kornyakov. 2012. “Real-time computer vision with OpenCV.” <em>Communications of the</em>. <a href="http://dl.acm.org/citation.cfm?id=2184337" class="uri">http://dl.acm.org/citation.cfm?id=2184337</a>.</p>
+</div>
+<div id="ref-Ren2015a">
+<p>Ren, S, K He, R Girshick, and J Sun. 2015. “Faster r-cnn: Towards real-time object detection with region proposal networks.” <em>Advances in Neural Information</em>. <a href="http://papers.nips.cc/paper/5638-faster-r-cnn-towards-real-time-object-detection-with-region-proposal-networks" class="uri">http://papers.nips.cc/paper/5638-faster-r-cnn-towards-real-time-object-detection-with-region-proposal-networks</a>.</p>
+</div>
+<div id="ref-Reund1996">
+<p>Reund, Yoav F, and Robert E Schapire. 1996. “A decision-theoretic generalization of on-line learning and an application to boosting.” <a href="http://cns.bu.edu/$\sim$gsc/CN710/FreundSc95.pdf" class="uri">http://cns.bu.edu/$\sim$gsc/CN710/FreundSc95.pdf</a>.</p>
+</div>
+<div id="ref-RodrigoBenenson2016">
+<p>Rodrigo Benenson. 2016. “Classification datasets results.” <a href="https://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html" class="uri">https://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html</a>.</p>
+</div>
+<div id="ref-Rumelhart1986">
+<p>Rumelhart, David E., Geoffrey E. Hinton, and Ronald J. Williams. 1986. “Learning representations by back-propagating errors.” <em>Nature</em> 323 (6088): 533–36. <a href="https://doi.org/10.1038/323533a0" class="uri">https://doi.org/10.1038/323533a0</a>.</p>
+</div>
+<div id="ref-Russakovsky2015">
+<p>Russakovsky, O, J Deng, H Su, and J Krause. 2015. “Imagenet large scale visual recognition challenge.” <em>International Journal of</em>. <a href="http://link.springer.com/article/10.1007/s11263-015-0816-y" class="uri">http://link.springer.com/article/10.1007/s11263-015-0816-y</a>.</p>
+</div>
+<div id="ref-Sermanet2013">
+<p>Sermanet, P, D Eigen, X Zhang, and M Mathieu. 2013. “Overfeat: Integrated recognition, localization and detection using convolutional networks.” <em>arXiv Preprint arXiv:</em> <a href="https://arxiv.org/abs/1312.6229" class="uri">https://arxiv.org/abs/1312.6229</a>.</p>
+</div>
+<div id="ref-Sethi1990">
+<p>Sethi, Ishwar Krishnan. 1990. “Entropy nets: From decision trees to neural networks.” <em>Proceedings of the IEEE</em> 78 (10): 1605–13.</p>
+</div>
+<div id="ref-Simonyan2014">
+<p>Simonyan, K, and A Zisserman. 2014. “Very deep convolutional networks for large-scale image recognition.” <em>arXiv Preprint arXiv:1409.1556</em>. <a href="https://arxiv.org/abs/1409.1556" class="uri">https://arxiv.org/abs/1409.1556</a>.</p>
+</div>
+<div id="ref-Srivastava2014">
+<p>Srivastava, N, GE Hinton, and A Krizhevsky. 2014. “Dropout: a simple way to prevent neural networks from overfitting.” <em>Journal of Machine</em>. <a href="http://www.jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf?utm_content=buffer79b43&amp;utm_medium=social&amp;utm_source=twitter.com&amp;utm_campaign=buffer" class="uri">http://www.jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf?utm_content=buffer79b43&amp;utm_medium=social&amp;utm_source=twitter.com&amp;utm_campaign=buffer</a>.</p>
+</div>
+<div id="ref-Szegedy2014">
+<p>Szegedy, Christian, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich. 2014. “Going Deeper with Convolutions,” September. <a href="http://arxiv.org/abs/1409.4842" class="uri">http://arxiv.org/abs/1409.4842</a>.</p>
+</div>
+<div id="ref-Szegedy2013">
+<p>Szegedy, C, W Zaremba, I Sutskever, and J Bruna. 2013. “Intriguing properties of neural networks.” <em>arXiv Preprint arXiv:</em> <a href="https://arxiv.org/abs/1312.6199" class="uri">https://arxiv.org/abs/1312.6199</a>.</p>
+</div>
+<div id="ref-Uijlings2012">
+<p>Uijlings, J R R, Van De SandeK E A, T Gevers, and A W M Smeulders. 2012. “Selective Search for Object Recognition.” <a href="https://ivi.fnwi.uva.nl/isis/publications/2013/UijlingsIJCV2013/UijlingsIJCV2013.pdf" class="uri">https://ivi.fnwi.uva.nl/isis/publications/2013/UijlingsIJCV2013/UijlingsIJCV2013.pdf</a>.</p>
+</div>
+<div id="ref-Viola2001">
+<p>Viola, P, and M Jones. 2001. “Robust real-time object detection.” <em>International Journal of Computer Vision</em>. <a href="http://mame.myds.me/bitsavers/pdf/dec/tech_reports/CRL-2001-1.pdf" class="uri">http://mame.myds.me/bitsavers/pdf/dec/tech_reports/CRL-2001-1.pdf</a>.</p>
+</div>
+<div id="ref-Welch2016">
+<p>Welch, Stephen. 2016. “Learning to See - YouTube.” <a href="https://www.youtube.com/playlist?list=PLiaHhY2iBX9ihLasvE8BKnS2Xg8AhY6iV" class="uri">https://www.youtube.com/playlist?list=PLiaHhY2iBX9ihLasvE8BKnS2Xg8AhY6iV</a>.</p>
+</div>
+<div id="ref-Wolpert1992">
+<p>Wolpert, DH. 1992. “Stacked generalization.” <em>Neural Networks</em>. <a href="http://www.sciencedirect.com/science/article/pii/S0893608005800231" class="uri">http://www.sciencedirect.com/science/article/pii/S0893608005800231</a>.</p>
+</div>
+<div id="ref-Yosinski2015">
+<p>Yosinski, J, J Clune, A Nguyen, and T Fuchs. 2015. “Understanding neural networks through deep visualization.” <em>arXiv Preprint arXiv:</em> <a href="https://arxiv.org/abs/1506.06579" class="uri">https://arxiv.org/abs/1506.06579</a>.</p>
+</div>
+<div id="ref-Zeiler2014">
+<p>Zeiler, Matthew D, and Rob Fergus. 2014. “Visualizing and Understanding Convolutional Networks.” <em>European Conference on Computer Vision</em>, November. <a href="http://arxiv.org/abs/1311.2901" class="uri">http://arxiv.org/abs/1311.2901</a>.</p>
+</div>
+<div id="ref-Zhang2015">
+<p>Zhang, C, H Li, X Wang, and X Yang. 2015. “Cross-scene crowd counting via deep convolutional neural networks.” <em>Proceedings of the IEEE</em>. <a href="http://www.cv-foundation.org/openaccess/content_cvpr_2015/html/Zhang_Cross-Scene_Crowd_Counting_2015_CVPR_paper.html" class="uri">http://www.cv-foundation.org/openaccess/content_cvpr_2015/html/Zhang_Cross-Scene_Crowd_Counting_2015_CVPR_paper.html</a>.</p>
+</div>
+<div id="ref-Zhang2016">
+<p>Zhang, Y, D Zhou, S Chen, and S Gao. 2016. “Single-image crowd counting via multi-column convolutional neural network.” <em>Proceedings of the IEEE</em>. <a href="http://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Zhang_Single-Image_Crowd_Counting_CVPR_2016_paper.html" class="uri">http://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Zhang_Single-Image_Crowd_Counting_CVPR_2016_paper.html</a>.</p>
+</div>
+<div id="ref-Zitnick2014">
+<p>Zitnick, C Lawrence, and Piotr Dollár. 2014. “Edge Boxes: Locating Object Proposals from Edges.” <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2014/09/ZitnickDollarECCV14edgeBoxes.pdf" class="uri">https://www.microsoft.com/en-us/research/wp-content/uploads/2014/09/ZitnickDollarECCV14edgeBoxes.pdf</a>.</p>
+</div>
+</div>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Disponible sur l’url: <a href="https://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html" class="uri">https://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>Car la somme pondérée est une fonction linéaire et toute combinaison linéaire de fonction linéaire est linéaire.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>pris sans autorisation de: <a href="https://www.youtube.com/watch?v=Pas0NsClrgY" class="uri">https://www.youtube.com/watch?v=Pas0NsClrgY</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>Voyez: <a href="https://www.youtube.com/watch?v=Dc0sr0kdBVI&amp;hd=1#t=57m20s" class="uri">https://www.youtube.com/watch?v=Dc0sr0kdBVI&amp;hd=1#t=57m20s</a><a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>dans le cadre du <em>Réseau Algérien sur le Calcul Intensif et Modélisation (RACIM)</em> <a href="www.rx-racim.cerist.dz/?page_id=26" class="uri">www.rx-racim.cerist.dz/?page_id=26</a><a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p>Centre de Recherche sur l’Information Scientifique et Technique<a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn7"><p>Site web officiel de OpenCV <a href="http://opencv.org/" class="uri">http://opencv.org/</a><a href="#fnref7" class="footnote-back">↩</a></p></li>
+<li id="fn8"><p>Site web officiel de Scipy: <a href="https://www.scipy.org/" class="uri">https://www.scipy.org/</a><a href="#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn9"><p>Site web officiel de Jupyter Notebook: <a href="http://jupyter.org/" class="uri">http://jupyter.org/</a><a href="#fnref9" class="footnote-back">↩</a></p></li>
+<li id="fn10"><p>SSH (Secure Shell): un protocole de communication sécurisé<a href="#fnref10" class="footnote-back">↩</a></p></li>
+<li id="fn11"><p>Site web officiel de Caffe: <a href="http://caffe.berkeleyvision.org/" class="uri">http://caffe.berkeleyvision.org/</a><a href="#fnref11" class="footnote-back">↩</a></p></li>
+<li id="fn12"><p>API: Application Programming Interface<a href="#fnref12" class="footnote-back">↩</a></p></li>
+<li id="fn13"><p>Instructions Officielles d’installation de Caffe: <a href="http://caffe.berkeleyvision.org/installation.html" class="uri">http://caffe.berkeleyvision.org/installation.html</a><a href="#fnref13" class="footnote-back">↩</a></p></li>
+<li id="fn14"><p>Caffe Model Zoo est disponible sur l’adresse: <a href="https://github.com/BVLC/caffe/wiki/Model-Zoo" class="uri">https://github.com/BVLC/caffe/wiki/Model-Zoo</a><a href="#fnref14" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
+</body>
+</html>
