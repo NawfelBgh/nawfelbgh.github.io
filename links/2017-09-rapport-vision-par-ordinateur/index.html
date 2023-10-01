@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Les réseaux de neurones convolutifs dans la vision par ordinateur</title>
+  <meta name="description" content="Rapport de la première année doctorat">
+  <meta name="keywords" content="Apprentissage machine, Vision par ordinateur, réseaux de neurones">
+  <meta name="author" content="Nawfel BENGHERBIA">
+  <title>Les réseaux de neurones convolutifs pour la vision par ordinateur</title>
   <style type="text/css">
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
@@ -16,30 +19,98 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
   <!--
-      Note to self: Generated with the command:
-      pandoc -f latex --bibliography=library.bib -M reference-section-title=Bibliographie --mathjax  -t html rapport.tex -s -o index.html
+      Note to self: Generated with commands:
+
+      # sudo dnf install texstudio
+      # sudo dnf install libreoffice-impress
+      sudo dnf install pandoc
+      sudo dnf install pandoc-citeproc
+      sudo dnf install texlive-babel-french
+      pandoc -f latex --bibliography=library.bib -M reference-section-title=Bibliographie --mathjax --toc  -t html rapport.tex -s -o index.html
+      # plus some manual editing
   -->
 </head>
 <body>
 
-
-<h1>Les réseaux de neurones convolutifs dans la vision par ordinateur</h1>
-
-<hr />
 <p><span class="smallcaps">Centre de recherche sur l’information scientifique et technique</span><br />
-    <span class="smallcaps">École nationale supérieure d’informatique</span><br />
-    <span class="smallcaps">Rapport de la première année doctorat</span><br />
-    <span class="smallcaps">Intitulé: Détection de mouvement de foules dans les lieux publics</span><br />
-    </p>
+<span class="smallcaps">École nationale supérieure d’informatique</span><br />
+<span class="smallcaps">Rapport de la première année doctorat</span><br />
+<span class="smallcaps">Intitulé: Détection de mouvement de foules dans les lieux publics</span><br />
+</p>
+<hr />
+<h1>Les réseaux de neurones convolutifs pour la vision par ordinateur</h1>
+</p>
+<hr />
 
-<p><em>Auteur:</em>Nawfel <span class="smallcaps">Bengherbia</span></p>
+<p><em>Auteur</em><br />
+Nawfel <span class="smallcaps">Bengherbia</span></p>
 
-<p><em>Promoteur:</em> Dr. Abdelkrim <span class="smallcaps">Meziane</span></p>
+<p><em>Promoteur</em><br />
+Dr. Abdelkrim <span class="smallcaps">Meziane</span></p>
 
 <p><em>4 septembre 2017</em></p>
+            
 
-<p><a href="./rapport.pdf">Télécharger en version PDF</a></p>
-<hr />
+<nav id="TOC">
+<h2>Table des matières</h2>
+<ul>
+<li><a href="#introduction-générale">Introduction générale</a></li>
+<li><a href="#étude-bibliographique">Étude bibliographique</a><ul>
+<li><a href="#notions-de-la-vision-par-ordinateur">Notions de la vision par ordinateur</a><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#representation-image">Représentation des images et des vidéos</a></li>
+<li><a href="#problemes-types">Les problèmes types de la vision par ordinateur</a></li>
+<li><a href="#benchmarks">Les benchmarks de la vision par ordinateur</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></li>
+<li><a href="#lapprentissage-automatique">L’apprentissage automatique</a><ul>
+<li><a href="#introduction-1">Introduction</a></li>
+<li><a href="#ML">Définitions</a></li>
+<li><a href="#ANN">Les réseaux de neurones artificiels</a></li>
+<li><a href="#DecisionTrees">Les arbres de décision</a></li>
+<li><a href="#Aggregation">Agrégation des modèles prédictifs</a></li>
+<li><a href="#conclusion-1">Conclusion</a></li>
+</ul></li>
+<li><a href="#lapprentissage-automatique-appliqué-aux-problèmes-de-vision-par-ordinateur">L’apprentissage automatique appliqué aux problèmes de vision par ordinateur</a><ul>
+<li><a href="#introduction-2">Introduction</a></li>
+<li><a href="#classic">Approches classiques</a></li>
+<li><a href="#cnn">Les réseaux de neurones convolutifs</a></li>
+<li><a href="#challenges">Challenges des réseaux de neurones convolutifs</a></li>
+<li><a href="#conclusion-2">Conclusion</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#coté-applicatif">Coté applicatif</a><ul>
+<li><a href="#installation-des-frameworks-de-vision-par-ordinateur">Installation des frameworks de vision par ordinateur</a><ul>
+<li><a href="#introduction-3">Introduction</a></li>
+<li><a href="#os">Système d’exploitation utilisé</a></li>
+<li><a href="#opencv">La bibliothèque OpenCV</a></li>
+<li><a href="#scipy">La distribution SciPy</a></li>
+<li><a href="#caffe">La framework Caffe</a></li>
+<li><a href="#installation-des-logiciels-dans-le-cluster">Installation des logiciels dans le cluster</a></li>
+<li><a href="#conclusion-3">Conclusion</a></li>
+</ul></li>
+<li><a href="#tests">Expériences faites</a><ul>
+<li><a href="#introduction-4">Introduction</a></li>
+<li><a href="#exp-class">Classification avec les réseaux de neurones convolutif</a></li>
+<li><a href="#exp-detect">Détection avec les réseaux de neurones convolutif</a></li>
+<li><a href="#conclusion-4">Conclusion</a></li>
+</ul></li>
+<li><a href="#conclusion-générale">Conclusion générale</a></li>
+</ul></li>
+<li><a href="#remerciements">Remerciements</a></li>
+<li><a href="#bibliography">Bibliographie</a></li>
+</ul>
+</nav>
+
+
+
+
+
+
+
+
+
+
 
 
 <h2 id="introduction-générale" class="unnumbered unnumbered">Introduction générale</h2>
@@ -97,7 +168,7 @@
 
 <h3 id="benchmarks">Les benchmarks de la vision par ordinateur</h3>
 <p>Les benchmarks sont des tests dont le but est d’évaluer et comparer les performances des systèmes informatiques. Dans le domaine de la vision par ordinateur il y a plusieurs benchmarks qui viennent sous forme de bases de données publiques d’images et vidéos annotées. Les annotations dépend du problème visé par le benchmark. Par exemple, il s’agit des classes des images dans la classification, et des masques des objets figurant dans les images dans la segmentation. Le but des chercheurs travaillant dans ce domaine est de produire des programme capable de générer les bonnes annotations à partir des images avec le minimum possible d’erreurs.</p>
-<p>La plupart d’algorithmes employés dans la vision par ordinateur sont basés sur l’apprentissage automatique (L’objet du chapitre suivant). C’est à dire que le programme de classification (ou de détection, de segmentation, etc.) est généré après entrainement sur une base de données d’exemples. L’entrainement peut être vu comme un calibrage des paramètres du programme de sorte à ce que sa sortie soit la plus similaire au annotations réelles. Comme c’est de la tricherie d’évaluer un programme sur la base de données de laquelle il a été généré, les benchmarks fournissent au moins deux bases de données: Une appelée base d’apprentissage (utilisée pour l’apprentissage) et l’autre appelée base de test (utilisée <strong>uniquement</strong> pour tester la performance des systèmes finaux).</p>
+<p>La plupart d’algorithmes employés en vision par ordinateur sont basés sur l’apprentissage automatique (L’objet du chapitre suivant). C’est à dire que le programme de classification (ou de détection, de segmentation, etc.) est généré après entrainement sur une base de données d’exemples. L’entrainement peut être vu comme un calibrage des paramètres du programme de sorte à ce que sa sortie soit la plus similaire au annotations réelles. Comme c’est de la tricherie d’évaluer un programme sur la base de données de laquelle il a été généré, les benchmarks fournissent au moins deux bases de données: Une appelée base d’apprentissage (utilisée pour l’apprentissage) et l’autre appelée base de test (utilisée <strong>uniquement</strong> pour tester la performance des systèmes finaux).</p>
 <p>Nous citons ici quelques benchmarks:</p>
 <ul>
 <li><p><strong>Benchmarks de classification:</strong></p>
@@ -130,7 +201,7 @@
 <p>Nous remarquons dans les <em>Leader Boards</em> des benckmarks présentés ci-dessus et dans <span class="citation" data-cites="RodrigoBenenson2016">Rodrigo Benenson (2016)</span><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> que la plupart des (voir toutes les) approches bien classées emploient des techniques comme les réseaux de neurones artificiels convolutifs profonds.</p>
 <h3 id="conclusion" class="unnumbered unnumbered">Conclusion</h3>
 
-<p>Nous avons présenté dans ce chapitre une formulation des images et des vidéos. Ensuite nous avons expliqué les problèmes de vision: la classification, la détection, la segmentation, le comptage d’objets, l’estimation de la pose et le suivi d’objets. Puis nous avons présenté quelques unes des bases de données les plus utilisées pour évaluer et comparer les méthodes. Nous entamons dans le chapitre suivant l’apprentissage automatique qui est au cœur des méthodes employées dans la vision par ordinateur.</p>
+<p>Nous avons présenté dans ce chapitre une formulation des images et des vidéos. Ensuite nous avons expliqué les problèmes de vision: la classification, la détection, la segmentation, le comptage d’objets, l’estimation de la pose et le suivi d’objets. Puis nous avons présenté quelques unes des bases de données les plus utilisées pour évaluer et comparer les méthodes. Nous entamons dans le chapitre suivant l’apprentissage automatique qui est au cœur des méthodes employées en la vision par ordinateur.</p>
 <h2 id="lapprentissage-automatique">L’apprentissage automatique</h2>
 <h3 id="introduction-1" class="unnumbered unnumbered">Introduction</h3>
 
@@ -456,7 +527,7 @@ La caractéristique Haar est une fonction calculée comme suit: La somme des int
 <p><span class="citation" data-cites="Iandola2016">Iandola et al. (2016)</span> ont créé le réseau de neurone convolutif <strong>SqueezeNet</strong>. Leur modèle a surpassé la précision d’AlexNet dans le benchmark de classification d’ImageNet tout en ayant 50 fois moins de paramètres (4.8 Mo versus 240 Mo). Après l’application de la <em>deep compression</em> <span class="citation" data-cites="Han2015">(Han, Mao, and Dally 2015)</span>, leur réseau devient de 0.5 Mo (soit 510 fois plus petit qu’AlexNet) tout en gardant la même précision. Le réseau SqueezeNet peut être entrainé dans un temps réduit et il est plus rapide au moment d’exécution. La réduction du nombre de paramètres a été réalisée avec une stratégie étonnamment simple: En (1) remplaçant une partie des filtres convolutifs de taille <span class="math inline">\(3 \times 3\)</span> par des filtres de <span class="math inline">\(1 \times 1\)</span> et en (2) réduisant le nombre de canaux d’entrée des filtres <span class="math inline">\(3 \times 3\)</span>. Il est à noter que la performance de <em>SqueezeNet</em> est dépassée par plusieurs modèles plus lourds comme <em>ResNet</em> <span class="citation" data-cites="He2015">(He et al. 2015)</span>.</p>
 <h3 id="conclusion-2" class="unnumbered unnumbered">Conclusion</h3>
 
-<p>L’apprentissage automatique des caractéristiques avec les réseaux de neurones convolutifs est l’ingrédient commun des approches représentant l’état de l’art dans la vision par ordinateur. Ces réseaux ont leurs propres désavantages comme leur vulnérabilité aux exemples adversatifs, leur nature peu interprétable et leur exigence en terme de ressources.</p>
+<p>L’apprentissage automatique des caractéristiques avec les réseaux de neurones convolutifs est l’élément commun trouvé dans les approches représentant l’état de l’art en vision par ordinateur. Ces réseaux ont leurs propres désavantages comme leur vulnérabilité aux exemples adversatifs, leur nature peu interprétable et leur exigence en terme de ressources.</p>
 <h1 id="coté-applicatif">Coté applicatif</h1>
 <h2 id="installation-des-frameworks-de-vision-par-ordinateur">Installation des frameworks de vision par ordinateur</h2>
 <h3 id="introduction-3" class="unnumbered unnumbered">Introduction</h3>
@@ -534,11 +605,11 @@ La caractéristique Haar est une fonction calculée comme suit: La somme des int
 
 <p>Due à la complexité inhérente des problèmes de vision par ordinateur, les travaux de ce domaine utilisent des techniques d’apprentissage automatique basées sur les données au lieu de la programmation explicite. Les réseaux de neurones convolutifs sont la technique d’apprentissage utilisée dans les méthodes représentant l’état de l’art dans les problèmes de classification, de détection et de comptage des objets. Nous avons expliqué le principe de fonctionnement de ces réseaux et plusieurs approches les utilisant. Nous avons aussi discuté leurs besoins en terme de ressources et fait un plan pour pouvoir les utiliser dans le cluster IBNBADIS. Enfin, nous avons conduit des expériences de classification et de détection en utilisant les réseaux convolutifs.</p>
 <p>Par rapport à l’échéance 2016, nous n’avons pas concentré sur les méthodes de segmentation d’images car elle représente un problème difficile et demandeur de ressources et qui n’est pas nécessaire pour réaliser notre objectif de détection, de comptage et de suivi. De plus, nous n’avons pas entamé, par manque de temps, le suivit ou la ré-identification des objets en mouvement.</p>
-<p><span>1.15</span></p>
 
 
 <h2 id="remerciements" class="unnumbered unnumbered">Remerciements</h2>
 <p>Tous mes remerciements vont à mes parents envers lesquels je serai toujours redevable, à M. Meziane Abdelkrim pour m’avoir encadré avec une très grande disponibilité, et aux membres du laboratoire CERIST et notamment M<sup>lle</sup> Setitra Insaf pour sa collaboration. Merci également à tous mes enseignants et à l’équipe pédagogique et administrative de l’ESI.</p>
+
 
 
 <h1 id="bibliography" class="unnumbered">Bibliographie</h1>
