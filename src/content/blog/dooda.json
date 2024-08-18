@@ -1,0 +1,11 @@
+{
+    "title": "Dooda",
+    "description": "The first video game that I wrote as a freshman in computer science",
+    "pubDate": "2012-01",
+    "link": "/static/dooda/index.html",
+    "i18n": {
+        "fr": {
+            "description": "Le premier jeu vidéo que j'ai écrit en tant qu'étudiant en informatique"
+        }
+    }
+}

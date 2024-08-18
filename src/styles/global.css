@@ -1,0 +1,74 @@
+:root {
+    --white: #fff;
+    --black: #000;
+    --light-gray: #e2e2e2;
+    --gray: #666;
+    --dark-gray: #444;
+    --darker-gray: #363636;
+    --darkest-gray: #2b2b2b;
+}
+
+/* Default to light theme */
+body {
+    --bg-color: var(--white);
+    --text-color: var(--darker-gray);
+    --light-text-color: var(--gray);
+    --heading-color: var(--black);
+    --border-color: var(--light-gray);
+    --link-color: var(--black);
+}
+
+body * {
+    color-scheme: light;
+}
+
+/* Define dark theme */
+body.dark-theme {
+    --bg-color: var(--darkest-gray);
+    --text-color: var(--light-gray);
+    --light-text-color: var(--white);
+    --heading-color: var(--white);
+    --border-color: var(--dark-gray);
+    --link-color: var(--white);
+}
+
+body.dark-theme * {
+    color-scheme: dark;
+}
+
+/* Define auto theme (Defaulting to dark theme if it's the user's preference) */
+@media (prefers-color-scheme: dark) {
+    body:not(.light-theme) {
+        --bg-color: var(--darkest-gray);
+        --text-color: var(--light-gray);
+        --light-text-color: var(--white);
+        --heading-color: var(--white);
+        --border-color: var(--dark-gray);
+        --link-color: var(--white);
+    }
+
+    body:not(.light-theme) * {
+        color-scheme: dark;
+    }
+}
+
+/* General CSS rules */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0 0 0.5rem 0;
+    color: rgb(var(--heading-color));
+    line-height: 1.75rem;
+}

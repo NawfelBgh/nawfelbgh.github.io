@@ -1,0 +1,11 @@
+{
+    "title": "SolidJS - Battle'Front by SFEIR",
+    "description": "I advocated for SolidJS at the frontend frameworks battle organized at SFEIR",
+    "pubDate": "2023-06-27",
+    "i18n": {
+        "fr": {
+            "title": "SolidJS - Battle'Front par SFEIR",
+            "description": "J'ai défendu SolidJS dans la bataille des frameworks frontend organisée à SFEIR"
+        }
+    }
+}

@@ -1,0 +1,49 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import { getEntry } from 'astro:content';
+import SimpleBlogLayout from '../../../layouts/SimpleBlogLayout.astro';
+import { getAlternates, getThumbnailUrl } from '../../../utils/blog';
+
+const lang = 'fr';
+const post = await getEntry('blog', 'battle-front-2023');
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+    <head>
+        <BaseHead
+            title={post.data.title}
+            description={post.data.description}
+            image={image}
+            alternates={alternates}
+        />
+    </head>
+    <SimpleBlogLayout post={post} lang={lang} alternates={alternates}>
+        <p>
+            J'ai présenté SolidJS lors de l'événement
+            <a href="https://sfeir.com/fr/">SFEIR</a> Battle'Front, où 5 présentateurs
+            ont défendu chacun un framework frontend différent.
+        </p>
+        <p>
+            Vous pouvez regarder <a
+                href="https://www.youtube.com/watch?v=LbeShbEdI1w&t=1616s"
+                >mon segment de 10 minutes de l'événement sur Youtube</a
+            >.
+        </p>
+        <p>
+            Vous pouvez ausi télécharger <a
+                href="/static/2023-06-27-SolidJS-Battle-Front.pdf"
+                >les slides de ma présentation</a
+            >.
+        </p>
+        <p>
+            En résumé, SolidJS intègre les meilleurs aspects de React mais est
+            plus simple et plus puissant. SolidJS a popularisé l'API des Signaux
+            et a démontré sa capacité à améliorer à la fois l'expérience des
+            développeurs et des utilisateurs. En conséquence, de nombreux autres
+            frameworks frontend intègrent désormais les Signaux.
+        </p>
+    </SimpleBlogLayout>
+</html>

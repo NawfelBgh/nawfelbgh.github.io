@@ -1,0 +1,11 @@
+{
+    "title": "Structㅤ.animate();",
+    "description": "Simulator of data structure algorithms: Arrays, Lists, Queues, Stacks and Trees",
+    "pubDate": "2014-05",
+    "link": "https://struct-animate.github.io/animation.html",
+    "i18n": {
+        "fr": {
+            "description": "Simulateur des algorithmes de structures de données : Tableaux, Listes, Files, Piles et Arbres"
+        }
+    }
+}

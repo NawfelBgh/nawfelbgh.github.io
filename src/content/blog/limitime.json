@@ -1,0 +1,11 @@
+{
+    "title": "Limitime",
+    "description": "Define time limits for Linux users",
+    "pubDate": "2014-08",
+    "link": "https://github.com/NawfelBgh/limitime/",
+    "i18n": {
+        "fr": {
+            "description": "Définir des limites de temps pour les utilisateurs de Linux"
+        }
+    }
+}

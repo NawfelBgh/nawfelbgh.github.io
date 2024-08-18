@@ -1,0 +1,12 @@
+{
+    "title": "Renforcement learning: The SARSA(λ) algorithm",
+    "description": "During the Doctoral Seminar in Machine Learning at ESI, I wrote this paper on SARSA(λ), a reinforcement learning algorithm which is a subfield of machine learning where an agent interacts with its environment and learns to choose actions that maximize its gains",
+    "pubDate": "2016-12",
+    "link": "/static/2016-12-apprentissage-par-renforcement/index.html",
+    "i18n": {
+        "fr": {
+            "title": "Apprentissage par renforcement: L'algorithme SARSA(λ)",
+            "description": "Lors du Séminaire doctoral en apprentissage machine à l'ESI, j'ai rédigé ce document sur SARSA(λ), un algorithme d'apprentissage par renforcement qui est un sous-domaine de l'apprentissage machine où un agent interagit avec son environnement et apprend à choisir les actions qui maximisent ses gains"
+        }
+    }
+}

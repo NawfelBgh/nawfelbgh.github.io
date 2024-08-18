@@ -1,0 +1,12 @@
+{
+    "title": "Convolutional Neural Networks for Computer Vision",
+    "description": "In this first year PhD report, in French, I present a literature review of computer vision and machine learning, and I show an application of convolutional neural networks to the image classification problem",
+    "pubDate": "2017-09",
+    "link": "/static/2017-09-vision-par-ordinateur/index.html",
+    "i18n": {
+        "fr": {
+            "title": "Les réseaux de neurones convolutifs pour la vision par ordinateur",
+            "description": "Dans ce rapport de première année de doctorat, je présente une revue de la littérature sur la vision par ordinateur et l’apprentissage automatique, et je démontre une application des réseaux de neurones convolutifs au problème de classification d'images"
+        }
+    }
+}

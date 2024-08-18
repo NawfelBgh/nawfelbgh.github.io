@@ -1,0 +1,12 @@
+{
+    "title": "Game theory for multiobjective optimization: Application to the frequency assignment problem",
+    "description": "This dissertation (in French) consists of three parts: 1. A literature review on game theory, multi-objective optimization, genetic algorithms, and the frequency assignment problem. 2. The design of three algorithms to solve the frequency assignment problem. And 3. A comparison and a discussion of the results we obtained.",
+    "pubDate": "2016-06",
+    "link": "static/2016-06-dissertation.pdf",
+    "i18n": {
+        "fr": {
+            "title": "La théorie des jeux pour l'optimisation multi-objectif : application au problème d'affectation de fréquences",
+            "description": "Ce mémoire de fin d'études se compose de trois parties : 1. Une revue de la littérature sur la théorie des jeux, l'optimisation multi-objectif, les algorithmes génétiques et le problème d'affectation de fréquences. 2. La définition de trois algorithmes de résolution du problème d'affectation de fréquence. Et 3. Une comparaison et une discussion des résultats que nous avons obtenus."
+        }
+    }
+}

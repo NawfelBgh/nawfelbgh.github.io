@@ -1,0 +1,11 @@
+{
+    "title": "Nash-Pareto Genetic Algorithm for the Frequency Assignment Problem",
+    "description": "This paper presents a hybrid multi-objective genetic algorithm which combines the main notion of game theory Nash equilibrium with Pareto-optimality to solve the multi-objective Frequency Assignment Problem (FAP) in mobile networks",
+    "pubDate": "2018-01",
+    "link": "https://www.sciencedirect.com/science/article/pii/S1877050918312389",
+    "i18n": {
+        "fr": {
+            "description": "Cet article présente un algorithme génétique multi-objectif hybride qui combine la notion principale d'équilibre de Nash de la théorie des jeux avec l'optimalité de Pareto pour résoudre le problème d'attribution de fréquence multi-objectif (FAP) dans les réseaux mobiles"
+        }
+    }
+}

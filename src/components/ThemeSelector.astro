@@ -1,0 +1,41 @@
+---
+import type { Lang } from '../types';
+import { THEMES } from '../utils/theme.ts';
+interface Props {
+    lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<select id="theme-selector" aria-label="Theme">
+    {
+        THEMES.map((theme) => (
+            <option value={theme.id}>{theme.label[lang]}</option>
+        ))
+    }
+</select>
+
+<style>
+    select {
+        height: 1.5rem;
+    }
+</style>
+<script>
+    let theme = localStorage.getItem('theme') ?? 'auto-theme';
+    document.body.classList.add(theme);
+
+    const select = document.getElementById('theme-selector');
+    const option = [...(select as HTMLSelectElement).options].find(
+        (option) => option.value === theme
+    );
+    option && (option.selected = true);
+    select?.addEventListener('change', () => {
+        if ((select as HTMLSelectElement).value !== theme) {
+            document.body.classList.remove(theme);
+            theme = (select as HTMLSelectElement).value;
+            document.body.classList.add(theme);
+            localStorage.setItem('theme', theme);
+        }
+    });
+</script>

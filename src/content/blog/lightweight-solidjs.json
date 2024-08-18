@@ -1,0 +1,12 @@
+{
+    "title": "Lightweight frontends with SolidJS | Bouffe Front SFEIR",
+    "description": "In this presentation, in French, I showed how SolidJS offers fast page loading and efficient UI updates, comparing it to React and NextJS",
+    "pubDate": "2023-01-25",
+    "link": "/static/2023-01-25-SolidJS-talk.pdf",
+    "i18n": {
+        "fr": {
+            "title": "Frontends légers avec SolidJS | Bouffe Front SFEIR",
+            "description": "Dans cette présentation, j'ai démontré comment SolidJS offre des chargements de pages rapides et des mises à jour d'interface performantes, en le comparant à React et NextJS"
+        }
+    }
+}

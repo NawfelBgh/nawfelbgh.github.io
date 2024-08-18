@@ -1,0 +1,52 @@
+---
+import type { Alternate, Lang } from '../types';
+import { LANGUAGES_NAMES } from '../utils/lang';
+
+interface Props {
+    lang: Lang;
+    alternates?: Alternate[];
+}
+
+const { alternates, lang } = Astro.props;
+const languages = [lang, ...(alternates || []).map((i) => i.hreflang)].toSorted(
+    (a, b) => a.localeCompare(b)
+);
+---
+
+{
+    alternates && (
+        <select id="language-selector" aria-label="Language">
+            {languages.map((language) => {
+                if (language === lang) {
+                    return (
+                        <option value="#" selected>
+                            {LANGUAGES_NAMES[language as 'en' | 'fr']}
+                        </option>
+                    );
+                }
+                const alternate = alternates.find(
+                    (i) => i.hreflang === language
+                );
+                return (
+                    <option value={alternate?.href}>
+                        {LANGUAGES_NAMES[language as 'en' | 'fr']}
+                    </option>
+                );
+            })}
+        </select>
+    )
+}
+
+<style>
+    select {
+        height: 1.5rem;
+    }
+</style>
+<script>
+    const select = document.getElementById('language-selector');
+    select?.addEventListener('change', () => {
+        if ((select as HTMLSelectElement).value !== '#') {
+            window.location.assign((select as HTMLSelectElement).value);
+        }
+    });
+</script>

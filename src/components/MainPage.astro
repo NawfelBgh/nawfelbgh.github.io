@@ -1,0 +1,131 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_TITLE, SITE_DESCRIPTION, getAlternates } from '../utils/home';
+import PageLayout from '../layouts/PageLayout.astro';
+
+import { getCollection } from 'astro:content';
+import { getUrl, getProperty } from '../utils/blog';
+import type { Lang } from '../types';
+
+interface Props {
+    lang: Lang;
+}
+
+const { lang } = Astro.props;
+const posts = (await getCollection('blog')).sort((a, b) =>
+    b.data.pubDate.localeCompare(a.data.pubDate)
+);
+const alternates = getAlternates(lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+    <head>
+        <BaseHead
+            title={SITE_TITLE}
+            description={SITE_DESCRIPTION[lang as 'en' | 'fr']}
+            image="/photo.webp"
+            alternates={alternates}
+        />
+        <style>
+            section {
+                max-width: min(840px, calc(100% - 2em));
+                margin: auto;
+                padding: 1em;
+            }
+            ul {
+                display: flex;
+                flex-direction: column;
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+            ul li {
+                padding: 1rem 0;
+                &:not(:last-child) {
+                    border-bottom: solid 1px var(--border-color);
+                }
+            }
+            ul li img {
+                float: inline-end;
+                height: 100px;
+                width: 150px;
+                margin-inline-start: 0.5rem;
+                margin-block-end: 0.5rem;
+            }
+            ul li a {
+                text-decoration: none;
+                display: block;
+
+                &:hover {
+                    .title {
+                        text-decoration: underline;
+                    }
+                }
+            }
+            .title {
+                font-size: 1rem;
+                margin: 0 0 0.25rem 0;
+                color: var(--heading-color);
+            }
+            .date {
+                color: var(--light-text-color);
+            }
+            p {
+                font-size: 0.9rem;
+                margin: 0.5rem 0 1rem;
+                color: var(--text-color);
+            }
+
+            @media (min-width: 600px) {
+                .title {
+                    font-size: 1.25rem;
+                    margin: 0 0 0.5rem 0;
+                }
+                p {
+                    font-size: 1rem;
+                }
+            }
+
+            @media (min-width: 1000px) {
+                ul li img {
+                    height: 200px;
+                    width: 300px;
+                    margin-inline-start: 1rem;
+                    margin-block-end: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <PageLayout lang={lang} alternates={alternates}>
+        <section>
+            <ul>
+                {
+                    posts.map((post, index) => (
+                        <li>
+                            <a href={getUrl(post, lang)}>
+                                <img
+                                    width={3}
+                                    height={2}
+                                    src={`/thumbnails/${post.id}.svg`}
+                                    alt=""
+                                    aria-hidden
+                                    loading={index < 4 ? 'eager' : 'lazy'}
+                                />
+                                <h2 class="title">
+                                    {getProperty(post, 'title', lang)}
+                                </h2>
+                                <time class="date" datetime={post.data.pubDate}>
+                                    {post.data.pubDate}
+                                </time>
+                                <p class="description">
+                                    {getProperty(post, 'description', lang)}
+                                </p>
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </section>
+    </PageLayout>
+</html>
