@@ -20,6 +20,11 @@ const alternates: Alternate[] = [
             description={description}
             alternates={alternates}
         />
+        <link
+            rel="preload"
+            as="font"
+            href="/static/fonts/eb-garamond-v27-latin-regular.woff2"
+        />
     </head>
     <PageLayout lang={lang} alternates={alternates}>
         <div class="print-actions">
@@ -29,7 +34,12 @@ const alternates: Alternate[] = [
             <div class="page">
                 <header>
                     <picture class="photo">
-                        <img src="/static/cv/photo.jpg" alt="photo" />
+                        <img
+                            src="/static/cv/photo.jpg"
+                            alt="photo"
+                            width="300"
+                            height="347"
+                        />
                     </picture>
                     <div class="informations">
                         <div class="name">Nawfel BENGHERBIA</div>
@@ -97,21 +107,24 @@ const alternates: Alternate[] = [
                         <div>Ingénieur en informatique, SFEIR, Paris</div>
                         <div>(2021-01 à maintenant)</div>
                         <ul>
-                            <li><em>LEASYS</em> : Gestion de souscriptions</li>
+                            <li>LEASYS : Gestion de souscriptions</li>
+                            <li>BNP Paribas Cardif : Catalogue d'APIs</li>
+                            <li>Delfingen : Gestion données commerciales</li>
+                            <li>Sanofi Accelrare : pré-diagnostic médical</li>
+                            <li>RAISE : Plateforme GenAI de SFEIR</li>
                             <li>
-                                <em>BNP Paribas Cardif</em> : Catalogue d'APIs
+                                PoCs &amp; Interventions ponctuelles pour SNCF,
+                                LVMH et Total Energies
                             </li>
-                            <li>
-                                <em>Delfingen</em> : Gestion données commerciales
-                            </li>
-                            <li><em>Sanofi</em> : Site web Accelrare</li>
                         </ul>
                     </div>
 
                     <ul class="skills y-2022-1">
                         <li>NextJs</li>
                         <li>NodeJs</li>
+                        <li>Angular</li>
                         <li>Cloud</li>
+                        <li>K8s</li>
                         <li>Scrum</li>
                     </ul>
 
@@ -125,29 +138,18 @@ const alternates: Alternate[] = [
                     </div>
 
                     <div class="event y-2018-2">
-                        <div>
-                            Stagiaire en ingénierie logiciel, Artelys, Paris
-                        </div>
-                        <div>(2018-04 à 2018-10)</div>
-                    </div>
-
-                    <div class="event y-2018-3">
                         <div>Ingénieur en informatique, Artelys, Paris</div>
-                        <div>(2018-10 à 2021-12)</div>
+                        <div>(2018-04 à 2021-12)</div>
                         <ul>
                             <li>
-                                <em>RATP</em> : Plannification des tâches de maintenance
+                                RATP : Plannification des tâches de maintenance
                             </li>
+                            <li>SNCF : Simulation du réseau ferroviaire</li>
+                            <li>Rubis Terminal : Optimisation du stockage</li>
                             <li>
-                                <em>SNCF</em> : Simulation du réseau ferroviaire
+                                Artelys : Plateforme Crystal Web &amp; Site web
                             </li>
-                            <li>
-                                <em>Rubis Terminal</em> : Optimisation du stockage
-                            </li>
-                            <li>
-                                <em>Artelys</em> : Platforme Crystal Web &amp; Site
-                                web
-                            </li>
+                            <li>Artelys : TimeSheets</li>
                         </ul>
                     </div>
 
@@ -163,8 +165,8 @@ const alternates: Alternate[] = [
 
                     <div class="event y-2018-4 research">
                         <div>
-                            Publication de mon travail de 2016 sur
-                            l'optimisation combinatoriale
+                            Publication de mon travail de thèse d'ingénieur de
+                            2016
                         </div>
                         <div>
                             <a
@@ -291,6 +293,7 @@ const alternates: Alternate[] = [
 
                     <ul class="skills y-2013-1">
                         <li>JavaScript</li>
+                        <li>Continuations</li>
                         <li>HTML5</li>
                         <li>jQuery UI</li>
                     </ul>

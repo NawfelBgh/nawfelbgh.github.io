@@ -20,6 +20,11 @@ const alternates: Alternate[] = [
             description={description}
             alternates={alternates}
         />
+        <link
+            rel="preload"
+            as="font"
+            href="/static/fonts/eb-garamond-v27-latin-regular.woff2"
+        />
     </head>
     <PageLayout lang={lang} alternates={alternates}>
         <div class="print-actions">
@@ -29,7 +34,12 @@ const alternates: Alternate[] = [
             <div class="page">
                 <header>
                     <picture class="photo">
-                        <img src="/static/cv/photo.jpg" alt="photo" />
+                        <img
+                            src="/static/cv/photo.jpg"
+                            alt="photo"
+                            width="300"
+                            height="347"
+                        />
                     </picture>
                     <div class="informations">
                         <div class="name">Nawfel BENGHERBIA</div>
@@ -97,19 +107,24 @@ const alternates: Alternate[] = [
                         <div>Software development engineer, SFEIR, Paris</div>
                         <div>(2021-01 to now)</div>
                         <ul>
-                            <li><em>LEASYS</em> subscriptions dashboard</li>
+                            <li>LEASYS subscriptions dashboard</li>
+                            <li>BNP Paribas Cardif API catalog website</li>
+                            <li>Delfingen sales dashboard</li>
+                            <li>Sanofi Accelrare medical pre-diagnosis tool</li>
+                            <li>RAISE SFEIR's GenAI platform</li>
                             <li>
-                                <em>BNP Paribas Cardif</em> API catalog website
+                                PoCs &amp; One-off interventions for SNCF, LVMH
+                                and Total Energies
                             </li>
-                            <li><em>Delfingen</em> sales dashboard</li>
-                            <li><em>Sanofi</em> Accelrare website</li>
                         </ul>
                     </div>
 
                     <ul class="skills y-2022-1">
                         <li>NextJs</li>
                         <li>NodeJs</li>
+                        <li>Angular</li>
                         <li>Cloud</li>
+                        <li>K8s</li>
                         <li>Scrum</li>
                     </ul>
 
@@ -123,22 +138,16 @@ const alternates: Alternate[] = [
                     </div>
 
                     <div class="event y-2018-2">
-                        <div>Software development intern, Artelys, Paris</div>
-                        <div>(2018-04 to 2018-10)</div>
-                    </div>
-
-                    <div class="event y-2018-3">
                         <div>Software development engineer, Artelys, Paris</div>
-                        <div>(2018-10 to 2021-12)</div>
+                        <div>(2018-04 to 2021-12)</div>
                         <ul>
-                            <li><em>RATP</em> maintenance planning</li>
-                            <li><em>SNCF</em> rail network simulation</li>
+                            <li>RATP maintenance planning</li>
+                            <li>SNCF rail network simulation</li>
                             <li>
-                                <em>Rubis Terminal</em> storage optimization dashboard
+                                Rubis Terminal storage optimization dashboard
                             </li>
-                            <li>
-                                <em>Artelys</em> Crystal Web platform &amp; website
-                            </li>
+                            <li>Artelys Crystal Web platform &amp; website</li>
+                            <li>Artelys TimeSheets app</li>
                         </ul>
                     </div>
 
@@ -154,8 +163,7 @@ const alternates: Alternate[] = [
 
                     <div class="event y-2018-4 research">
                         <div>
-                            Publication of my 2016’s work on combinatorial
-                            optimization
+                            Publication of my 2016's engineering thesis work
                         </div>
                         <div>
                             <a
@@ -275,6 +283,7 @@ const alternates: Alternate[] = [
 
                     <ul class="skills y-2013-1">
                         <li>JavaScript</li>
+                        <li>Continuations</li>
                         <li>HTML5</li>
                         <li>jQuery UI</li>
                     </ul>
