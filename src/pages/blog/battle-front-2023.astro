@@ -6,6 +6,7 @@ import { getAlternates, getThumbnailUrl } from '../../utils/blog';
 
 const lang = 'en';
 const post = await getEntry('blog', 'battle-front-2023');
+if (!post) throw new Error('Entry not found blog:battle-front-2023');
 const image = getThumbnailUrl(post);
 const alternates = getAlternates(post, lang);
 ---
