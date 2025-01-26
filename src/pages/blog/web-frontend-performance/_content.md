@@ -17,7 +17,7 @@ The article is structured as follows:
 
 Here are some key takeaways from the article:
 
-- Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. This means we need to maintain a comprehensive overview of the entire system.
+- Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. I tried to highlight this whenever possible throughout the document.
 - Websites and apps can still perform well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
 - Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
 
@@ -519,28 +519,52 @@ CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_terminatio
 
 ## Bundling resources
 
-Some network latency is introduced each time an HTML document or one of its resources load other resources.
-This latency and network overhead can be avoided by embedding resources inline instead of referencing them by URL.
-Depending on context, this is called inlining, embedding, concatenation or bundling.
-For example:
+Some network latency is introduced each time an HTML document or one of its resources loads other resources. This latency and network overhead can be avoided by embedding resources inline instead of referencing them by URL. Depending on the context, this is referred to as inlining, embedding, concatenation, or bundling. For example:
 
 - HTML documents can contain inline `<script>`, `<style>` and `<svg>` tags.
 - HTML, CSS and JavaScript files can embed multimedia files using [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs).
 - Stylesheet files can be concatenated.
 - JavaScript modules and their dependencies can be bundled together and sent as a single file to the client.
-- Multiple images can be combined into a single sprite image that is split back into individual peaces using [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Implementing_image_sprites_in_CSS) or [SVG](https://www.sitepoint.com/use-svg-image-sprites/) techniques.
+- Multiple images can be combined into a single sprite image that is split back into individual pieces using [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Implementing_image_sprites_in_CSS) or [SVG](https://www.sitepoint.com/use-svg-image-sprites/) techniques.
 
-As stated previously, the main benefit of bundling is reducing network overhead. But in addition to that:
+<figure id="figure-no-resource-bundling">
+    <img
+        alt="Without resource bundling"
+        src="/blog/web-frontend-performance/resource-bundling.svg"
+        width="700"
+        height="475"
+    />
+    <figcaption>
+       <a href="#figure-no-resource-bundling">Without resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load icons 1, 2, and 3, as well as a script file. The client fetches these resources via additional HTTP requests. Once the script is loaded, the client finds that it depends on another JavaScript module, necessitating yet another request to the server to load this module. The page finishes loading once all six resources are fully loaded.
+    </figcaption>
+</figure>
 
-- Concatenating textual files works well in conjunction with compression because compression algorithms can take advantage of redundancy across a whole set of files yielding better compression ratios compared to when the files are compressed individually.
-- JavaScript bundling tools implement optimizations that help reduce of bundles’ sizes as we will see in the section on [Using optimizing bundlers](#using-optimizing-bundlers)
+<figure id="figure-resource-bundling">
+    <img
+        alt="With resource bundling"
+        src="/blog/web-frontend-performance/resource-bundling.svg"
+        width="700"
+        height="475"
+    />
+    <figcaption>
+       <a href="#figure-resource-bundling">With resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load the <code>icons_sprite.png</code> file, which contains icons 1, 2, and 3, as well as a script file that includes both the page's script and its dependencies. The page finishes loading once the HTML, the sprite, and the script are fully loaded.
+    </figcaption>
+</figure>
 
-But these gains come at a cost:
+As stated previously, the main benefit of bundling is reducing network overhead. In addition to that:
 
-- Bundling resources together give them all the same priority which can lead to worse loading performance. We will look back at properly prioritizing resources in the section [Minimizing render blocking resources](#minimizing-render-blocking-resources). This is why [some optimization tools](https://www.modpagespeed.com/doc/) implement the opposite optimization: Outlining. Ie. extracting inlined elements into their own files.
-- Bundling also makes caching less efficient:
-  - If a resource is loaded in multiple HTML files, inlining it leads to it being downloaded, and potentially cached, multiple times.
-  - When a single resource inside a bundle is updated, the bundle is updated as a unit and users have to download the whole thing again.
+- Concatenating textual files works well in conjunction with compression because compression algorithms can take advantage of redundancy across a whole set of files, yielding better compression ratios compared to when the files are compressed individually.
+- JavaScript bundling tools implement optimizations that help reduce the sizes of bundles, as we will see in the section on [Using optimizing bundlers](#using-optimizing-bundlers)
+
+However, these gains come at a cost:
+
+- Bundling makes caching less efficient:
+  - Resources that are bundled together can only be cached as much as the least cacheable resource. We discussed this earlier in the section [Caching static portions of webpages](#caching-static-portions-of-webpages) where dynamic content must be separated from static content to enable the caching of the static content.
+  - If a resource is loaded on multiple pages, inlining it in HTML documents leads to it being downloaded and sometimes cached multiple times.
+  - When a single resource inside a bundle is updated, the bundle is updated as a unit, and users have to download the whole thing again.
+- Bundling resources together also gives them all the same priority, which can lead to worse loading performance. We will revisit properly prioritizing resources in the section [Loading resources at the right time](#loading-resources-at-the-right-time).
+
+Because of the performance drawbacks of bundling, [some optimization tools](https://www.modpagespeed.com/doc/) implement the opposite optimization: outlining, i.e., extracting inlined elements into their own files.
 
 <figure id="figure-cache-without-inlining">
     <img
@@ -550,7 +574,7 @@ But these gains come at a cost:
         height="475"
     />
     <figcaption>
-       <a href="#figure-cache-without-inlining">Caching without inlining:</a> In this example, <code>page1.html</code> and <code>page2.html</code> use the same CSS file which is properly cached and reused.
+       <a href="#figure-cache-without-inlining">Caching without inlining:</a> In this example, both non-cacheable dynamic pages, <code>page1.html</code> and <code>page2.html</code>, use the same CSS file, which is properly cached and reused.
     </figcaption>
 </figure>
 
@@ -562,21 +586,21 @@ But these gains come at a cost:
         height="375"
     />
     <figcaption>
-       <a href="#figure-cache-with-inlining">Caching with inlining:</a> In this example, <code>page1.html</code> and <code>page2.html</code> inline the same CSS file into their content. The user downloads the styles each time they visit the pages.
+       <a href="#figure-cache-with-inlining">Caching with inlining:</a> In this example, non-cacheable dynamic pages, <code>page1.html</code> and <code>page2.html</code>, each inline the same CSS file into their content, requiring clients to download the styles again with each page visit.
     </figcaption>
 </figure>
 
 ### Bundling in the HTTP/2+ era
 
-With the advent of HTTP/2, many web articles announced the death of resource bundling, because:
+With the advent of HTTP/2, many web articles declared the death of resource bundling, because:
 
-- HTTP/2 can multiplex the loading of several resources using a single HTTP connection reducing network overhead substantially. This is an improvement over HTTP/1.1 where HTTP connections can only transmit a single resource at a time and where only a limited number of HTTP connections can be simultaneous opened.
-- HTTP/2 defines the [server push extension](https://en.wikipedia.org/wiki/HTTP/2_Server_Push) which lets servers push resources to the client before the later requests them. When a client requests a page, servers can push the page's sub-resources before the client discovers that it needs them, eliminating latency without having to bundle files together and without compromising caching.
+- HTTP/2 can multiplex the loading of several resources using a single HTTP connection, significantly reducing network overhead. This is an improvement over HTTP/1.1, where HTTP connections can only transmit a single resource at a time and only a limited number of HTTP connections can be opened simultaneously.
+- HTTP/2 defines the [server push extension](https://en.wikipedia.org/wiki/HTTP/2_Server_Push) which allows servers to push resources to the client before the client requests them. When a client requests a page, servers can push the page's sub-resources before the client discovers that it needs them, thereby eliminating latency without having to bundle files together and without compromising caching.
 
-On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) where it is explained that bundling is still relevant in HTTP/2 and HTTP/3:
+On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) which explains that bundling is still relevant in HTTP/2 and HTTP/3. Some of the reasons are:
 
-- Even with multiplexing, requests still have overhead.
-- HTTP Server Push support was removed from [Chrome](https://developer.chrome.com/blog/removing-push) and from [Firefox](https://www.mozilla.org/en-US/firefox/132.0/releasenotes/).
+- Even with multiplexing, requests still incur overhead.
+- HTTP Server Push support has been removed from [Chrome](https://developer.chrome.com/blog/removing-push) and [Firefox](https://www.mozilla.org/en-US/firefox/132.0/releasenotes/).
 
 ---
 
