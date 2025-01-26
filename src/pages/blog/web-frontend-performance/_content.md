@@ -18,10 +18,10 @@ The article is structured as follows:
 Here are some key takeaways from the article:
 
 - Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. This means we need to maintain a comprehensive overview of the entire system.
-- Websites and apps can still function well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
+- Websites and apps can still perform well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
 - Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
 
-Finally, this article is by no means a comprehensive guide to web performance. It is also inevitably biased by my experience using JavaScript frameworks (mainly React) and with WordPress.
+Finally, this article is by no means a comprehensive guide to web performance. It completely glosses over backend performance. And, It is inevitably biased by my experience using JavaScript frameworks (mainly React) and with WordPress.
 
 # Table of content
 
@@ -115,13 +115,13 @@ One way to make web frontends faster is by using more powerful hardware:
 - Upgrading users' devices,
 - Building faster networks,
 - Using more powerful server machines, and
-- Adding more server machines.
+- Using more server machines.
 
-The first two options usually require users to pay, as they can’t change the web applications themselves. Users might need to upgrade their devices or internet plans, or they may look for faster alternative web applications.
+The first two options usually require users to pay, as they cannot change the web applications themselves. Users may upgrade their devices or internet plans, or they may look for faster alternative web applications.
 
 The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimizations are not feasible—perhaps because the software is already optimized for the existing hardware, or due to a lack of time or manpower for software optimization.
 
-Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with significant financial resources. Furthermore, the production of hardware and energy consumption for web services compete for physical resources, impacting both other human activities and wildlife.
+Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human activities and have an environmental impact.
 
 <figure id="figure-web-infra-bigger">
     <img
@@ -148,9 +148,9 @@ It’s also worth noting that, worldwide, around 60% of electricity is generated
 
 ### Frontends contribution to the web's environmental footprint
 
-Due to the sheer number of user devices, studies ([Estimating Digital Emissions](https://sustainablewebdesign.org/estimating-digital-emissions/), [Environmental footprint of the digital world](https://www.greenit.fr/environmental-footprint-of-the-digital-world/)) estimate that user devices have larger environmental impact than both the network and the data centers. And networks have a greater impact than data centers.
+Due to the sheer number of user devices, studies (such as [Estimating Digital Emissions](https://sustainablewebdesign.org/estimating-digital-emissions/) and [Environmental footprint of the digital world](https://www.greenit.fr/environmental-footprint-of-the-digital-world/)) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers.
 
-This means that frontend developers have the power and the responsibility to reduce the environmental impact of the web.
+This means that frontend developers have both the power and the responsibility to reduce the environmental impact of the web.
 
 <figure id="figure-emissions-breakdown">
     <img
@@ -187,25 +187,23 @@ In this chapter, I present techniques that reduce the workload for server machin
 - reduce the overall work required in the whole system,
 - and reduce the time needed to serve the frontend to the user.
 
-These techniques may decrease work in one area while increasing it in another. And achieving absolute optimization may require very complex system. Therefore, a good goal is to maintain a bird's-eye view of the entire system and to select optimization techniques and their levels of application in an effective way.
-
 ## Performance through minimalism
 
 Before diving into the technical side of things, it is worth mentioning minimalism as a non technical, or a less technical, solution to make frontends fast.
 
-Bloat is a very well known phenomenon in [software in general](https://en.wikipedia.org/wiki/Software_bloat) and in the web in particular. According to [httparchive.org](https://httparchive.org/reports/page-weight#bytesTotal), as of december 2024, the median desktop web pages loads 2.67 MB of data (almost 6 times the median web page from 2011).
+Bloat is a very well known phenomenon in [software in general](https://en.wikipedia.org/wiki/Software_bloat) and in the web in particular. According to [the HTTP Archive](https://httparchive.org/reports/page-weight#bytesTotal), as of december 2024, the median desktop web pages loads 2.67 MB of data (almost 6 times the median web page from 2011).
 
 On this subject, I recommend Maciej Cegłowski's hilarious talk: [The Website Obesity Crisis](https://idlewords.com/talks/bsite_obesity.htm):
 
 > [Maciej's] modest proposal: your website should not exceed in file size the major works of Russian literature. Anna Karenina, for example, is 1.8 MB
 
-Minimalism is one way to approach this issue of web bloat. It is encouraged in the [Sustainable Web design](https://stainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) sphere, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
+Minimalism is one way to approach this issue of web bloat. It is encouraged in the [Sustainable Web design](https://stainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) spheres, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
 
 - Is this image or this script really useful
 - Does this image or script have to be this big
 - Is this old content, or say this polyfill script, still relevant today or should we remove it
 
-[Sustainable Web design](https://sustainablewebdesign.org/) goes beyond minimalism. It encompasses user experience design and also the technical solutions addressed in the rest of this article.
+[Sustainable Web design](https://sustainablewebdesign.org/) goes beyond minimalism. It encompasses user experience design, carbon intensity and also the technical solutions addressed in the rest of this article.
 
 ## Caching
 
@@ -215,13 +213,13 @@ This approach sacrifices some memory on the client and server to reduce CPU work
 
 Caching can be implemented to some extent without users noticing. However, the best performance gains can only be realized by accepting that some users may not see the most recent version of certain data immediately after it is published. The challenge arises when clients are instructed to store and reuse a response until a certain expiration time without contacting the server; it can be difficult to inform them of updates that occur before that expiration.
 
-As a result, caching decisions cannot be made solely by developers without input from the product owner. It is important for both developers and product owners to understand the level of cache control achievable with web technologies in order to make informed decisions regarding the various resources on their websites and applications.
+As a result, caching decisions should not be made by developers alone; input from the product owner is crucial. Both developers and product owners need to understand the level of cache control that web technologies offer and what is acceptable for different types of resources on their websites and applications to implement effective caching.
 
 ### HTTP caching
 
-To support [caching requirements](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching), the HTTP protocol provides a range of [standard headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers), including:
+To support [caching requirements](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching), the HTTP protocol provides a range of [standard headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers). For example:
 
-- Response [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) headers allow servers to tell clients and intermediary caches when they can cache and reuse server’s responses, and for how long,
+- Response [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) headers allow servers to tell clients and intermediary caches when they can store and reuse server’s responses, and for how long,
 - Request Cache-Control headers allow clients to ask intermediary caches to reach to the origin server to get fresher content,
 - Other response headers such as `Last-Modified` and `ETag` and request headers such as `If-Modified-Since` and `If-None-Match` allow implementing [conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Conditional_requests) as we will see shortly.
 
@@ -234,16 +232,28 @@ Caching can be done both by clients and intermediary servers. Cache-Control head
         width="1000"
     />
     <figcaption>
-       <a href="#caching-with-shared-cache">Shared and private caches</a>: In this example, when the server responds to client 1's request. Both the shared cache and client 1's private cache save the response. When client 2 requests the same data, the shared cache responds to it without soliciting the origin server, and client 2's private cache saves the response too. When both clients 1 and 2 need the same data again, they reuse the version they saved in their private cache without requiring any network traffic. The origin server ends up generating this peace of data only once.
+       <a href="#caching-with-shared-cache">Shared and private caches</a>: In this example, when the server responds to Client 1's request, both the shared cache and Client 1's private cache save the response. When Client 2 requests the same data, the shared cache responds without contacting the origin server, and Client 2's private cache saves the response as well. When both Clients 1 and 2 need the same data again, they can reuse the version saved in their private caches without requiring any network traffic. The origin server generates this piece of data only once.
     </figcaption>
 </figure>
 
 #### Fresh and stale cached data
 
-When an HTTP response is stored in a cache, it is considered fresh for a certain duration. Once that duration is elapsed, the response is considered stale. If the freshness duration is not specified by Cache-Control max-age headers or by Expires headers, it is chosen heuristically by the caches.
+When an HTTP response is stored in a cache, it remains fresh for a certain duration. Once that duration is elapsed, the response becomes stale. If the freshness duration is not specified by a `Cache-Control: max-age` header or an `Expires` header, caches will chose it heuristically.
+Additionally, the freshness duration can be explicitly set to 0 (using `Cache-Control: max-age=0`), which makes the cached response stale immediately.
 
-Cached responses that are still fresh can be reused on subsequent requests without soliciting the origin server.
-Stale responses can be reused too, but the cache has to revalidate them first by sending a conditional request to the origin server which either sends a new response or tells the cache that it can still reuse its stored response (avoiding the retransmission of data).
+Cached responses that are still fresh can be reused on subsequent requests without soliciting the server. This eliminates the following steps:
+
+- Sending a request to the server
+- Waiting for the server to respond
+- Receiving the server's response
+
+Stale responses can also be reused, but the cache has to revalidate them first by sending a [conditional request](https://developer.mozilla.org/en-US/docs/Web/HTTP/Conditional_requests) to the server. The server will either reply with a new response or with an empty response and a `304 Not-Modified` status code, instructing the cache to reuse its stored response.
+
+When making a conditional request, we still have to:
+
+- Send a request to the server
+- Wait for the server to respond, although this can be quick if the server determines that the client has up-to-date content
+- Receive server response. When it is a `304 Not-Modified` response, it is still advantageous (compared to not using the cache at all) because the client does not need to download the response body again.
 
 <figure id="cache-revalidation">
     <img
@@ -253,17 +263,18 @@ Stale responses can be reused too, but the cache has to revalidate them first by
     />
     <figcaption>
         <p>
-            <a href="#cache-revalidation">Cache revalidation</a>: In this example, the user requests a page and gets a 50KB response containing version 1 of the page, and which stays fresh in the cache for 10 minutes. The user requests the page a second time after 5 minutes, and since the response stored in the cache is still fresh, the cache sends it to the user. After another 5 minutes, the user requests the page again but the cached version is now stale. So the cache sends a conditional request (If-None-Match: "version 1") to the server verify that version 1 of the page is still the currently published version. To this conditional request, the server responds with an empty response with header 304 Not Modified. Seeing that, the cache marks the response that it already has as fresh again and use it to satisfy the user's request.
+            <a href="#cache-revalidation">Cache revalidation</a>: In this example, the user requests a page and receives a 50KB response containing version 1 of the page, which stays fresh in the cache for 10 minutes. The user requests the page a second time after 5 minutes, and since the response stored in the cache is still fresh, the cache sends it to the user. After another 5 minutes, the user requests the page again, but the cached version is now stale. Therefore, the cache sends a conditional request (<code>If-None-Match: "version 1"</code>) to the server to verify that version 1 of the page is still the currently published version. In response to this conditional request, the server sends a 304 Not Modified header with no body. Seeing this, the cache marks the response it already has as fresh again and uses it to respond to the user.
        </p>
        <p>
-            After that, the site editor publishes version 2 of the page and the user requests the page once more, and it happens that the cached version is now stale. The cache sends another conditional request to the server, To which the server responds with a new 50KB response containing version 2 of the page. The cache stores this new version of the page (replacing the old one) and responds with it to the user.
+            After that, the site editor publishes version 2 of the page. When the user requests the page once more, the cached version is now stale. The cache sends another conditional request to the server, to which the server responds with a new 50KB response containing version 2 of the page. The cache stores this new version (replacing the old one) and responds to the user with it.
        </p>
     </figcaption>
 </figure>
 
 #### Revalidating stale data in the background
 
-Stale-while-revalidate (also referred to as SWR) is another cache control option that the server can provide alongside `maxage`. It defines a period during which the cache can respond with stale data while revalidating it in the background. Whenever it is acceptable to show not up-to-date content, the stale-while-revalidate strategy can be used to hides the cache revalidation delay.
+`Stale-while-revalidate` (also referred to as SWR) is another cache control option that the server can provide alongside `max-age`. It defines a period during which the cache can respond with stale data while revalidating the content in the background using a conditional request.
+The stale-while-revalidate strategy can only be used when it is acceptable to show not up-to-date content to the user. It has the advantage of hiding the delays associated with the revalidation of cached data.
 
 <figure id="cache-swr">
     <img
@@ -273,13 +284,13 @@ Stale-while-revalidate (also referred to as SWR) is another cache control option
     />
     <figcaption>
         <p>
-            <a href="#cache-swr">Stale-while-revalidate</a>: In this example, the user requests a page, to which the server responds with the currently published version (version 1) which ends up stored in the cache. The server specifies that the response can be considered fresh for 10 minutes and that once stale, it can still be reused and revalidated in the background for 5 minutes. Later on, the site editor publishes a new version. When the user requests the same page again, the cache's version has been stale for less than 5 minutes. So the cache immediately responds to the user with version 1 and in parallel, it sends a conditional request to the server and ends up getting version 2 of the page. 
+            <a href="#cache-swr">Stale-while-revalidate</a>: In this example, the user requests a page, and the server responds with the currently published version (version 1), which is then stored in the cache. The server indicates that the response can be considered fresh for 10 minutes, and once it becomes stale, it can still be reused and revalidated in the background for an additional 5 minutes. Later, when the site editor publishes a new version, the user requests the same page again. At this point, the cached version has been stale for less than 5 minutes, so the cache immediately responds to the user with version 1. Meanwhile, it sends a conditional request to the server and subsequently retrieves version 2 of the page.
         </p>
         <p>
-            Later on, when the user requests the page again, the cache responds with version 2 which is still fresh and the user perceives the response as loading instantly. The stale-while-revalidate has effectively hidden the latency of getting version 2 of the page from the origin server.
+            Later, when the user requests the page again, the cache responds with version 2, which is still fresh, making the user perceive the new response as loading instantly. The stale-while-revalidate mechanism has effectively concealed the latency involved in retrieving version 2 of the page from the server.
         </p>
         <p>
-            15 minutes later, the user requests the page again. This time the cached version is stale and the stale-while-revalidate duration has expired too. So the cache cannot respond to the user before it revalidates the cached version with the origin server.
+            Fifteen minutes later, the user requests the page again. This time, the cached version is stale, and the stale-while-revalidate duration has also expired. As a result, the cache cannot respond to the user until it revalidates the cached version with the server.
         </p>
     </figcaption>
 </figure>
