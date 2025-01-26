@@ -424,14 +424,14 @@ When a web font is defined by multiple subset files, the browser ensures it down
 
 ### HTTP responses compression
 
-[Compressing HTTP responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression) can reduce network usage substantially. It is implemented by practically all web browsers and most popular web servers and web hosting services, making enabling it a matter of proper server configuration.
+[Compressing HTTP responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression) can substantially reduce network usage. This feature is implemented by practically all web browsers, as well as most popular web server stacks and web hosting services, making its activation a matter of proper server configuration.
 
-HTTP responses compression works via content negotiation between clients and servers:
+HTTP response compression works through content negotiation between clients and servers:
 
-- Clients send the list of compression formats they support using the `Accept-Encoding` request header,
+- Clients send a list of supported compression formats using the `Accept-Encoding` request header,
 - Servers can compress their responses using an algorithm that both they and the client support.
   - They indicate which algorithm they used with the `Content-Encoding` response header.
-  - They also send the `Vary` response header to tell caches to treat requests to the same URL but with a different `Accept-Encoding` header value as separately cacheable entities.
+  - They also send the `Vary` response header to instruct caches to treat requests to the same URL with different `Accept-Encoding` header values as separately cacheable entities.
 
 <figure id="figure-response-compression">
     <img
@@ -441,42 +441,42 @@ HTTP responses compression works via content negotiation between clients and ser
     />
     <figcaption>
         <p>
-            <a href="#figure-response-compression">HTTP response compression:</a> In this example, client 1 which supports gzip compression requests a web page. The origin server sends a <code>gzip</code>ed response which the shared cache saves for later reuse.
-            Client 2 which also supports gzip compression requests the same page and gets a response directly from the cache.
+            <a href="#figure-response-compression">HTTP response compression:</a> In this example, Client 1, which supports gzip compression, requests a web page. The server sends a gzip-compressed response, which the shared cache saves for later reuse.
+            Client 2, which also supports gzip compression, requests the same page and receives a response directly from the cache.
         </p>
         <p>
-            Client 3 which supports brotli compression (<code>br</code>) requests the same page. This time the shared cache cannot reuse the gzip compressed version so it forwards the request to the server. The server sends a new response compressed with brotli, which the shared cache save for later reuse without overwriting the gzip response.
+            Client 3, which supports Brotli compression (br), requests the same page. This time, the shared cache cannot reuse the gzip-compressed version, so it forwards the request to the server. The server sends a new response compressed with Brotli, which the shared cache saves for later reuse without overwriting the gzip response.
         </p>
         <p>
-            When clients 2 and 3 request the page again, the cache is able to provide a response to both of them without having to reach to the origin server.
+            When Clients 2 and 3 request the page again, the cache is able to provide a response to both of them without having to reach out to the server.
         </p>
     </figcaption>
 </figure>
 
-Note that not all resources have to use HTTP compression: Some file formats, such as images and video files, are already compressed. Therefore, recompressing them again wastes CPU cycles and can increase their sizes (although slightly).
+Note that not all resources need to use HTTP compression: Some file formats, such as images and video files, are already compressed. Therefore, recompressing them again would waste CPU cycles and can increase their sizes (although slightly).
 
 ### HTTP headers compression
 
-In addition to response body compress, [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Headers compression is implemented by browsers and the HTTP stack of web servers requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
+In addition to response body compression, [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Header compression is implemented by browsers and the HTTP stack of web servers, requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
 
 Header compression uses:
 
-- A static dictionary containing a set of vary commonly used header fields,
-- And per-connection dynamic dictionaries which are kept in sync between the client and the server and which store previously sent header fields.
+- A static dictionary containing a set of commonly used header fields,
+- Per-connection dynamic dictionaries that are kept in sync between the client and the server, storing previously sent header fields.
 
-Request and response header fields can be encoded either literally or, when possible, using indices referencing entries in the static or the dynamic dictionaries. This translates to replacing potentially long strings with one or a few bytes.
+Request and response header fields can be encoded either literally or, when possible, using indices that reference entries in the static or dynamic dictionaries. This translates to replacing potentially long strings with one or a few bytes.
 
-Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be sent only once during the lifetime of an HTTP connection, reducing network usage compared to HTTP/1.1 where they have to be sent on every request. This makes it possible to forgo the practice of hosting static content in cookie-less domains to avoid the cost of cookies retransmission.
+Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be sent only once during the lifetime of an HTTP connection, reducing network usage compared to HTTP/1.1, where they need to be sent with every request. This makes it possible to forgo the practice of hosting static content in cookie-less domains to avoid the cost of cookie retransmission.
 
 <figure id="figure-hpack">
     <img
-        alt="HPack HTTP headers compression"
+        alt="HPack HTTP header compression"
         src="/blog/web-frontend-performance/hpack.svg"
         width="1000"
     />
     <figcaption>
         <p>
-            <a href="#hpack">Headers compression:</a> This example shows how headers in textual format are encoded using HPack replacing literal values whenever possible with one-byte-sized indices to the static and dynamic tables.
+            <a href="#hpack">Header compression:</a> This example shows how headers in textual format are encoded using HPACK, replacing literal values with one-byte-sized indices to the static and dynamic tables whenever possible.
         </p>
     </figcaption>
 </figure>
@@ -485,11 +485,11 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
 
 ## Content Delivery Networks
 
-Tha longer the distance between the client and the server is, the more time it takes data packets to travel between the two. The resulting time delays are called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency) and are the result of physical limits: It takes a beam of light [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the earth.
+The longer the distance between the client and the server, the more time it takes for data packets to travel between the two. The resulting time delays are called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency) and are the result of physical limits; it takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
 
-[Content Delivery Networks](https://en.wikipedia.org/wiki/Content_delivery_network) (CDNs) try to address this problem of physical distance between the servers and the clients. A CDN is a group of geographically distributed proxy servers that sit between servers and clients, caching server responses, when possible, and delivering them to clients from a geographically close node (called PoP: Point of Presence).
+[Content Delivery Networks](https://en.wikipedia.org/wiki/Content_delivery_network) (CDNs) aim to address the issue of latency caused by the physical distance between servers and clients. A CDN is a group of geographically distributed proxy servers that sit between servers and clients, caching server responses when possible and delivering them to clients from a nearby node (called a PoP, or Point of Presence).
 
-CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_termination_proxy), HTTP caching and compression in addition to other features that vary from provider to another.
+CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_termination_proxy), HTTP caching, and compression, in addition to other features that vary from one provider to another.
 
 <figure id="world-map-no-cdn">
     <img
@@ -499,7 +499,7 @@ CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_terminatio
         height="360"
     />
     <figcaption>
-       <a href="#world-map-no-cdn">With no CDN:</a> In this example, all the requests from all users throughout the world are handled by the origin server. Faraway users experience high latencies.
+       <a href="#world-map-no-cdn">With no CDN:</a> In this example, all requests from users around the world are handled by the origin server, resulting in high latency for users who are far away.
     </figcaption>
 </figure>
 
@@ -511,7 +511,7 @@ CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_terminatio
         height="360"
     />
     <figcaption>
-       <a href="#world-map-no-cdn">With a CDN:</a> In this example, most requests are handled by PoP servers situated close to the users. They are loaded with low latency for all users. A small proportion of requests can only be handled by the origin server. For these requests, faraway users still experience high latencies.
+       <a href="#world-map-no-cdn">With a CDN:</a> In this example, most requests are handled by PoP servers located close to the users, resulting in low latency for all users. However, a small proportion of requests can only be processed by the origin server, which means that distant users still experience high latency for these requests.
     </figcaption>
 </figure>
 
