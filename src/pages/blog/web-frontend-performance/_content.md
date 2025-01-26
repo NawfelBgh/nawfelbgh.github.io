@@ -366,8 +366,10 @@ We want to leverage caching for the static elements while still being able to pr
 For examples of how to do this, check out:
 
 - [Caching the Uncacheable: CSRF Security](https://www.fastly.com/blog/caching-uncacheable-csrf-security): This article from 2014 explains how to inject dynamic, user-specific CSRF tokens into cached HTML pages.
-- [HTMX](https://htmx.org/)'s [Lazy Loading](https://htmx.org/examples/lazy-load/) feature, which allows webpages to fetch page parts using separate HTTP requests.
-- [Astro](https://astro.build/)'s [Server Islands](https://docs.astro.build/en/guides/server-islands/) which are webpage parts loaded using separate HTTP requests.
+- Features from different frameworks allowing webpages to fetch page parts using separate HTTP requests:
+  - [Hotwire Turbo](https://turbo.hotwired.dev/)'s [Frames](https://turbo.hotwired.dev/handbook/introduction#turbo-frames%3A-decompose-complex-pages).
+  - [HTMX](https://htmx.org/)'s [Lazy Loading](https://htmx.org/examples/lazy-load/) feature.
+  - [Astro](https://astro.build/)'s [Server Islands](https://docs.astro.build/en/guides/server-islands/).
 
 <figure id="figure-request-dynamic-page-parts">
     <img
@@ -608,16 +610,16 @@ On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](ht
 
 ### Using optimizing bundlers
 
-Developers do not usually ship their source code unchanged to the clients. Instead, they use bundling tools or frameworks that include such tools to transform the website source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
+Developers typically do not ship their source code unchanged to clients. Instead, they use bundling tools or frameworks that include such tools to transform the website's source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
 
-We have seen in [Bundling resources](#bundling-resources) how bundling reduces network overhead. In addition to that, bundling tools implement features that help reduce code size such as [Minification](#minification) and [Tree-Shaking](#tree-shaking).
+As we discussed in [Bundling resources](#bundling-resources), bundling reduces network overhead. Additionally, bundling tools implement features like [Minification](#minification) and [Tree-Shaking](#tree-shaking), which help reduce code size.
 
 #### Minification
 
-Text files such as HTML, CSS, JavaScript and SVG files contain elements that are useful for developers but not for the end users: White space formatting, comments and intuitive variables names.
+Text files such as HTML, CSS, JavaScript and SVG files contain elements that are useful for developers but not for end users: whitespace formatting, comments and intuitive variable names.
 [Minification](https://developer.mozilla.org/en-US/docs/Glossary/Minification) is the process of removing those elements.
 
-Here is an example source code:
+Here is an example of source code:
 
 ```js
 // This is a comment
@@ -640,9 +642,9 @@ function multiply(n,t){return n*t}
 
 #### Tree-shaking
 
-Bundlers can also reduce code size with [Tree Shaking](https://en.wikipedia.org/wiki/Tree_shaking). That is, by removing code that is shown by static analysis to be unreachable from the bundle's entry points. Outside web circles, this concept is more generally known as [Dead-code Elimination](https://en.wikipedia.org/wiki/Dead-code_elimination).
+Bundlers can also reduce code size with [Tree-Shaking](https://en.wikipedia.org/wiki/Tree_shaking); by removing code that static analysis shows to be unreachable from the bundle's entry points. Outside web circles, this concept is more generally known as [Dead-code Elimination](https://en.wikipedia.org/wiki/Dead-code_elimination).
 
-Here is an example source code:
+Here is an example of source code:
 
 ```js
 // utils.js
@@ -669,22 +671,22 @@ console.log(add(0.1, 0.2));
 
 ### Using small libraries and third-party scripts
 
-Code size is a criterion that should be considered when choosing libraries and third party services.
+When choosing libraries and third-party services, code size should be one of the selection criteria.
 
-As a general rule, we should avoid using [kitchen sink libraries](https://www.quora.com/What-is-a-%E2%80%9Ckitchen-sink%E2%80%9D-in-the-context-of-programming) (Ie. Libraries integrating all sorts of features), and should pick libraries that cover the needs of our applications. For example: The adequate libraries to use will be different when rendering readonly tables and when rendering editable ones. In the first case, a small and simple library is enough where as in the later case, a larger and more feature-rich library may be needed.
+As a general rule, we should avoid using [kitchen sink libraries](https://www.quora.com/What-is-a-%E2%80%9Ckitchen-sink%E2%80%9D-in-the-context-of-programming) (i.e., libraries that integrate all sorts of features) and instead choose libraries that meet the specific needs of our applications. For example, the appropriate libraries will differ when rendering read-only tables versus editable ones. In the former case, a small and simple library may suffice, whereas in the latter case, a larger and more feature-rich library might be necessary.
 
-Many tools can be used to learn about JavaScript libraries sizes:
+Many tools can be used to determine the sizes of JavaScript libraries:
 
-- https://bundlephobia.com/ a website which shows the code size of npm package,
-- Bundle analyzers/visualizers such as [Webpack's](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup's](https://www.npmjs.com/package/rollup-plugin-visualizer),
-- [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extensions for VSCode which displays the code size of npm packages.
-- The network tab in the [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) that ship with web browsers give you the exact size of each script a webpage loads.
+- https://bundlephobia.com/ - a website that shows the code size of npm packages,
+- [Webpack Bundle analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup Bundle Visualizer](https://www.npmjs.com/package/rollup-plugin-visualizer),
+- [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extension for VSCode, which displays the code size of npm packages.
+- The network tab in the [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) that ship with web browsers, providing the exact size of each resource a webpage loads.
 
-In addition to library size, tree-shaking-ability should be considered too when choosing libraries.
+In addition to library size, the ability to tree-shake should also be considered when choosing libraries.
 
-For examples: [Checkout this page](https://github.com/you-dont-need/You-Dont-Need-Momentjs) comparing MomentJS, a utility library for handling date objects, with alternative libraries that are smaller and tree-shakable in the case of date-fns.
+For example, check out the [You-Dont-Need-Momentjs](https://github.com/you-dont-need/You-Dont-Need-Momentjs) page comparing Moment.js, a utility library for handling date objects, with alternative libraries that are smaller, and tree-shakable in the case of date-fns.
 
-It should be noted that tree-shaking has limits as libraries tend to have a set of core modules which cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules bringing with it a style engine and a bunch of other utilities. So instead of reaching for MUI to only use one of its component, it is better to look for a specialized library.
+It is important to note that tree-shaking has its limits, as libraries typically contain a set of core modules that cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules, which include a style engine and various other utilities. Therefore, instead of reaching for MUI to use just one of its components, it is better to look for a specialized library.
 
 ### Keeping code in the server
 
@@ -693,7 +695,7 @@ This can have the side effects of worsening user experience (UX) and developer e
 
 - For the client to execute the code that is offloaded to the server, it has to do a network request leading to extra latency compared to if it had the code locally. When the code has to do some work in the server anyway, it is possible to execute all server code without requiring extra network requests.
 - Developers have to split their code into server-side and client-side portions and have to create API routes and manage serialization of inputs and outputs.
-  - [HTMX]() and [HotWire]() sidestep the problem by communicating with HTML REPHRASE !!!!!!
+  - [HTMX](https://htmx.org/) and [Hotwire](https://hotwired.dev/) sidestep this problem by communicating with HTML NOOOOOOOO
   - [tRPC](https://trpc.io/) is a popular solution that solves the API routes and serialization parts of the problem.
   - More recently, JavaScript frameworks such as [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) offer a more complete solution, usually called server functions, where: Developers can mark modules or individual functions as server-side only, they can call server functions from client code just like they call any async function, and the framework transparently split code into server-side and client-side parts and transform the client-side code calling server-side code into API calls.
 
