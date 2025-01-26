@@ -418,9 +418,9 @@ As setting up a system that provides multiple sources for each image can be quit
 
 ### Subsetting web font files
 
-When using custom [web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts), font files can be split into separate files that define each the glyphs of a subset of the unicode characters (For example: Only latin characters, or only Arabic characters).
+Web pages can use text fonts installed on users' systems or load custom web font files. [Web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define the glyphs of subsets of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
 
-When a web font is defined by multiple subset files, the browser makes sure to download only the files containing glyphs that actually appear in the page. Checkout MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
+When a web font is defined by multiple subset files, the browser ensures it downloads only the files containing glyphs that actually appear on the page. Check out the MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and the section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
 
 ### HTTP responses compression
 
