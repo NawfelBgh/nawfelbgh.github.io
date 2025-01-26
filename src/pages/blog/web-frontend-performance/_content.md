@@ -302,12 +302,25 @@ Clients can ask intermediary caches to [disregard cached responses](https://deve
 - When the user presses the reload page button, the browser sends a conditional request with `Cache-Control: max-age=0` so that cached responses are not reused.
 - And when the user does a forced reload (typically using the keyboard command Ctrl+Shift+R), the browser sends non-conditional requests with `Cache-Control: no-cache`, telling caches to ignore their stored content and forward the request to the origin server.
 
+<figure id="figure-client-requested-cache-revalidation">
+    <img
+        alt="Client-requested cache revalidation"
+        src="/blog/web-frontend-performance/client-requested-cache-revalidation.svg"
+        width="1000"
+    />
+    <figcaption>
+        <p>
+            <a href="#figure-client-requested-cache-revalidation">Client-requested cache revalidation:</a> In this example, the client requests a page containing an image. It receives responses from a shared cache, which are also stored in the client's local cache. The user then presses Ctrl+Shift+R. Although the page is still fresh in the local cache, the client ignores its stored version and sends a request with <code>Cache-Control: no-cache</code> header to the server. Seeing this header, the shared cache ignores its stored version and forwards the request to the server. Once the client receives the page, it requests the image on the page, always using <code>Cache-Control: no-cache</code> header.
+        </p>
+    </figcaption>
+</figure>
+
 #### Cache busting
 
-[Cache busting](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#cache_busting) is a caching strategy commonly used to address the dilemma of having to choose between short or long cache freshness duration (`max-age`):
+[Cache busting](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#cache_busting) is a caching strategy commonly used to address the dilemma of having to choose between short and long cache freshness durations (`max-age`):
 
-- Short `max-age`s allow users to see updated content soon after it is published, at the expense of increased traffic reaching the origin server.
-- Long `max-age`s take advantage of caching benefits more, but make it makes it harder to deliver updated content to the users.
+- Short `max-age`s allow users to see updated content soon after it is published, at the expense of increased traffic reaching the server.
+- Long `max-age`s take more advantage of caching benefits, but make it harder to deliver updated content to the users.
 
 Cache busting works as follows:
 
@@ -316,7 +329,7 @@ Cache busting works as follows:
   - they are served with a very long `max-age`,
   - and when new versions of these files are published, they are published on new URLs (for example: `/path/to/file.css?version=1.1`).
 - As for webpages with user-visible URLs:
-  - are updated whenever their content changes and whenever some of their url-versioned sub-resources are updated,
+  - they are updated whenever their content changes and whenever some of their URL-versioned sub-resources are updated,
   - and they are given a short cache `max-age`, thanks to which, users get to see updated versions fast.
 
 <figure id="figure-cache-busting">
@@ -327,31 +340,47 @@ Cache busting works as follows:
     />
     <figcaption>
         <p>
-            <a href="#figure-cache-busting">Cache busting:</a> In this example, the client requests a page and gets a response that expires in 10 minutes. The page requests a script file <code>/navbar.js?version=1</code> and receives a response that it can reuse for a whole year. 
+            <a href="#figure-cache-busting">Cache busting:</a> In this example, the client requests a page and receives a response that expires in 10 minutes. The page requests a script file <code>/navbar.js?version=1</code> and receives a response that can be reused for a whole year.
         </p>
         <p>
-            The site editor publishes a new version of the page. The client requests the same page again, but since its cached version has expired, it reaches to the origin server and gets the new page. The page requests the same script file again, which is delivered from the cache (as remains fresh for a year).
+            The site editor publishes a new version of the page. The client requests the same page again, but since its cached version has expired, it reaches out to the server and gets the new page. The page requests the same script file again, which is delivered from the cache, as it remains fresh for a year.
         </p>
         <p>
-            The site editor publishes a newer version of the page. the client requests the page again and reaches to the origin server to get it. The page requests a new script file this time (<code>/navbar.js?version=2</code>), which is downloaded from the origin server and cached to be reused for up to one year...
+            The site editor publishes a newer version of the page. The client requests the page again and reaches out to the server to retrieve it. The page requests a new script file this time (<code>/navbar.js?version=2</code>), which is downloaded from the server and cached to be reused for up to one year.
         </p>
     </figcaption>
 </figure>
 
 Cache busting, as explained so far, can be further optimized:
 
-- Since sub-resources can link to other sub-resources, updating a sub-resource downstream requires not only republishing it with a new URL, but also republishing all sub-resources linking to it, recursively, invalidating many cached files. Import maps can be used to [solve this problem for javascript modules](https://spidermonkey.dev/blog/2023/02/23/javascript-import-maps-part-1-introduction.html) and Service Workers can [solve this problem more generally](https://banno.com/articles/improving-caching-with-import-maps/)
+- Since sub-resources can link to other sub-resources, updating a sub-resource downstream requires not only republishing it with a new URL, but also republishing all sub-resources that link to it, recursively, which can invalidate many cached files. Import maps can be used to [solve this problem for javascript modules](https://spidermonkey.dev/blog/2023/02/23/javascript-import-maps-part-1-introduction.html), and Service Workers can [solve this problem more generally](https://banno.com/articles/improving-caching-with-import-maps/)
 
-- Wikipedia, being one of the largest and most visited websites, want to cache their pages as long as possible and they cannot afford to update all their pages whenever a script or a style file is modified. So [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script which points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way pages can have long `max-age`s while still being able to load newly published sub-resources.
+- Wikipedia, being one of the largest and most visited websites, want to cache their pages for as long as possible and cannot afford to update all their pages whenever a script or a style file is modified. So, [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script that points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way, pages can have long `max-age`s while still being able to load newly published sub-resources.
 
 #### Caching static portions of webpages
 
-Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For instance, on a product page of an e-commerce site, the static elements would include the product details, while the dynamic elements would consist of the contents of the user's shopping basket and action forms, secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
+Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For example, on a product page of an e-commerce site, the static elements would include the product details, while the dynamic elements would consist of the contents of the user's shopping basket, along with action forms that are secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
 
-It is beneficial to leverage caching for the static elements while still being able to provide personalized dynamic content.
+We want to leverage caching for the static elements while still being able to provide personalized dynamic content. One approach to achieve this is to include only the static elements in the main HTML document, which can be cached on the client side and in intermediary caches. To retrieve the dynamic parts of the page, additional requests are made, which introduce some latency for these parts.
 
-One approach to achieving this is to include only the static elements in the main HTML document, which can be cached, while using additional requests to retrieve dynamic content. This method allows both client-side and intermediary caches to store the static elements. The downside is the potential latency introduced by these extra requests.
-The [Astro](https://astro.build/) web framework implements this concept effectively with [Server Islands](https://docs.astro.build/en/guides/server-islands/): it fetches and renders the dynamic parts of the page with a minimal amount of JavaScript and enables developers to use this feature through a simple API.
+For examples of how to do this, check out:
+
+- [Caching the Uncacheable: CSRF Security](https://www.fastly.com/blog/caching-uncacheable-csrf-security): This article from 2014 explains how to inject dynamic, user-specific CSRF tokens into cached HTML pages.
+- [HTMX](https://htmx.org/)'s [Lazy Loading](https://htmx.org/examples/lazy-load/) feature, which allows webpages to fetch page parts using separate HTTP requests.
+- [Astro](https://astro.build/)'s [Server Islands](https://docs.astro.build/en/guides/server-islands/) which are webpage parts loaded using separate HTTP requests.
+
+<figure id="figure-request-dynamic-page-parts">
+    <img
+        alt="Fetching dynamic page parts with a separate request"
+        src="/blog/web-frontend-performance/request-dynamic-page-parts.svg"
+        width="1000"
+    />
+    <figcaption>
+        <p>
+            <a href="#figure-request-dynamic-page-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
+        </p>
+    </figcaption>
+</figure>
 
 ### Service Workers
 
