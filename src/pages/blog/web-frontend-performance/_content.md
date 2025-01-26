@@ -388,32 +388,33 @@ Since 2018, all major browsers support the [Service Worker](https://developer.mo
 
 ### Caching in interactive WebApps
 
-In interactive and potentially long lived web applications, client-side JavaScript code loads data from the server and later decides when it is time to refetch data again, for example: after some time interval or after the user performs an action that writes into the server's database.
+In interactive [AJAX](<https://en.wikipedia.org/wiki/Ajax_(programming)>)-heavy web applications, client-side JavaScript code loads data from the server and later decides when to refetch the data again, for example, after a certain time interval or after the user performs an action that writes to the server's database.
 
-This data loading and reloading by client-side code can be seen as cache management where the data loaded in the client is regarded as a cached version of server data. Many developer in the JavaScript world reach for the [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) library which provides APIs for cache management in addition to DevTools and framework integration.
+This data loading and reloading by client-side code can be seen as cache management, where the data loaded on the client is regarded as a cached version of the server data. Many developers in the JavaScript community reach for the [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) library, which provides APIs for cache management, as well as DevTools and integrations with various web frameworks.
 
 ### Caching compiled code
 
-Browsers do not only cache server responses, they can also cache compiled JavaScript code in order to optimize the startup time of frequently used web applications. For more information on this, checkout the following articles by [Chromium](https://v8.dev/blog/code-caching) and [Firefox](https://blog.mozilla.org/javascript/2017/12/12/javascript-startup-bytecode-cache/) teams.
+Browsers do not only cache server responses; they can also cache compiled JavaScript code to optimize the startup time of frequently used web applications. For more information on this, check out the following articles by the [Chromium](https://v8.dev/blog/code-caching) and [Firefox](https://blog.mozilla.org/javascript/2017/12/12/javascript-startup-bytecode-cache/) teams.
 
 ---
 
 ## Reducing content size
 
-Now, we will look at ways to reduce the size of webpages and of their sub-resources, this helps reduce network traffic and the amount of data that the client has process.
+Now, we will look at techniques to reduce the size of webpages and their sub-resources. This helps reduce network traffic and the amount of data that the client has to process.
 
 ### Image optimization
 
-Image file sizes [can be reduced by](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia):
+Images make up [around 50%](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia) of the bandwidth of the average website , making them a good candidate for optimization. Image file sizes can be reduced by:
 
-- Resizing images to no more than the resolution at which they are ultimately rendered on users’ screens,
-- Using vector graphics (SVGs) when possible,
+- Resizing images to no more than the resolution at which they are ultimately rendered on users’ screens.
+- Using vector graphics ([SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)s) when possible.
 - Encoding images using [lossy compression](https://en.wikipedia.org/wiki/Lossy_compression) when it provides good enough quality (for example, by using the JPEG format instead of PNG).
+- Encoding images using modern, well-optimized file formats like [AVIF](https://en.wikipedia.org/wiki/AVIF) or [WEBP](https://en.wikipedia.org/wiki/WebP).
 
-The HTML `<img>`, `<picture>` and `<video>` elements allow webpages to [provide multiple sources for the same multimedia item](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) and to let the browser pick the version of the appropriate format and size.
-This allows us to cater to the needs of all users, by providing alternative versions of each image: Different resolutions for different screen sizes, and by providing images in both modern and more optimized file formats like AVIF and WEBP for new browsers and in older formats like JPEG and PNG for old browsers.
+The HTML `<img>`, `<picture>` and `<video>` elements allow webpages to [provide multiple sources for the same multimedia item](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) and let the browser pick the version of the appropriate format and size.
+This allows us to cater to the needs of all users, by providing alternative versions of each image: Different resolutions for different screen sizes, and images in both modern, well-optimized file formats for new browsers and in older formats for legacy browsers.
 
-As setting up such a system can be complex, many web frameworks and hosting services include tools to automate image optimization.
+As setting up a system that provides multiple sources for each image can be quite complex, many web frameworks and hosting services include image optimization tools to automate this task.
 
 ### Subsetting web font files
 
