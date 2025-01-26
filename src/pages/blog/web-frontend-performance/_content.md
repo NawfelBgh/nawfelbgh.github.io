@@ -21,11 +21,7 @@ Here are some key takeaways from the article:
 - Websites and apps can still function well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
 - Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
 
-This article is biased based on the things I learned through my professional use of JavaScript frameworks (mainly React) as well as my use of WordPress. I encourage you to explore other important web performance topics:
-
-- Measuring performance using DevTools and metrics like Core Web Vitals.
-- Improving user experience to enhance perceived speed.
-- And more generally, scalability and algorithmic and database optimization.
+Finally, this article is by no means a comprehensive guide to web performance. It is also inevitably biased by my experience using JavaScript frameworks (mainly React) and with WordPress.
 
 # Table of content
 
@@ -1080,3 +1076,9 @@ A further optimization is to prefetch next page's code when the user hovers over
 ---
 
 ## Conclusion
+
+I encourage you to explore other important web performance topics:
+
+- Measuring performance using DevTools and metrics like Core Web Vitals.
+- Improving user experience to enhance perceived speed.
+- And more generally, scalability and algorithmic and database optimization.

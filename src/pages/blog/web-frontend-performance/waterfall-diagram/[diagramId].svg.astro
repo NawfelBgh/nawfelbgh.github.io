@@ -9,8 +9,7 @@ export function getStaticPaths() {
 }
 
 const { diagramId } = Astro.params;
-const { modulePath, args } = getModule(diagramId);
-const module = await import(modulePath);
+const { module, args } = getModule(diagramId);
 
 const logs: Log[] = module.main(...args);
 

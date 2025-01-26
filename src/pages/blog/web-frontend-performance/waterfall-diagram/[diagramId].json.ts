@@ -8,8 +8,7 @@ export function getStaticPaths() {
 export const GET: APIRoute = async ({ params, request }) => {
   const { diagramId } = params;
 
-  const { modulePath, args } = getModule(diagramId!);
-  const module = await import(modulePath);
+  const { module, args } = getModule(diagramId!);
 
   return new Response(JSON.stringify(module.main(...args)), {
     headers: {

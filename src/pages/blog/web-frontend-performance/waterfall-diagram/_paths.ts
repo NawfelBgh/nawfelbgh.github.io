@@ -1,3 +1,12 @@
+import type { Log } from "./_common.ts";
+import * as clientSideNavigation from "./_clientSideNavigation.ts";
+import * as fontLoading from "./_fontLoading.ts";
+import * as layoutThrashing from "./_layoutThrashing.ts";
+import * as loadClientRenderedPage from "./_loadClientRenderedPage.ts";
+import * as loadServerRenderedPage from "./_loadServerRenderedPage.ts";
+import * as multiSectionsPage from "./_multiSectionsPage.ts";
+import * as webWorker from "./_webWorker.ts";
+
 export const STATIC_PATHS = [
   { params: { diagramId: "streaming-html" } },
   { params: { diagramId: "not-streaming-html" } },
@@ -18,8 +27,8 @@ export const STATIC_PATHS = [
 ];
 
 export function getModule(diagramId: string): {
-  modulePath: string;
-  args: unknown[];
+  module: { main: (...args: boolean[]) => Log[] };
+  args: boolean[];
 } {
   if (
     [
@@ -29,7 +38,7 @@ export function getModule(diagramId: string): {
     ].includes(diagramId)
   ) {
     return {
-      modulePath: "./_load-server-rendered-page.ts",
+      module: loadServerRenderedPage,
       args: [
         diagramId === "split-render-blocking-resources",
         diagramId !== "not-streaming-html",
@@ -38,7 +47,7 @@ export function getModule(diagramId: string): {
   }
   if (["spa-preload", "spa-no-preload"].includes(diagramId)) {
     return {
-      modulePath: "./_load-client-rendered-page.ts",
+      module: loadClientRenderedPage,
       args: [diagramId === "spa-preload"],
     };
   }
@@ -50,7 +59,7 @@ export function getModule(diagramId: string): {
     ].includes(diagramId)
   ) {
     return {
-      modulePath: "./_client-side-navigation.ts",
+      module: clientSideNavigation,
       args: [
         diagramId !== "client-side-navigation-no-preload",
         diagramId === "client-side-navigation-preload-code-data",
@@ -59,7 +68,7 @@ export function getModule(diagramId: string): {
   }
   if (["font-preload", "font-no-preload"].includes(diagramId)) {
     return {
-      modulePath: "./_font-loading.ts",
+      module: fontLoading,
       args: [diagramId === "font-preload"],
     };
   }
@@ -71,21 +80,21 @@ export function getModule(diagramId: string): {
     ].includes(diagramId)
   ) {
     return {
-      modulePath: "./_multi-sections-page.ts",
+      module: multiSectionsPage,
       args: [diagramId === "multi-sections-page-streaming"],
     };
   }
 
   if (["layout-thrashing", "no-layout-thrashing"].includes(diagramId)) {
     return {
-      modulePath: "./_layout-thrashing.ts",
+      module: layoutThrashing,
       args: [diagramId === "layout-thrashing"],
     };
   }
 
   if (["web-worker", "no-web-worker"].includes(diagramId)) {
     return {
-      modulePath: "./_web-worker.ts",
+      module: webWorker,
       args: [diagramId === "web-worker"],
     };
   }
