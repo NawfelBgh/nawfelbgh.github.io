@@ -72,3 +72,12 @@ h6 {
     color: rgb(var(--heading-color));
     line-height: 1.75rem;
 }
+
+p, ul, ol {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+:is(ul, ol) :is(ul, ol) {
+    margin-bottom: 0;
+}
