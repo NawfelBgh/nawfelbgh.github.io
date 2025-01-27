@@ -369,6 +369,7 @@ For examples of how to do this, check out:
 - Features from different frameworks allowing webpages to fetch page parts using separate HTTP requests:
   - [Hotwire Turbo](https://turbo.hotwired.dev/)'s [Frames](https://turbo.hotwired.dev/handbook/introduction#turbo-frames%3A-decompose-complex-pages).
   - [HTMX](https://htmx.org/)'s [Lazy Loading](https://htmx.org/examples/lazy-load/) feature.
+  - [Unpoly](https://unpoly.com/)'s [deferred fragments](https://unpoly.com/lazy-loading).
   - [Astro](https://astro.build/)'s [Server Islands](https://docs.astro.build/en/guides/server-islands/).
 
 <figure id="figure-request-dynamic-page-parts">
@@ -671,35 +672,42 @@ console.log(add(0.1, 0.2));
 
 ### Using small libraries and third-party scripts
 
-When choosing libraries and third-party services, code size should be one of the selection criteria.
+When choosing libraries and third-party services, **code size** should be one of the selection criteria.
 
 As a general rule, we should avoid using [kitchen sink libraries](https://www.quora.com/What-is-a-%E2%80%9Ckitchen-sink%E2%80%9D-in-the-context-of-programming) (i.e., libraries that integrate all sorts of features) and instead choose libraries that meet the specific needs of our applications. For example, the appropriate libraries will differ when rendering read-only tables versus editable ones. In the former case, a small and simple library may suffice, whereas in the latter case, a larger and more feature-rich library might be necessary.
 
 Many tools can be used to determine the sizes of JavaScript libraries:
 
-- https://bundlephobia.com/ - a website that shows the code size of npm packages,
-- [Webpack Bundle analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup Bundle Visualizer](https://www.npmjs.com/package/rollup-plugin-visualizer),
-- [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extension for VSCode, which displays the code size of npm packages.
-- The network tab in the [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) that ship with web browsers, providing the exact size of each resource a webpage loads.
+- [Webpack Bundle analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup Bundle Visualizer](https://www.npmjs.com/package/rollup-plugin-visualizer) provide an exact breakdown of the contribution of each JavaScript module and package to your application bundle.
+- The [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extension for VSCode displays the code size of npm packages based on your imports.
+- The [bundlejs](https://bundlejs.com/) website lets you partially import code from many JavaScript packages and measures the bundle size for you.
+- The [bundlephobia](https://bundlephobia.com/) website shows code size of npm packages.
+- The network tab in the [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) that come with web browsers provides the exact size of each resource a webpage loads.
 
-In addition to library size, the ability to tree-shake should also be considered when choosing libraries.
+In addition to library size, the ability to **tree-shake** should also be considered when choosing libraries.
 
 For example, check out the [You-Dont-Need-Momentjs](https://github.com/you-dont-need/You-Dont-Need-Momentjs) page comparing Moment.js, a utility library for handling date objects, with alternative libraries that are smaller, and tree-shakable in the case of date-fns.
 
 It is important to note that tree-shaking has its limits, as libraries typically contain a set of core modules that cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules, which include a style engine and various other utilities. Therefore, instead of reaching for MUI to use just one of its components, it is better to look for a specialized library.
 
+TODO FIGURE LIBRARIES REACT + MOMENT + MUI (Button, Modal, Select, Input) + DATE_PICKER + GTM + Recaptcha vs LIGHTWEIGHT ALTERNATIVES
+
 ### Keeping code in the server
 
-Another way to reduce the amount of code sent to the client it by executing some of it in the server, and never sending it to the client.
-This can have the side effects of worsening user experience (UX) and developer experience (DX):
+Another way to reduce the amount of code sent to the client is to keep as much of the code as possible on the server, execute it there, and never send it to the client. However, this can have side effects that may worsen user experience (UX) and developer experience (DX):
 
-- For the client to execute the code that is offloaded to the server, it has to do a network request leading to extra latency compared to if it had the code locally. When the code has to do some work in the server anyway, it is possible to execute all server code without requiring extra network requests.
-- Developers have to split their code into server-side and client-side portions and have to create API routes and manage serialization of inputs and outputs.
-  - [HTMX](https://htmx.org/) and [Hotwire](https://hotwired.dev/) sidestep this problem by communicating with HTML NOOOOOOOO
-  - [tRPC](https://trpc.io/) is a popular solution that solves the API routes and serialization parts of the problem.
-  - More recently, JavaScript frameworks such as [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) offer a more complete solution, usually called server functions, where: Developers can mark modules or individual functions as server-side only, they can call server functions from client code just like they call any async function, and the framework transparently split code into server-side and client-side parts and transform the client-side code calling server-side code into API calls.
+- Clients now have to make network requests to execute the code that is offloaded to the server, leading to extra latency compared to executing that code locally.
+  - This is not an issue when some of the work involves reaching out to the server anyway. In such cases, no extra network requests may be required.
+- Developers must split the server-side and client-side portions of their code. They need to create API routes and call them from client code while managing the serialization of inputs and outputs.
+  - This is not a problem when the code offloaded to the server is executed during page loading, as the server can run the code without the need for API routes. We will explore this in more depth in the following section on [server-side rendering](#server-side-rendering).
 
-#### Server side rendering
+Some frameworks offer solutions to improve the DX aspect of the problem:
+
+- [tRPC](https://trpc.io/) provides a simple API that allows developers to create both the server and client sides of API routes. The resulting code is well-typed and quite readable.
+- More recently, [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only. They can then call server functions from client code just like any normal client-side async function, and the framework transparently splits the code into server-side and client-side parts, transforming the client-side code to call the server-side code via API calls.
+- [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/) sidestep this DX problem by keeping almost all the code on the server, receiving only HTML from the server, and extending HTML with annotations that allow for the loading of HTML fragments into the page without the need to write any client-side JavaScript code.
+
+#### Server-side rendering
 
 In web frameworks parlance, rendering usually refers to the transformation of data from some structured format (like JSON) into HTML that is displayed to the user.
 The term can be confusing because of its many other uses such as [in computer graphics](<https://en.wikipedia.org/wiki/Rendering_(computer_graphics)>) and in [Browser rendering engines](https://en.wikipedia.org/wiki/Browser_engine).
