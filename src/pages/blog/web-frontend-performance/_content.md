@@ -822,30 +822,29 @@ Finally, layout and reflow take longer as CSS rules become more complex and as t
 
 ### Client-side navigation
 
-When a user clicks on a link, the default behavior of the browser is to do a normal navigation:
+In web applications that load a lot of JavaScript code, re-executing the app's code on every page navigation can waste too many CPU cycles. Client-side navigation, in contrast to traditional browser navigation, can help address this issue.
+
+Let's first examine how browsers handle navigation by default. When a user clicks on a link:
 
 - The browser fetches the new page and its resources from the server and renders it on the screen.
-- The browser creates a new JavaScript execution context where the new page scripts are executed.
-  - the browser can freeze the execution context of the previous page, to resume it later if the user clicks the back button without having to reload the page anew. This is known as the [Back/Forward Cache (bfcache)](https://developer.mozilla.org/en-US/docs/Glossary/bfcache).
-- The browser also updates its UI to reflect the URL change and to allow the user to navigate back to the previous page.
+- The browser creates a new JavaScript execution context in which the scripts for the new page are executed.
+  - The browser can freeze the execution context of the previous page, allowing it to be resumed later if the user clicks the back button, without having to reload the page. This is known as the [Back/Forward Cache (bfcache)](https://developer.mozilla.org/en-US/docs/Glossary/bfcache) and it is good practice to avoid APIs that disable it.
+- The browser also updates its UI to reflect the URL change and to enable the user to navigate back to the previous page.
 
-When relying on default browser navigation, it is a good practice to avoid APIs that disable the bfcache.
+An alternative way to handle navigation is through client-side navigation (also referred to as soft navigation or client-side routing):
 
-An alternative way to doing navigation is to do client-side navigation (also called soft navigation or client-side routing):
-
-- The application installs event handlers that cancel the default browser behavior when links are clicked.
-  - The current JavaScript execution context is preserved and live objects such as video/audio elements and WebSocket/WebRTC/EventSource connections are not interrupted.
-- The application fetches the new page data and renders it to the DOM.
+- The application installs event handlers that cancel the browser's default behavior when links are clicked.
+  - The current JavaScript execution context is preserved, and live objects such as video/audio elements and WebSocket/WebRTC/EventSource connections are not interrupted.
+- The application fetches the new page data and renders it into the DOM.
 - The application uses the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to:
   - Instruct the browser to update the URL in the address bar and the state of the back and forward buttons.
   - Install event handlers to intercept and handle clicks on the back and forward buttons.
 
-Client-side navigation is a requirement in applications that want to support URL based navigation while preserving the state of the page. For example, in an audio streaming website where the audio has to continue playing while the user navigates between pages.
+It’s important to recognize that client-side navigation is not a silver bullet. Implementing it requires the application to load additional code to simulate browser behavior and manage routing on the client side, rather than relying on the server side as in traditional navigation. This can lead to increased client side code size and added complexity, which may be excessive for many websites and applications.
 
-Client-side navigation can also be used an optimization in [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs) which rely on JavaScript to fetch pages' data and which tend to be JavaScript-heavy. In such apps:
+However, client-side navigation is essential for applications that need to support URL-based navigation while maintaining the state of the page. For instance, in an audio streaming website, users expect the audio to continue playing seamlessly as they navigate between different pages.
 
-- Client-side navigation allows loading next page's data without having to wait first for page scripts to be loaded and executed again,
-- and it spares the browser from re-executing a lot of JavaScript code on every navigation.
+Moreover, client-side navigation is often a performance requirement in JavaScript-heavy [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs).
 
 <figure id="figure-classic-navigation">
     <img
@@ -855,7 +854,7 @@ Client-side navigation can also be used an optimization in [single-page applicat
         height="700"
     />
     <figcaption>
-        <a href="#figure-classic-navigation">Default browser navigation:</a> In this example, the browser creates a new JavaScript context when navigating between page A and page B. Page A's context is suspended and stored in the bfcache. When the user clicks on the back button, this context is resumed and page B's context is suspended and cached. Notice that the shared resources of page A et page B are loaded twice.
+        <a href="#figure-classic-navigation">Default browser navigation:</a> In this example, the browser creates a new JavaScript context when navigating between Page A and Page B. Page A's context is suspended and stored in the bfcache. When the user clicks the back button, this context is resumed, and Page B's context is suspended and cached. Note that the shared resources of Page A and Page B are loaded twice.
     </figcaption>
 </figure>
 
@@ -867,7 +866,7 @@ Client-side navigation can also be used an optimization in [single-page applicat
         height="600"
  />
     <figcaption>
-        <a href="#figure-soft-navigation">Client-side navigation:</a> In this example, a SPA handles navigation. Do to so, it loads a client side router script, which increases code size. Notice that the shared resources of page A et page B are only loaded once.
+        <a href="#figure-soft-navigation">Client-side navigation:</a> In this example, a SPA handles navigation. To do so, it loads a client-side router script, which increases code size. Note that the shared resources of Page A and Page B are only loaded once.
     </figcaption>
 </figure>
 
