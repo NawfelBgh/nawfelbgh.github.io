@@ -694,37 +694,36 @@ TODO FIGURE LIBRARIES REACT + MOMENT + MUI (Button, Modal, Select, Input) + DATE
 
 ### Keeping code in the server
 
-Another way to reduce the amount of code sent to the client is to keep as much of the code as possible on the server, execute it there, and never send it to the client. However, this can have side effects that may worsen user experience (UX) and developer experience (DX):
+Another way to reduce the amount of code sent to the client is to keep as much of it as possible on the server, execute it there, and never send it to the client.
 
-- Clients now have to make network requests to execute the code that is offloaded to the server, leading to extra latency compared to executing that code locally.
-  - This is not an issue when some of the work involves reaching out to the server anyway. In such cases, no extra network requests may be required.
-- Developers must split the server-side and client-side portions of their code. They need to create API routes and call them from client code while managing the serialization of inputs and outputs.
-  - This is not a problem when the code offloaded to the server is executed during page loading, as the server can run the code without the need for API routes. We will explore this in more depth in the following section on [server-side rendering](#server-side-rendering).
+Offloading code to the server can sometimes worsen user experience due to the extra requests that have to go to the server, which add network latency. This is not a problem when the offloaded code's work involves reaching out to the server anyway, as no additional network requests may be required.
 
-Some frameworks offer solutions to improve the DX aspect of the problem:
+Offloading code to the server can also negatively impact developer experience (DX), as it can require tedious tasks such as creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
 
-- [tRPC](https://trpc.io/) provides a simple API that allows developers to create both the server and client sides of API routes. The resulting code is well-typed and quite readable.
-- More recently, [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only. They can then call these server functions from client code just like any regular asynchronous function. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
-- [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/) sidestep this DX problem by keeping almost all the code on the server, receiving only HTML from the server, and extending HTML with annotations that allow for the loading of HTML fragments into the page without the need to write any client-side JavaScript code.
+- If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side rendering](#server-side-rendering).
+- If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/) where developers can load these fragments without writing client-side JavaScript.
+
+TODO ADD 2 FIGURES showcasing sending code or keeping it in the server
+
+Some frameworks improve the DX of making API requests:
+
+- [tRPC](https://trpc.io/) offers a simple API for creating both server and client sides of API routes, resulting in well-typed and readable code.
+- [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
 
 #### Server-side rendering
 
-In web frameworks parlance, rendering usually refers to the transformation of data from some structured format (like JSON) into HTML that is displayed to the user.
-The term can be confusing because of its many other uses such as [in computer graphics](<https://en.wikipedia.org/wiki/Rendering_(computer_graphics)>) and in [Browser rendering engines](https://en.wikipedia.org/wiki/Browser_engine).
+In this section, alse generally in web frameworks circules, the word *rendering* refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
-Rendering can be done in the client or in the server.
-Client-side rendering (CSR) requires the client to load rendering code.
-But with server-side rendering (SSR), in its pure form as we will see shortly, no rendering code has to be shipped to the client reducing client-side code size. SSR also leads to better initial page-load times as we will explore later in [section blah](#).
+Rendering can be done on the client or the server. Client-side rendering (CSR) requires the client to load rendering code. In contrast, with server-side rendering (SSR), in its pure form as we will see shortly, no rendering code has to be shipped to the client, thus reducing client-side code size. SSR also leads to better initial page-load times, which we will explore later in [section blah](#).
 
-In traditional SSR approaches, a form of a template language is used in the server for rendering HTML in a declarative style, and some less declarative JavaScript code is written to make the server generated HTML interactive.
+In traditional SSR approaches, a form of template language is used on the server to render HTML in a declarative style, while some less declarative JavaScript code is written to make the server-generated HTML interactive.
 
-Most modern JavaScript frameworks do both SSR and CSR. They offer developers a better experience compared to traditional SSR approaches as they allow them to write a single code base in a declarative style that works both on the server and the client.
-Doing SSR, these frameworks reduce initial page-load times. But they increase network usage compared to both pure SSR approaches and pure CSR approaches:
+In contrast, many modern JavaScript frameworks are hybrids that do both SSR and CSR. These frameworks offer developers a better experience compared to traditional SSR approaches as they allow them to write a single codebase in a declarative style that works on both the server and the client. While these frameworks reduce initial page-load times through SSR, they also increase network usage compared to both pure SSR and pure CSR approaches:
 
 - Since they also do CSR, the client has to download rendering code.
-- Framework code size is increased (compared to a pure CSR version) in order to support [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>): The process by which components that were rendered on the server are made interactive on the client.
+- The framework's code size is increased (compared to a pure CSR version) in order to support [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>): The process by which components rendered on the server are made interactive on the client.
 - These frameworks also face what [Ryan Carniato](https://x.com/RyanCarniato) (the creator of SolidJS) calls [the double data problem](https://dev.to/this-is-learning/why-efficient-hydration-in-javascript-frameworks-is-so-challenging-1ca3): The server has to send data in two formats to the client. Once in HTML format to optimize page-load time, and a second time in JSON format serving as input and state initialization for client-side code.
-- Finally, HTML templates that are reused many times in the same page are sent multiple times in HTML, and another time in CSR code. Where as with pure CSR, they are only sent once.
+- Finally, HTML templates that are reused multiple times on the same page are sent repeatedly in HTML, in addition to being sent again in CSR code. In contrast, with pure CSR, they are sent only once.
 
 <figure id="figure-pure-ssr-vs-hydration-vs-pure-csr">
     <img alt="Pure SSR vs Hydration vs Pure CSR" href="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" />
@@ -735,7 +734,7 @@ Doing SSR, these frameworks reduce initial page-load times. But they increase ne
 
 ##### Partial hydration
 
-To help reduce code size, some frameworks let developers control which parts of the application are rendered exclusively in the server (which translates to code that is never sent to the client) and which parts can render both in the server and the client. This is called Partial or selective rehydration.
+To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (meaning that this code is never sent to the client) and which parts can be rendered on both the server and the client. The code for the components that are rendered only on the server does not need to be sent to the client, which reduces client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
 
 Right now, the most popular frameworks supporting partial hydration are [Astro](https://astro.build/) via [Islands](https://docs.astro.build/en/concepts/islands/), and [NextJS](https://nextjs.org/) via [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
 
@@ -746,7 +745,7 @@ Right now, the most popular frameworks supporting partial hydration are [Astro](
     </figcaption>
 </figure>
 
-Note that partial hydration shines in larger applications. In a small application like the demo Movies App, the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partial hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [NextJS](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and NextJS, and to the fact that the app itself isn't big enough for code size savings from partial hydration to outweigh the overhead of larger frameworks.
+Note that partial hydration excels in larger applications. In a small application like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [NextJS](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
 
 <figure id="figure-movies-app">
     <table>
@@ -769,14 +768,14 @@ Note that partial hydration shines in larger applications. In a small applicatio
                 <td>Partial</td>
             </tr>
             <tr>
-                <td>NextJS</td>
+                <td>Next.js</td>
                 <td>100kB</td>
                 <td>Partial</td>
             </tr>
         </tbody>
     </table>
     <figcaption>
-        <a href="#figure-movies-app">Movies App Demos Sizes:</a> Comparison of multiple implementations of the Movies App demo
+        <a href="#figure-movies-app">Comparison of the client-side code of multiple implementations of the Movies App demo:</a> . We can see that although the SolidJS version fully hydrates the page, it still loads less JavaScript code than the Astro+Alpine and the Next.js versions.
     </figcaption>
 </figure>
 
@@ -784,17 +783,16 @@ Note that partial hydration shines in larger applications. In a small applicatio
 
 ## Reducing CPU work in the client
 
-In order to show the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model), it has calculate the positions and the sizes of the elements of the page (a process commonly referred to as Layout), and finally it has to paint the result on the screen.
-The browser has to redo some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating layout is also referred to as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
+In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page — a process commonly referred to as layout — and finally paint the result on the screen.
+The browser has to repeat some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating page layout is known as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
-To avoid overwhelming users' devices with CPU work, the DOM should be small, CSS rules should be simple, and JavaScript code should run as little as possible and should avoid inducing unnecessary layouts and paints.
+To avoid overwhelming users' devices with CPU work, the DOM should be kept small, CSS rules should be simple, and JavaScript code should run as infrequently as possible and should avoid inducing unnecessary layouts and paints.
 
-Browser DevTools can be used to determine where webpages spend their time: Executing JavaScript code, calculating layout, doing garbage collection, ...etc.
+Browser DevTools can be used to determine where web pages spend their time: executing JavaScript code, calculating layout, doing garbage collection, etc.
 
-If JavaScript execution is the performance bottleneck, profiling should help pin-point the source of the problem. The solution form will differ widely depending on your data, code and libraries. But ultimately it boils down to [algorithmic optimization](https://en.wikipedia.org/wiki/Algorithmic_efficiency).
+If JavaScript execution is the performance bottleneck, profiling can help pinpoint the source of the problem. The solution will vary widely depending on your data, code, and libraries. But ultimately, it boils down to [algorithmic optimization](https://en.wikipedia.org/wiki/Algorithmic_efficiency).
 
-If time is spent doing layout, the problem may be that your code is triggering unnecessary layout recalculation - a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing) (Showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)): When JavaScript code writes to the DOM the browser has to recalculate layout but it doesn't do it immediately. It waits to catch many DOM updates and then recalculate layout once and repaints the page in its new state.
-But when JavaScript code reads certain properties from the DOM, it forces the browser to calculate layout immediately. Therefore, reading and writing to the DOM in a loop can cause more layout recalculations than necessary.
+If the performance problem comes from the browser repeatedly recalculating the layout, the cause may be inefficient JavaScript code that triggers unnecessary layout recalculations — a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). This is showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)). When JavaScript code writes to the DOM, the browser has to recalculate the layout, but it doesn't do this immediately. It waits to catch multiple DOM updates and then recalculates the layout once, repainting the page in its new state. However, when JavaScript code reads certain properties from the DOM, it forces the browser to calculate the layout immediately. Therefore, reading and writing to the DOM in a loop can result in more layout recalculations than necessary.
 
 <figure id="layout-thrashing">
     <img
@@ -802,7 +800,7 @@ But when JavaScript code reads certain properties from the DOM, it forces the br
         src="/blog/web-frontend-performance/waterfall-diagram/layout-thrashing.svg"
     />
     <figcaption>
-       <a href="#layout-thrashing">Layout thrashing:</a> In this example, the click event handler writes to the DOM and then reads the state of the DOM repeatedly in a loop. Each DOM-write invalidates the current layout calculations, and each subsequent DOM-read requires the browser to recalculate layout to read the correct current state of the DOM. The result is that it takes the browser 1.2 seconds to process the click event handler. During this time the browser is not responsive to user events.
+       <a href="#layout-thrashing">Layout thrashing:</a> In this example, the click event handler writes to the DOM and then reads the state of the DOM repeatedly in a loop. Each DOM-write invalidates the current layout calculations, so each subsequent DOM-read requires the browser to recalculate layout to read the correct current state of the DOM. The result is that it takes the browser 1.2 seconds to process the click event handler, leaving it unresponsive to user events during this time.
     </figcaption>
 </figure>
 
@@ -812,13 +810,16 @@ But when JavaScript code reads certain properties from the DOM, it forces the br
         src="/blog/web-frontend-performance/waterfall-diagram/no-layout-thrashing.svg"
     />
     <figcaption>
-       <a href="#no-layout-thrashing">No Layout thrashing:</a> In this example, The click event handler does all the DOM reads it needs first. Then, it does all the DOM writes, invalidating the current layout calculations. When the event handler is done executing. The browser recalculates layout once to show the final state to the user. the whole thing takes 200 milliseconds to finish.
+       <a href="#no-layout-thrashing">No Layout thrashing:</a> In this example, the click event handler performs all the necessary DOM reads first. Then, it does all the DOM writes, invalidating the current layout calculations. Once the event handler has finished executing, the browser recalculates the layout once to render the final state to the user. The entire process takes 200 milliseconds to complete. Contrast it with the 1.2 seconds from the previous example.
     </figcaption>
 </figure>
 
-If the DOM is updated too frequently forcing the browser to recalculate layout again and again, it may help to batch DOM update operations or to apply techniques such as [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) or [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle). If the page includes animations, care should be taken to animate CSS properties that do not invalidate layout.
+If no layout thrashing is happening but the DOM is still updated too frequently forcing the browser to recalculate layout again and again, it may help to apply techniques such as [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) or [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle) which are commonly used to avoid spamming the browser with work when the user is actively filling input which trigger actions on the page.
 
-If it takes the browser a long time to do layout, it can be that CSS rules are very complex and/or that the DOM is very big. To address CSS rules complexity, I refer you to [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). As for the size of the DOM, it can be reduced by using techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution which became available recently (september 2024) in all major browsers is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which allow developers to mark DOM sections that can be rendered independently from each other, allowing the browser to skip painting and calculating layout for sub-trees of the DOM when they are offscreen.
+Performance issues related to layout can come from inefficient CSS, for example when using CSS animations or transitions on CSS properties that trigger reflow. Check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
+
+Finally, layout and reflow take longer time to do the more CSS rules are complex and the more the DOM is big.
+To address CSS rules complexity, I refer you to [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). As for the size of the DOM, it can be reduced by using techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution which became widely available recently (september 2024) is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which allow developers to mark DOM sections that can be rendered independently from each other, allowing the browser to skip painting and calculating layout for sub-trees of the DOM when they are offscreen.
 
 ### Client-side navigation
 
