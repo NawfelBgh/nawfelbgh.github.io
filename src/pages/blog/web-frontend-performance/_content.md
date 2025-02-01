@@ -948,7 +948,9 @@ Even though these frameworks can compete in the JavaScript framework scene, I wo
 - These frameworks focus on providing high level APIs to developers to allow them to write declarative code. This is great for developer experience, but is unlikely to lead to writing optimally performant code.
 - These frameworks still generate JavaScript code because Wasm code cannot interact directly with the DOM. And there can be overhead in the communication between JavaScript and Wasm.
 
-So although Wasm can replace JavaScript to a certain degree, I don't think that it should be seen as a replacement for it. It should rather be used when it shines the most: To process data very fast using very optimized code, and to make available to JavaScript code C, C++ or Rust libraries that are very well optimized.
+So although Wasm can replace JavaScript in the client to a certain degree, I don't think that it should be seen as a replacement for it. It should rather be used when it shines the most: To do processing that can benefit form data-oriented design optimizations, and to make available to JavaScript code very well optimized C, C++ and Rust libraries.
+
+Wasm being a way to securely run near native speed code, it also found uses in the server side and outside the web. Many programming languages [support running Wasm code](https://webassembly.org/getting-started/developers-guide/). 
 
 ---
 
