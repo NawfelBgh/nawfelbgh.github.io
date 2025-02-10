@@ -712,7 +712,7 @@ Some frameworks improve the DX of making API requests:
 
 #### Server-side rendering
 
-In this section, alse generally in web frameworks circules, the word *rendering* refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
+In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
 Rendering can be done on the client or the server. Client-side rendering (CSR) requires the client to load rendering code. In contrast, with server-side rendering (SSR), in its pure form as we will see shortly, no rendering code has to be shipped to the client, thus reducing client-side code size. SSR also leads to better initial page-load times, which we will explore later in [section blah](#).
 
@@ -872,38 +872,73 @@ Moreover, client-side navigation is often a performance requirement in JavaScrip
 
 ### Using WebAssembly
 
-Yet another solution for reducing work on the CPU is to use a faster programming language. On the web, only two client side programming languages are supported: JavaScript and WebAssembly.
+Yet another solution for reducing work on the CPU is to use a faster programming language. On the web, only two client side programming languages are supported: JavaScript and [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) (abbreviated as Wasm for short).
 
-[WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) (abbreviated as Wasm for short) is a low lever language with features that are great for performance:
+Here is how these languages interact: JavaScript code can load and instantiate Wasm modules, provide them with the functions they require as dependencies and call the functions they export. While JavaScript can access Web APIs directly, Wasm code can only access them by calling back to JavaScript. For more information about how all of this work, I also highly recommend [Lin Clark](https://www.code-cartoons.com/)'s fun-to-read article series: [A cartoon intro to WebAssembly Articles](https://hacks.mozilla.org/category/code-cartoons/a-cartoon-intro-to-webassembly/).
 
-- It gives developers control over the layout of objects in memory.
-- It doesn't have an automatic garbage collector.
-- It is designed to be loaded and compiled fast.
+Wasm is designed with performance in mind. But using it instead of JavaScript can hurt performance due to overhead as I will explain shortly.
+So when should we use Wasm if we want the best performance?
 
-I will try to detail these points in the following sections. I also highly recommend [Lin Clark](https://www.code-cartoons.com/)'s fun-to-read article series on Wasm: [A cartoon intro to WebAssembly Articles](https://hacks.mozilla.org/category/code-cartoons/a-cartoon-intro-to-webassembly/).
+For the impatient, given the current iteration of Wasm, My summary is that:
 
-#### Optimizing data layout in memory
+- Most websites will derive the best performance from using JavaScript and maybe dropping to Wasm to do localized CPU intensive work if needed.
+- Large and highly interactive web applications that can afford slower load time can run fast on either well optimized JavaScript or well optimized code compiled to Wasm
+- In compute intensive tasks, well optimized code compiled to Wasm can beat JavaScript code that is optimized until unreadable.
 
-Optimal code process data by using the CPU and the RAM effectively. To do that data should be layed out in memory in a way such that processing it can use the CPU caches hierarchy and features such as CPU prefetching effectively. For more on this check out [Data-oriented design](https://en.wikipedia.org/wiki/Data-oriented_design).
+Now, for the patient, let's derive the strengths and weaknesses of both languages by looking at a few axis differentiating them :
 
-JavaScript being a high level language provide developers with a simplistic object model where almost every variable or object field is a reference to data somewhere else in memory and developers have no control whatever on where that is. In contrast, WebAssembly code is usually generated from code in programming languages that give developers control over objects memory layout such as C, C++ and Rust. In these languages, developer have control wether an object is represented inline in the program's stack and inside other objects, or if it should be reached through a reference.
-The ability to express both inline objects and references makes these languages' type system more complex compared to high lever languages such as JavaScript.
-That is the price for precise control over performance.
-Keep in mind that even in such languages, programmers can get lazy and use a simplified object model and therefore increasing complexity for programmers for no performance benefit. Maybe even for a loss.
+- Dynamic vs Static Typing
+- Runtime services available to the code
+- Human-readable vs Binary code
+- Design goals
 
-Note that JavaScript does also give programmers control over the memory layout of objects if they really really wanted. That is, by writing JavaScript code that only reads and writes numbers in a typed array. That is in fact how C++ code was compiled to very fast [asm.js](https://en.wikipedia.org/wiki/Asm.js), a subset of JavaScript code doing exactly that. Many 3D game engines, Unreal engine [for instance](https://blog.mozilla.org/futurereleases/2013/05/02/epic-citadel-demo-shows-the-power-of-the-web-as-a-platform-for-gaming/), where compiled to JavaScript back in the days and run at incredible speeds. Technique from asm.js are still used today by [polywasm](https://github.com/evanw/polywasm) to polyfill WebAssembly using JavaScript code when browsers don't support it or disable it.
+#### Dynamic vs Static Typing
 
-After the initial MVP implementation of Wasm which was basically a binary format for asm.js, [new features](https://webassembly.org/features/) were to added to Wasm giving it more capabilities like bulk memory operations and even SIMD support.
+JavaScript is a dynamically typed programming language where as Wasm is a statically typed one.
 
-<figure id="figure-memory-layout-high-level-lang">
+JavaScript code operates on objects whose types are only known at runtime:
+
+- This means that JavaScript engines have to generate code that has to check for object types before operating on them.
+- JavaScript engines have been heavily optimized though. They analyze [hot code paths](<https://en.wikipedia.org/wiki/Hot_spot_(computer_programming)>) (that is, frequently-run code sections) at runtime to detect which shapes of objects they operate on, and generate optimized code for those shapes. For more on this, check out [inline caching](https://en.wikipedia.org/wiki/Inline_caching) and [JIT compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation).
+
+Wasm on the other hand is a statically typed language. This means that programs can control the memory layout of objects, allowing them to read from and write to easily calculable memory addresses, without having to go through lookup tables or having to check for object types all the time. Wasm being a low level language gives programmers the option to write code that uses the CPU caches hierarchy and the CPU memory-prefetching capabilities effectively. For more on this check out [Data-oriented design](https://en.wikipedia.org/wiki/Data-oriented_design). Let's have an overview of what Wasm code can do:
+
+- Wasm code can operate on numeric values and can load them and store them into a linear memory (an array of numbers) as of its initial MVP release [available widely since 2017](https://caniuse.com/wasm). This was sufficient to port many programs written in C, C++ and Rust to run on the browser.
+
+- Thanks to Reference Types extension, [available widely since 2022](https://caniuse.com/wasm-reference-types), Wasm code can receive opaque references from JavaScript code, pass them around as function arguments and results and store them in dedicated tables (because opaque references cannot be stored in linear memory for portability and security reasons).
+
+- Thanks to the Typed Function References extension, [available widely as of september 2024 (or december 2023 if you don't count Safari)](https://webassembly.org/features/), Wasm code can operate on typed function references, pass them around, store them in dedicated tables and call them without incurring overhead from having to check their type at runtime.
+
+- thanks to the Garbage collection extension, [available widely as of december 2024 (or december 2023 if you don't count Safari)](https://webassembly.org/features/), Wasm code can allocate statically typed garbage collected objects. It can pass them around and store them in typed tables.
+  - Note that pre-existing code in low level languages such as C, C++ and Rust, cannot be compiled to use Wasm's GC-references as these live outside the linear memory that low level languages are compiled to use in Wasm.
+  - Note also that currently, only an [MVP of Garbage Collection](https://github.com/WebAssembly/gc/blob/main/proposals/gc/MVP.md) is implemented in Wasm. [Post-MVP](https://github.com/WebAssembly/gc/blob/main/proposals/gc/Post-MVP.md) features are being designed to lift many limitations of the current design, to allow among other things the nesting of typed data structures (structs and arrays) without requiring pointer indirection and operating on references pointing inside such nested structures.
+    - dotnet runtime https://github.com/dotnet/runtime/issues/94420
+    - golang https://github.com/golang/go/issues/63904
+
+Note that JavaScript programmers can also control the memory layout of certain objects if they really really wanted. That is, by writing hard-to-read JavaScript code that only reads and writes numbers from and into a typed array. That is in fact how C++ code was compiled back in 2013 to very fast [asm.js](https://en.wikipedia.org/wiki/Asm.js), a subset of JavaScript code doing exactly that. Many 3D game engines, Unreal engine [for instance](https://blog.mozilla.org/futurereleases/2013/05/02/epic-citadel-demo-shows-the-power-of-the-web-as-a-platform-for-gaming/), where compiled to JavaScript and run at incredible speeds. Technique from asm.js are still used today by [polywasm](https://github.com/evanw/polywasm) to polyfill Wasm using JavaScript code when browsers don't support it or disable it.
+
+<figure id="figure-memory-layout-js">
     <img
-        alt="Memory layout in a high level language"
+        alt="Memory layout in JavaScript"
         src="/blog/web-frontend-performance/memory-layout-high-level-lang.svg"
         width="600"
         height="600"
  />
     <figcaption>
-        <a href="#figure-soft-navigation">Memory layout in a high level language:</a> In this example, I show the memory layout of an object that can be typed in typescript as <code>Map&lt;[number, number], { id: number, name: string, tags: strings[] }&gt;</code>. Note all the indirections needed at each level to represent this data structure. This is not unique to JavaScript. Other high level languages like Java suffer from the same problem.
+        <p>
+            <a href="#figure-soft-navigation">Memory layout in JavaScript:</a> In this example, I show the memory layout of an object that can be typed in typescript as <code>Map&lt;[number, number], { id: number, name: string, tags: strings[] }&gt;</code>.
+            I assume that the map keys are deduplicated by <a href="https://en.wikipedia.org/wiki/String_interning">interning</a> to make this example comparable to the two below.
+        </p>
+        <pre>
+const map = new Map();
+map.set(keysStore.get(1, 2), { id: 1, name: "name 1", tags: ["tag 1.1", "tag 1.2", ...] });
+map.set(keysStore.get(3, 4), { id: 2, name: "name 2", tags: ["tag 2.1", "tag 2.2", ...] });
+// ...</pre>
+        <p>
+        Note all the indirections needed at each level to represent this data structure. This problem is common in managed languages.
+        Note also how the JavaScript engine has create and manage extra shape objects that map object string properties to indices in memory.
+        Note also the extra properties pointers added in each object to support any code that would extend our objects with more properties.
+        </p>
     </figcaption>
 </figure>
 
@@ -915,17 +950,50 @@ After the initial MVP implementation of Wasm which was basically a binary format
         height="600"
  />
     <figcaption>
-        <a href="#figure-soft-navigation">Memory layout in a low level language:</a> In this example, I show the memory layout of an object that can be typed in Rust as <code>HashMap&lt;(i32, i32), Object&gt;</code> where <code>Object</code> is <code>struct { id: u32, name: String, tags: Vec&lt;String&gt; }</code>. Notice how little indirection there is compared to the previous example.
+        <p>
+        <a href="#figure-soft-navigation">Memory layout in a low level language compiled to Wasm:</a> In this example, I show the memory layout of an object that can be typed in Rust as <code>HashMap&lt;(i32, i32), Box&lt;Object&gt;&gt;</code> where <code>Object</code> is <code>struct { id: u32, name: String, tags: Vec&lt;String&gt; }</code>.
+        </p>
+        <p>
+        Compared to the previous example, there is little indirection since many child objects are stored inline inside their parents. Also, no runtime information about the shape of objects is needed.
+        </p>
+        <p>
+        The catch, which will revisit in the following section, is that unlike the JavaScript example which uses a native hash table implementation provided by the browser, the Wasm hash table code must be bundled with the application code.
+        </p>
     </figcaption>
 </figure>
 
-#### No automatic garbage collection
+<figure id="figure-memory-layout-wasm-gc-mvp">
+    <img
+        alt="Memory layout in Wasm GC MVP"
+        src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
+        width="600"
+        height="600"
+ />
+    <figcaption>
+        <p>
+        <a href="#figure-soft-navigation">Memory layout in Wasm GC MVP:</a> In this example, I show the memory layout of the same object from the previous examples but using Wasm GC to represent objects with static types.
+        </p>
+        <p>
+        Unlike the JavaScript example, this example uses a custom implementation for the hash map, which is less optimized than the native version and which does require loading more code.
+        This example also uses less indirection compared the JS example in a few places: the key tuple is represented by a struct containing its values inline, and the tags array is assumed to be of a fixed size cutting one level of indirection.
+        Another difference is that thanks to static typing, objects take less space and shape objects, commonly called Runtime Types (or RTTs) in Wasm, contain less data compared to the JS equivalent, as they are only needed to validate subtypes-casting.
+        </p>
+    </figcaption>
+</figure>
 
-WebAssembly doesn't offer automatic garbage collection. Although, it [recently](https://webassembly.org/features/) got the capability to hold garbage collected JavaScript object references. Developers have control about when and where new objects are allocated in memory and when they are freed, which is more control over performance and increased complexity.
+#### Runtime services available to the code
+
+Blah blah GC, Stdlib
+
+##### No automatic garbage collection
+
+WebAssembly doesn't offer automatic garbage collection. Developers have control about when and where new objects are allocated in memory and when they are freed, which is more control over performance and increased complexity. In Wasm we can write code that allocates and frees memory less often than garbage collected code.
+
+Although, it [recently](https://webassembly.org/features/) got the capability to hold garbage collected JavaScript object references, Wasm only supports holding garbage collected references in top level variables. Objects in Wasm heap cannot hold references to garbage collected JavaScript objects. This is good enough to interact with JavaScript code, but not enough to support compiling garbage collected code to efficient Wasm. Elaborate!!!
 
 During the execution of JavaScript code, and especially when it allocates a lot of memory, the browser can decide to pause the program to collect unused memory which can lead to delayed renders or unresponsiveness to user events. In contrast, Wasm code doesn't trigger browser's built in garbage collection. The developers has to manage the memory themselves though. When done correctly, this can lead to very low latency code. When done incorrectly it can be slower than browser garbage collection which is quite optimized. For example, check out SpiderMonkey's (Firefox's JavaScript engine) garbage collector [documentation page](https://firefox-source-docs.mozilla.org/js/gc.html) showcasing the features it implements.
 
-#### Fast loading and compilation
+#### Human-readable vs Binary code
 
 When Wasm's binary format [was designed](https://github.com/WebAssembly/design/blob/main/Rationale.md#why-a-binary-encoding), many criteria where taken into account:
 
@@ -936,8 +1004,16 @@ When Wasm's binary format [was designed](https://github.com/WebAssembly/design/b
 
 Nowadays, browsers can even [parallelize](https://www.infoq.com/news/2018/01/firefox-58-web-assembly-gets-10x/) wasm code compilation.
 
-#### Using WebAssembly vs JavaScript
+#### Design goals
 
+Probably delete this
+
+https://webassembly.org/docs/use-cases/
+https://webassembly.org/docs/high-level-goals/
+
+#### WebAssembly Web frameworks
+
+WasAssembly can be used in the parts of web applications that require it, and to run programs written in other programming languages in th
 Today, web frameworks like [Leptos](https://www.leptos.dev/) and [Sycamore](https://sycamore.dev/) let you write your client-side in Rust and compile it to WebAssembly. These framework implement high level features like components, fine-grained reactivity, SSR and hydration, making them technically a valid replacement for many of the modern JavaScript frameworks.
 
 Performance-wise, Leptos and Sycamore are also among the best scoring frameworks in rendering speed according to the [JS framework benchmarks](https://krausest.github.io/js-framework-benchmark/current.html). Code-size-wise, I don't have proper benchmark at hands, but judging by the file size of the `.wasm` files loaded from these frameworks' websites, it looks like they are comparable to JavaScript frameworks or a little bigger.
@@ -950,7 +1026,7 @@ Even though these frameworks can compete in the JavaScript framework scene, I wo
 
 So although Wasm can replace JavaScript in the client to a certain degree, I don't think that it should be seen as a replacement for it. It should rather be used when it shines the most: To do processing that can benefit form data-oriented design optimizations, and to make available to JavaScript code very well optimized C, C++ and Rust libraries.
 
-Wasm being a way to securely run near native speed code, it also found uses in the server side and outside the web. Many programming languages [support running Wasm code](https://webassembly.org/getting-started/developers-guide/). 
+Wasm being a way to securely run near native speed code, it also found uses in the server side and outside the web. Many programming languages [support running Wasm code](https://webassembly.org/getting-started/developers-guide/).
 
 ---
 
@@ -958,6 +1034,7 @@ Wasm being a way to securely run near native speed code, it also found uses in t
 
 - Using faster languages and frameworks
 - Using better algorithms
+- calling the server less: bundling, caching
 - Offloading code to the client
 
 ---
