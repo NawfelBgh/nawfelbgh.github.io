@@ -917,6 +917,84 @@ Wasm on the other hand is a statically typed language. This means that programs 
 
 Note that JavaScript programmers can also control the memory layout of certain objects if they really really wanted. That is, by writing hard-to-read JavaScript code that only reads and writes numbers from and into a typed array. That is in fact how C++ code was compiled back in 2013 to very fast [asm.js](https://en.wikipedia.org/wiki/Asm.js), a subset of JavaScript code doing exactly that. Many 3D game engines, Unreal engine [for instance](https://blog.mozilla.org/futurereleases/2013/05/02/epic-citadel-demo-shows-the-power-of-the-web-as-a-platform-for-gaming/), where compiled to JavaScript and run at incredible speeds. Technique from asm.js are still used today by [polywasm](https://github.com/evanw/polywasm) to polyfill Wasm using JavaScript code when browsers don't support it or disable it.
 
+Figures [Memory layout in JavaScript](#figure-memory-layout-js), [Memory layout in a low level language](#figure-memory-layout-low-level-lang) and [Memory layout in Wasm GC MVP](#figure-memory-layout-wasm-gc-mvp) show the memory layout of the objects needed to represent the same object in JavaScript, in Rust compiled to Wasm and in Java compiled to Wasm.
+
+The JavaScript code for constructing our object is:
+
+```ts
+type Key = [number, number];
+type StableKey = string;
+type Value = { id: number; name: string; tags: strings[] };
+function makeStableKey(...key: Key): StableKey {
+  return key[0] + "/" + key[1];
+}
+// Our map object of interest
+const map = new Map<StableKey, Value>();
+map.set(makeStableKey(1, 2), {
+  id: 1,
+  name: "name 1",
+  tags: ["tag 1.1", "tag 1.2" /*, ...*/],
+});
+map.set(makeStableKey(3, 4), {
+  id: 2,
+  name: "name 2",
+  tags: ["tag 2.1", "tag 2.2" /*, ...*/],
+});
+// ...
+```
+
+The Rust code for creating the equivalent object is :
+
+```rust
+#[derive(Hash, Eq)]
+struct Key {
+  x: i32,
+  y: i32,
+}
+struct Value {
+    id: u32,
+    name: String,
+    tags: Vec<String>,
+}
+type Map = HashMap<Key, Box<MapValue>>;
+// Our map object of interest
+let mut map = Map::new();
+map.insert(Key(1, 2), Box::new(MapValue {
+  id: 1,
+  name: String::from("name 1"),
+  tags: vec![String::from("tag 1.1"), String::from("tag 1.2") /*, ...*/],
+}));
+map.insert(Key(3, 4), Box::new(MapValue {
+  id: 2,
+  name: String::from("name 2"),
+  tags: vec![String::from("tag 2.1"), String::from("tag 2.2") /*, ...*/],
+}));
+```
+
+The Java equivalent code is:
+
+```java
+record Key (int x, int y) {}
+class Value {
+  Value(int id, String name, ArrayList<String> tags) { /* ... */ }
+  int id;
+  String name;
+  ArrayList<String> tags;
+}
+// Our map object of interest
+HashMap<Key, Value> map = new HashMap<>();
+map.put(new Key(1, 2), new Value(
+  1,
+  "name1",
+  new ArrayList<>(Arrays.asList("tag 1.1", "tag 1.2" /*, ...*/))
+));
+map.put(new Key(3, 4), new Value(
+  2,
+  "name2",
+  new ArrayList<>(Arrays.asList("tag 2.1", "tag 2.2" /*, ...*/))
+));
+```
+
 <figure id="figure-memory-layout-js">
     <img
         alt="Memory layout in JavaScript"
@@ -926,18 +1004,15 @@ Note that JavaScript programmers can also control the memory layout of certain o
  />
     <figcaption>
         <p>
-            <a href="#figure-soft-navigation">Memory layout in JavaScript:</a> In this example, I show the memory layout of an object that can be typed in typescript as <code>Map&lt;[number, number], { id: number, name: string, tags: strings[] }&gt;</code>.
-            I assume that the map keys are deduplicated by <a href="https://en.wikipedia.org/wiki/String_interning">interning</a> to make this example comparable to the two below.
+            <a href="#figure-memory-layout-js">Memory layout in JavaScript:</a> In this example, I show the memory layout of the map object from the previous TypeScript snippet.
         </p>
-        <pre>
-const map = new Map();
-map.set(keysStore.get(1, 2), { id: 1, name: "name 1", tags: ["tag 1.1", "tag 1.2", ...] });
-map.set(keysStore.get(3, 4), { id: 2, name: "name 2", tags: ["tag 2.1", "tag 2.2", ...] });
-// ...</pre>
+        <p>Key object are transformed to strings because JavaScript Maps hash the key object reference instead of its value.</p>
         <p>
-        Note all the indirections needed at each level to represent this data structure. This problem is common in managed languages.
-        Note also how the JavaScript engine has create and manage extra shape objects that map object string properties to indices in memory.
-        Note also the extra properties pointers added in each object to support any code that would extend our objects with more properties.
+        Note all the indirections needed at each level to represent this data structure. This problem is common in hight level languages.
+        </p>
+        <p>Note also how the JavaScript engine has create and manage extra shape objects that map object string properties to indices in memory. In fact when a peace of code reads a property from an object, it has to access the object shape descriptor in order to look up the index of that property inside the object. To achieve better performance, JavaScript engines try to do <a href="https://en.wikipedia.org/wiki/Inline_caching">some caching</a> in order to avoid having to look up property storage location in subsequent reads and writes.
+        </p>
+        <p>Finally, note the extra properties pointers added in each object to support any code that would extend our objects with more properties.
         </p>
     </figcaption>
 </figure>
@@ -951,13 +1026,16 @@ map.set(keysStore.get(3, 4), { id: 2, name: "name 2", tags: ["tag 2.1", "tag 2.2
  />
     <figcaption>
         <p>
-        <a href="#figure-soft-navigation">Memory layout in a low level language compiled to Wasm:</a> In this example, I show the memory layout of an object that can be typed in Rust as <code>HashMap&lt;(i32, i32), Box&lt;Object&gt;&gt;</code> where <code>Object</code> is <code>struct { id: u32, name: String, tags: Vec&lt;String&gt; }</code>.
+        <a href="#figure-memory-layout-low-level-lang">Memory layout in a low level language compiled to Wasm:</a> In this example, I show the memory layout of the object from the previous Rust example.
         </p>
         <p>
-        Compared to the previous example, there is little indirection since many child objects are stored inline inside their parents. Also, no runtime information about the shape of objects is needed.
+        There is little indirection compared to the previous example. Many child objects are stored inline inside their parents: They key values are directly stored inside the hash table, and the tags tables metadata are stored inline inside the MapValue object.
+        </p>
+        </p>
+        There is also no runtime information to store about the shape of objects.
         </p>
         <p>
-        The catch, which will revisit in the following section, is that unlike the JavaScript example which uses a native hash table implementation provided by the browser, the Wasm hash table code must be bundled with the application code.
+        There is a catch though, and we will revisit it in the following section. Unlike the JavaScript example which uses a native hash table implementation provided by the browser, the Wasm hash table code must be bundled with the application code.
         </p>
     </figcaption>
 </figure>
@@ -971,12 +1049,14 @@ map.set(keysStore.get(3, 4), { id: 2, name: "name 2", tags: ["tag 2.1", "tag 2.2
  />
     <figcaption>
         <p>
-        <a href="#figure-soft-navigation">Memory layout in Wasm GC MVP:</a> In this example, I show the memory layout of the same object from the previous examples but using Wasm GC to represent objects with static types.
+        <a href="#figure-memory-layout-wasm-gc-mvp">Memory layout in Wasm GC MVP:</a> In this example, I show the memory layout of the object constructed by the Java example compiled to Wasm GC.
         </p>
         <p>
-        Unlike the JavaScript example, this example uses a custom implementation for the hash map, which is less optimized than the native version and which does require loading more code.
-        This example also uses less indirection compared the JS example in a few places: the key tuple is represented by a struct containing its values inline, and the tags array is assumed to be of a fixed size cutting one level of indirection.
-        Another difference is that thanks to static typing, objects take less space and shape objects, commonly called Runtime Types (or RTTs) in Wasm, contain less data compared to the JS equivalent, as they are only needed to validate subtypes-casting.
+        Indirection-wise, this example resembles more the JavaScript version than the Rust compiled to Wasm version. It is to be noted though that since Wasm code is statically typed, reads and writes to object fields can be done by performing a single memory access at a static offset from the object memory address.
+        This example uses extra layers of indirection compared to the JS example in a few places: the hash table implemented in Wasm GC is likely to be less compact in memory compared to the native JS Map. And the tags array has an extra level of indirection to support resizing as Wasm arrays are not resizable. This indirection could be removed if either future versions of Wasm make arrays resizable or by supporting nesting structs and arrays.
+        </p>
+        <p>
+        On the positive side and thanks to static typing, objects allocated by Wasm code take less space than JavaScript objects. There is no space wasted to account for dynamically added properties. And shape objects (commonly called Runtime Types or RTTs) contain less data compared to the JS equivalent, as they are only needed to validate subtypes-casting.
         </p>
     </figcaption>
 </figure>
