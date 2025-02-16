@@ -1075,31 +1075,27 @@ In the figure [blah](#), I show the representation of the object from the follow
 
 ```javascript
 class ParentClass {
-  property0 = 0;
+  property0 = 123;
   method0() {
     return this.property0;
   }
 }
 
 class ChildClass extends ParentClass {
-  property1 = 1;
+  property1 = 456;
   method1() {
     return this.property0 + 1;
   }
 }
 
-const object = new ChildClass();
-console.log(object.hasOwnProperty("property1")); // true
-console.log(object.hasOwnProperty("property0")); // true
-console.log(object.hasOwnProperty("method1")); // false
-console.log(object.hasOwnProperty("method0")); // false
+const myObject = new ChildClass();
 
 function callMethod0(object) {
   object.method0();
 }
 
-function addExtraProperty(object) {
-  object.extra = 2;
+function addNewProperty(object) {
+  object.newProperty = 2;
 }
 ```
 
@@ -1112,19 +1108,39 @@ function addExtraProperty(object) {
  />
     <figcaption>
         <p>
-        <a href="#figure-accessing-js-object-properties">Accessing JS objects' properties:</a> In this example, blah
+        <a href="#figure-accessing-js-object-properties">Accessing JS objects' properties:</a> This example shows the JS objects and the Shape objects needed to represent <code>myObject</code> from the previous code example.
         </p>
         <p>
-        Note how the JavaScript engine has create and manage extra shape objects that map object string properties to indices in memory. In fact when a peace of code reads a property from an object, it has to access the object shape descriptor in order to look up the index of that property inside the object. To achieve better performance, JavaScript engines try to do <a href="https://en.wikipedia.org/wiki/Inline_caching">some caching</a> in order to avoid having to look up property storage location in subsequent reads and writes.
+        Steps 1 to 8 represent the memory accesses needed for the function <code>callMethod0</code> to get the address of <code>method0</code>. Steps A to D represent the memory accesses needed for <code>method0</code> to read <code>property0</code> from the object.
+        </p>
+        <p>
+        All the extra properties fields are set to null in this example. But they are needed in case functions like <code>addNewProperty</code> are called with one of our objects.
         </p>
     </figcaption>
 </figure>
 
-JavaScript engines are heavily optimized though. They analyze [hot code paths](<https://en.wikipedia.org/wiki/Hot_spot_(computer_programming)>) (that is, frequently-run code sections) at runtime to detect which shapes of objects they operate on, and they generate optimized code for those shapes. For more on this, check out [inline caching](https://en.wikipedia.org/wiki/Inline_caching) and [JIT compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation).
+JavaScript engines are heavily optimized though. They analyze [hot code paths](<https://en.wikipedia.org/wiki/Hot_spot_(computer_programming)>) (that is, frequently-run code sections) at runtime to detect which shapes of objects they operate on, and they generate optimized code for those shapes. For more on this, check out [inline caching](https://en.wikipedia.org/wiki/Inline_caching) and [JIT compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation). Code specialized for an object shape doesn't have to lookup object property names in the shape dictionary on each access. Instead, it directly accesses the object property by its offset inside the object.
 
-Unlike JavaScript, **Wasm** is a statically typed language. Unlike JS where loading a property from an object may require a hash table lookup, Wasm code can guaranty object property access to only require a single read from or a single write to an easily calculable memory addresses.
+Unlike JavaScript, **Wasm** gives programmers the tools to represent constructs from statically typed language. Unlike JS where loading a property from an object may require a hash table lookup, Wasm code can guaranty object property access to only require a single memory access at a relative offset from the object address.
 
-Though, since Wasm code is statically typed, reads and writes to object fields can be done by performing a single memory access at a static offset from the object memory address.
+<figure id="figure-accessing-statically-typed-object-properties">
+    <img
+        alt="Accessing a statically typed objects' properties"
+        src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
+        width="600"
+        height="600"
+ />
+    <figcaption>
+        <p>
+        <a href="#figure-accessing-statically-typed-object-properties">Accessing a statically typed objects' properties:</a> This example shows the objects needed to represent <code>myObject</code> from the previous code example in a statically typed language.
+        </p>
+        <p>
+        Steps 1 to 3 represent the memory accesses needed for the function <code>callMethod0</code> to get the address of <code>method0</code>. Steps A and B represent the memory accesses needed for <code>method0</code> to read <code>property0</code> from the object.
+        </p>
+        <p>
+        No extra properties fields need to be reserved inside our objects just in case and functions like <code>addNewProperty</code> are simply invalid.
+    </figcaption>
+</figure>
 
 #### Human-readable vs Binary code
 
