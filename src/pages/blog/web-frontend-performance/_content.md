@@ -81,74 +81,41 @@ Finally, this article is by no means a comprehensive guide to web performance. I
 
 Let's begin with a simple overview of the key components that make up the web:
 
-Users access the web using web browsers, also referred to as web clients, which are installed on their devices. These devices are connected to the Internet, a global network of computers linked by relay devices. Besides user devices, there are server machines that also connect to the Internet.
+The [Internet](https://en.wikipedia.org/wiki/Internet) is a global network of computers linked by relay devices. These computers include users' devices and server machines.
 
-The term "server" can refer to the physical hardware, but it also describes the server software (referred to simply as "servers" in this article) that runs on these machines.
+The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web), or simply the Web, is an information system that uses the Internet infrastructure.
 
-Clients can request [Web resources](https://en.wikipedia.org/wiki/Web_resource) (referred to simply as "resources" in this article) from servers. These resources are essentially files that can be identified by [URLs](https://en.wikipedia.org/wiki/URL) (Uniform Resource Locators).
+Organizations and businesses can have presence on the web by making [websites](https://en.wikipedia.org/wiki/Website), hosted by [web servers](https://en.wikipedia.org/wiki/Web_server) (Software and hardware components serving [web content](https://en.wikipedia.org/wiki/Web_content) to the users).
 
-Servers have various roles, including database servers, backend servers (which implement business logic), and frontend servers (sometimes called Back for Front or BFF servers) that respond to requests from web clients. In this article, we will explore how to optimize frontend servers, along with client code and network usage.
+To access websites, users use [web browsers](https://en.wikipedia.org/wiki/Web_browser), also referred to as web [clients](https://en.wikipedia.org/wiki/Client_(computing)), installed on their devices: Web clients request [Web resources](https://en.wikipedia.org/wiki/Web_resource) (referred to simply as "resources" in this article) from servers, and process server responses. These resources are essentially files that can be identified by [URLs](https://en.wikipedia.org/wiki/URL) (Uniform Resource Locators).
 
-<figure id="figure-client-server-model">
-    <img />
-    <figcaption>
-        <a href="#figure-client-server-model">The Web's client-server model:</a> blah blah user client frontend server backend server network resources requests responses
-    </figcaption>
-</figure>
+In this article, we will explore how to improve web frontends performance by optimizing client code (that is, code running in clients devices), frontend servers code (code running in the server and generating web content) and by reducing network usage between clients and servers.
 
-<figure id="figure-web-infra">
+## The Web as a physical system
+
+The web is a gigantic distributed system of hardware components that require physical resources throughout their entire lifecycle:
+
+- Building the hardware requires mining and manufacturing, both of which take away space from nature, consume energy and generate pollution.
+- Hardware consumes energy during its usage.
+- Finally, disposing of retired hardware has an impact on the environment.
+
+If we only take into account carbon emissions, which are a proxy for energy consumption, the Internet is currently estimated to account for around 4% of global carbon emissions. This is comparable to the entire aviation industry (See: [Introduction to web sustainability](https://developer.mozilla.org/en-US/blog/introduction-to-web-sustainability/)).
+
+<figure id="figure-physical-web">
     <img
         alt="Web infrastructure"
-        src="/blog/web-frontend-performance/web-infra.svg"
+        src="/blog/web-frontend-performance/physical-web.svg"
         width="1000"
     />
     <figcaption>
-       <a href="#figure-web-infra">The physical infrastructure of the Web:</a> This figure shows components of the infrastructure of the Web: Servers, users' devices, network relay devices. It shows also that the web is embedded in a natural system. Space is taken from those natural systems to make the physical resources necessary for running the Web. This is represented here by mines, factories and solar panels.
+       <a href="#figure-physical-web">The physical infrastructure of the Web:</a> This figure shows components of the infrastructure of the Web: Servers, users' devices, network relay devices. It shows also that the web is embedded in a natural system. Space is taken from those natural systems to make the physical resources necessary for running the Web. This is represented here by mines, factories and solar panels.
        The network connections have different capacities (or bandwidth). User devices also are not equally powerful. In this figure, a rich user (the user with the hat) has a stronger device and is connected to the Internet through a higher capacity link, compared to the other two users.
     </figcaption>
 </figure>
 
-## Improving performance by using more powerful hardware
-
-One way to make web frontends faster is by using more powerful hardware:
-
-- Upgrading users' devices,
-- Building faster networks,
-- Using more powerful server machines, and
-- Using more server machines.
-
-The first two options usually require users to pay, as they cannot change the web applications themselves. Users may upgrade their devices or internet plans, or they may look for faster alternative web applications.
-
-The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimizations are not feasible—perhaps because the software is already optimized for the existing hardware, or due to a lack of time or manpower for software optimization.
-
-Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human activities and have an environmental impact.
-
-<figure id="figure-web-infra-bigger">
-    <img
-        alt="Bigger Web Infrastructure"
-        src="/blog/web-frontend-performance/web-infra-bigger.svg"
-        width="1000"
-    />
-    <figcaption>
-       <a href="#figure-web-infra-bigger">Bigger Web Infrastructure:</a> This figure shows a similar infrastructure to the one in <a>the previous figure</a>: Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. And the network connections are of bigger capacity. The rich user device is also more powerful. The other users devices and connection is the same. I note also that to grow the web infrastructure, more space is taken from the natural systems. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
-    </figcaption>
-</figure>
-
-## The environmental footprint of the Web
-
-The web is a vast distributed system of hardware components that require physical resources throughout their entire lifecycle:
-
-- Building the hardware requires mining and manufacturing, both of which consume energy and generate pollution.
-- Using the hardware also requires energy.
-- Finally, disposing of retired hardware has an impact on the environment.
-
-If we only take into account carbon emissions, which is a proxy for energy consumption, the Internet is currently estimated to account for around 4% of global carbon emissions. This is comparable to the entire aviation industry (See: [Introduction to web sustainability](https://developer.mozilla.org/en-US/blog/introduction-to-web-sustainability/)).
-
-It’s also worth noting that, worldwide, around 60% of electricity is generated by burning fossil fuels ([Electricity Mix](https://ourworldindata.org/electricity-mix)), and that certain processes in the mining, metals refinement, and the manufacturing industry currently require burning fossil fuels. For example, for generating high heat and for transportation.
-
 ### Frontends contribution to the web's environmental footprint
 
-Due to the sheer number of user devices, studies (such as [Estimating Digital Emissions](https://sustainablewebdesign.org/estimating-digital-emissions/) and [Environmental footprint of the digital world](https://www.greenit.fr/environmental-footprint-of-the-digital-world/)) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers.
+Studies [Estimating Digital Emissions](https://sustainablewebdesign.org/estimating-digital-emissions/) and [Environmental footprint of the digital world](https://www.greenit.fr/environmental-footprint-of-the-digital-world/) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers. This can be explained by the sheer number of user devices, and the size of the network infrastructure. 
 
 This means that frontend developers have both the power and the responsibility to reduce the environmental impact of the web.
 
@@ -174,6 +141,32 @@ This means that frontend developers have both the power and the responsibility t
         https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4424264
         file:///Users/nawfelbengherbia/Downloads/ssrn-4424264.pdf
         page 12 fig 3
+    </figcaption>
+</figure>
+
+## Improving performance by using more powerful hardware
+
+One way to make web frontends faster is by using more powerful hardware:
+
+- Upgrading users' devices,
+- Building faster networks,
+- Using more powerful server machines, and
+- Using more server machines.
+
+The first two options usually require users to pay, as they cannot change the web applications themselves. Users may upgrade their devices or internet plans, or they may look for faster alternative web applications.
+
+The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimizations are not feasible—perhaps because the software is already optimized for the existing hardware, or due to a lack of time or manpower for software optimization.
+
+Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human activities and have an environmental impact.
+
+<figure id="figure-physical-web-bigger">
+    <img
+        alt="Bigger Web Infrastructure"
+        src="/blog/web-frontend-performance/physical-web-bigger.svg"
+        width="1000"
+    />
+    <figcaption>
+       <a href="#figure-physical-web-bigger">Bigger Web Infrastructure:</a> This figure shows a similar infrastructure to the one in <a>the previous figure</a>: Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. And the network connections are of bigger capacity. The rich user device is also more powerful. The other users devices and connection is the same. I note also that to grow the web infrastructure, more space is taken from the natural systems. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
     </figcaption>
 </figure>
 
