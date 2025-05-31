@@ -87,7 +87,7 @@ The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web), or simply th
 
 Organizations and businesses can have presence on the web by making [websites](https://en.wikipedia.org/wiki/Website), hosted by [web servers](https://en.wikipedia.org/wiki/Web_server) (Software and hardware components serving [web content](https://en.wikipedia.org/wiki/Web_content) to the users).
 
-To access websites, users use [web browsers](https://en.wikipedia.org/wiki/Web_browser), also referred to as web [clients](https://en.wikipedia.org/wiki/Client_(computing)), installed on their devices: Web clients request [Web resources](https://en.wikipedia.org/wiki/Web_resource) (referred to simply as "resources" in this article) from servers, and process server responses. These resources are essentially files that can be identified by [URLs](https://en.wikipedia.org/wiki/URL) (Uniform Resource Locators).
+To access websites, users use [web browsers](https://en.wikipedia.org/wiki/Web_browser), also referred to as web [clients](<https://en.wikipedia.org/wiki/Client_(computing)>), installed on their devices: Web clients request [Web resources](https://en.wikipedia.org/wiki/Web_resource) (referred to simply as "resources" in this article) from servers, and process server responses. These resources are essentially files that can be identified by [URLs](https://en.wikipedia.org/wiki/URL) (Uniform Resource Locators).
 
 In this article, we will explore how to improve web frontends performance by optimizing client code (that is, code running in clients devices), frontend servers code (code running in the server and generating web content) and by reducing network usage between clients and servers.
 
@@ -108,39 +108,37 @@ If we only take into account carbon emissions, which are a proxy for energy cons
         width="1000"
     />
     <figcaption>
-       <a href="#figure-physical-web">The physical infrastructure of the Web:</a> This figure shows components of the infrastructure of the Web: Servers, users' devices, network relay devices. It shows also that the web is embedded in a natural system. Space is taken from those natural systems to make the physical resources necessary for running the Web. This is represented here by mines, factories and solar panels.
-       The network connections have different capacities (or bandwidth). User devices also are not equally powerful. In this figure, a rich user (the user with the hat) has a stronger device and is connected to the Internet through a higher capacity link, compared to the other two users.
+       <p><a href="#figure-physical-web">The Web as a system with Physical components:</a> This figure shows components of the infrastructure of the Web: Servers, users' devices and network relay devices. It shows also that the web is embedded in a natural system. Space and resources are taken from nature to build and run the infrastructure of the Web. This is represented here by a mine, a factory and solar panels.</p>
+       <p>
+       This figure also highlights that not everybody has access to the same level of service in the web: A rich user has a more powerful machine and is connected to the web via faster network connections compared to less rich users.
+       </p>
     </figcaption>
 </figure>
 
 ### Frontends contribution to the web's environmental footprint
 
-Studies [Estimating Digital Emissions](https://sustainablewebdesign.org/estimating-digital-emissions/) and [Environmental footprint of the digital world](https://www.greenit.fr/environmental-footprint-of-the-digital-world/) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers. This can be explained by the sheer number of user devices, and the size of the network infrastructure. 
+Studies [Environmental footprint of the digital world (2019)](https://www.greenit.fr/environmental-footprint-of-the-digital-world/) and [Estimating Digital Emissions (2023)](https://sustainablewebdesign.org/estimating-digital-emissions/) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers. This can be explained by the sheer number of user devices, and by the size of the network infrastructure.
 
 This means that frontend developers have both the power and the responsibility to reduce the environmental impact of the web.
 
 <figure id="figure-emissions-breakdown">
     <img
         alt="Emissions breakdown of the web's infrastructure"
-        src="/blog/web-frontend-performance/web-infra-bigger.svg"
-        width="1000"
+        src="/blog/web-frontend-performance/energy-footprint-breakdown.svg"
+        width="800"
+        height="700"
     />
     <figcaption>
         <p>
-            <a href="#figure-emissions-breakdown">The breakdown of emissions per tier and per lifecycle phase:</a> This figure showcases data from the article <a href="https://sustainablewebdesign.org/estimating-digital-emissions/">Estimating Digital Emissions</a>.
+            <a href="#figure-emissions-breakdown">The breakdown of emissions per tier and per lifecycle phase:</a> This figure showcases data from the article <a href="https://sustainablewebdesign.org/estimating-digital-emissions/">Estimating Digital Emissions (2023)</a>.
         </p>
         <p>
-            The x-axis shows estimated percentages of the energy used by data centers, networks and user devices. Respectively: 22%, 24% and 54%, user devices dominating the mix.
+            It is estimated that data centers consume 22% of the energy of the web infrastructure, networks consume 24% and user devices dominate the mix consuming 54%.
         </p>
         <p>
-            The y-axis shows estimated percentages of Greenhouse gases emitted during the manufacturing phase (embodied emissions) and during the operational phase of Data centers, Networks and User devices.
-            Both data centers and networks emit 82% during operation and 18% during manufacturing.
-            As for user devices, they emit 49% during operation and 51% during manufacturing.
+            It is also estimated that both data centers and networks emit 18% greenhouse gases during manufacturing and 82% during operation.
+            As for user devices, they emit 51% greenhouse gases during manufacturing and 49% during operation.
         </p>
-        Replace with
-        https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4424264
-        file:///Users/nawfelbengherbia/Downloads/ssrn-4424264.pdf
-        page 12 fig 3
     </figcaption>
 </figure>
 
@@ -157,7 +155,7 @@ The first two options usually require users to pay, as they cannot change the we
 
 The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimizations are not feasible—perhaps because the software is already optimized for the existing hardware, or due to a lack of time or manpower for software optimization.
 
-Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human activities and have an environmental impact.
+Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human and non-human activities.
 
 <figure id="figure-physical-web-bigger">
     <img
@@ -166,7 +164,11 @@ Relying on hardware upgrades to solve performance issues should be a last resort
         width="1000"
     />
     <figcaption>
-       <a href="#figure-physical-web-bigger">Bigger Web Infrastructure:</a> This figure shows a similar infrastructure to the one in <a>the previous figure</a>: Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. And the network connections are of bigger capacity. The rich user device is also more powerful. The other users devices and connection is the same. I note also that to grow the web infrastructure, more space is taken from the natural systems. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
+       <p><a href="#figure-physical-web-bigger">Bigger Web Infrastructure:</a> This figure shows a similar infrastructure to the one from <a href="#figure-physical-web">the previous figure</a>. Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. The network connections are of bigger capacity. Users devices and connection speed increased a little bit, and the rich user's increased even more.
+       </p>
+       <p>
+       In order to support the growth of the infrastructure of the Web, more space is taken from nature. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
+       </p>
     </figcaption>
 </figure>
 
@@ -295,15 +297,20 @@ Clients can ask intermediary caches to [disregard cached responses](https://deve
 - When the user presses the reload page button, the browser sends a conditional request with `Cache-Control: max-age=0` so that cached responses are not reused.
 - And when the user does a forced reload (typically using the keyboard command Ctrl+Shift+R), the browser sends non-conditional requests with `Cache-Control: no-cache`, telling caches to ignore their stored content and forward the request to the origin server.
 
-<figure id="figure-client-requested-cache-revalidation">
+<figure id="figure-cache-revalidation-request">
     <img
         alt="Client-requested cache revalidation"
-        src="/blog/web-frontend-performance/client-requested-cache-revalidation.svg"
+        src="/blog/web-frontend-performance/cache-revalidation-request.svg"
         width="1000"
     />
     <figcaption>
         <p>
-            <a href="#figure-client-requested-cache-revalidation">Client-requested cache revalidation:</a> In this example, the client requests a page containing an image. It receives responses from a shared cache, which are also stored in the client's local cache. The user then presses Ctrl+Shift+R. Although the page is still fresh in the local cache, the client ignores its stored version and sends a request with <code>Cache-Control: no-cache</code> header to the server. Seeing this header, the shared cache ignores its stored version and forwards the request to the server. Once the client receives the page, it requests the image on the page, always using <code>Cache-Control: no-cache</code> header.
+            <a href="#figure-cache-revalidation-request">Client-requested cache revalidation:</a> In this example, the user vistes a page containing an image. Both the page and the image are received from a shared cache and are stored in the user's browser local cache.
+        </p>
+        <p>
+            Laten when the user navigates back to the page, it is served directly from the browser cache.
+        </p>
+        <p>The user then presses Ctrl+Shift+R to trigger a forced reload. Although the page is still fresh in the local cache, the browser ignores its stored version and sends a request with <code>Cache-Control: no-cache</code> header to the server. Seeing this header, the shared cache ignores its stored version and forwards the request to the server which generates the page and sends the response. Once the browser receives the page, it requests the image referenced by the page, always using <code>Cache-Control: no-cache</code> header.
         </p>
     </figcaption>
 </figure>
