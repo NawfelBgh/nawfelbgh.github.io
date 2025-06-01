@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="600"
+   height="850"
+   viewBox="0 0 600 850"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="with-bundling.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.85670677"
+     inkscape:cx="208.93964"
+     inkscape:cy="574.29218"
+     inkscape:window-width="1792"
+     inkscape:window-height="991"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.839343"
+       id="rect1"
+       width="600"
+       height="850"
+       x="0"
+       y="0"
+       ry="5.0590771e-14" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 75,75 V 825"
+       id="path1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 525.75,75 V 825"
+       id="path1-5" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       x="76.227905"
+       y="59.005474"
+       id="text1"><tspan
+         sodipodi:role="line"
+         x="76.227905"
+         y="59.005474"
+         id="tspan3"
+         style="font-size:16px;stroke-width:1.5">User</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       x="526.70941"
+       y="58.615612"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         x="526.70941"
+         y="58.615612"
+         style="font-size:16px;stroke-width:1.5">Server</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 74.881215,122.88858 524.89367,162.32056"
+       id="path5"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 526.25005,191.68817 75.289965,370.49855"
+       id="path7"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 525.23653,538.69719 74.768723,717.01529"
+       id="path7-0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 525.17114,621.30619 74.703333,799.62429"
+       id="path7-0-1-3"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 83.872197,372.21436 -7.975001,-1.95917 4.26704,-7.32488"
+       id="path8" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 83.866306,718.66157 -7.975001,-1.95917 4.26704,-7.32488"
+       id="path8-68" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 83.831047,801.36473 -7.975001,-1.95917 4.26704,-7.32488"
+       id="path8-68-8-4" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 519.0467,157.04664 6.16284,5.42755 -7.17252,4.51846"
+       id="path8-6" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="88.545532"
+       y="116.84369"
+       id="text8"><tspan
+         sodipodi:role="line"
+         x="88.545532"
+         y="116.84369"
+         id="tspan6"
+         style="stroke-width:1.5">GET page</tspan></text>
+    <rect
+       style="fill:#fafeff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-opacity:1"
+       id="rect21"
+       width="254.95282"
+       height="213.42204"
+       x="204.19298"
+       y="175.35217"
+       ry="2.6783351e-14" />
+    <rect
+       style="fill:#fafeff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect21-1"
+       width="187.87892"
+       height="70.284866"
+       x="300.99768"
+       y="548.91028"
+       ry="8.8203819e-15" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="212.59023"
+       y="197.00294"
+       id="text8-3"><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="197.00294"
+         id="tspan6-1"
+         style="stroke-width:1.5">&lt;html&gt;</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="217.00294"
+         style="stroke-width:1.5"
+         id="tspan15">...</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="237.00294"
+         style="stroke-width:1.5"
+         id="tspan14">...<tspan
+   style="fill:#0000ff;fill-opacity:1"
+   id="tspan27"> url(&quot;icons-sprite.svg&quot;)</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="257.00293"
+         style="stroke-width:1.5"
+         id="tspan17">...</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="277.00293"
+         style="stroke-width:1.5"
+         id="tspan16">...</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="297.00293"
+         style="stroke-width:1.5"
+         id="tspan19">&lt;script</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="317.00293"
+         style="stroke-width:1.5"
+         id="tspan20">    type=&quot;module&quot;</tspan><tspan
+         sodipodi:role="line"
+         x="212.59023"
+         y="337.00293"
+         style="stroke-width:1.5"
+         id="tspan21">    src=&quot;<tspan
+   style="fill:#0000ff;fill-opacity:1"
+   id="tspan30">bundle.js</tspan>&quot;&gt; ...</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 75.065467,433.88864 525.07792,473.32062"
+       id="path5-5"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 519.23095,468.0467 6.16284,5.42755 -7.17252,4.51846"
+       id="path8-6-6" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="88.729782"
+       y="429.84375"
+       id="text8-2"><tspan
+         sodipodi:role="line"
+         x="88.729782"
+         y="429.84375"
+         id="tspan6-8"
+         style="stroke-width:1.5">GET icons-sprite.svg</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="306.80472"
+       y="569.05298"
+       id="text8-2-3"><tspan
+         sodipodi:role="line"
+         x="306.80472"
+         y="569.05298"
+         id="tspan6-8-94"
+         style="stroke-width:1.5">icons-sprite.svg</tspan><tspan
+         sodipodi:role="line"
+         x="306.80472"
+         y="589.05298"
+         style="stroke-width:1.5"
+         id="tspan5">(icons 1, 2 &amp; 3)</tspan></text>
+    <rect
+       style="fill:#fafeff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect21-1-1"
+       width="229.05038"
+       height="160.4424"
+       x="284.59775"
+       y="643.19196"
+       ry="2.0134678e-14" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="290.56125"
+       y="663.49115"
+       id="text8-2-3-6"><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="663.49115"
+         id="tspan6-8-94-0"
+         style="stroke-width:1.5">// bundle.js</tspan><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="683.49115"
+         style="stroke-width:1.5"
+         id="tspan23">// inlined dependeny.js</tspan><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="703.49115"
+         style="stroke-width:1.5"
+         id="tspan9">// ...</tspan><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="723.49115"
+         style="stroke-width:1.5"
+         id="tspan10">const something</tspan><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="743.49115"
+         style="stroke-width:1.5"
+         id="tspan11" /><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="763.49115"
+         style="stroke-width:1.5"
+         id="tspan13">// inlined script.js</tspan><tspan
+         sodipodi:role="line"
+         x="290.56125"
+         y="783.49115"
+         style="stroke-width:1.5"
+         id="tspan24">// ...</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:13.3333px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;stroke:#000000"
+       x="336.93323"
+       y="219.89326"
+       id="text7"><tspan
+         sodipodi:role="line"
+         id="tspan7"
+         x="336.93323"
+         y="219.89326" /></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 74.059051,473.27183 398.584509,34.92565 12.84785,1.12578 38.58009,3.38055"
+       id="path5-5-8"
+       sodipodi:nodetypes="cccc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 518.22453,507.42989 6.16284,5.42755 -7.17252,4.51846"
+       id="path8-6-6-4" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="90.595291"
+       y="470.01315"
+       id="text8-2-0-9"><tspan
+         sodipodi:role="line"
+         x="90.595291"
+         y="470.01315"
+         id="tspan6-8-0-2"
+         style="stroke-width:1.5">GET bundle.js</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10.6667px;line-height:1.25;font-family:sans-serif"
+       x="272.82339"
+       y="622.26953"
+       id="text22"><tspan
+         sodipodi:role="line"
+         id="tspan22"
+         x="272.82339"
+         y="622.26953" /></text>
+  </g>
+</svg>

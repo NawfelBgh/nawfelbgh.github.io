@@ -3,8 +3,8 @@
 
 <svg
    width="1080"
-   height="900"
-   viewBox="0 0 1080 900"
+   height="1000"
+   viewBox="0 0 1080 1000"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
@@ -26,8 +26,8 @@
      inkscape:lockguides="false"
      showguides="true"
      inkscape:zoom="0.70710678"
-     inkscape:cx="681.65094"
-     inkscape:cy="430.62803"
+     inkscape:cx="336.58283"
+     inkscape:cy="485.78236"
      inkscape:window-width="1792"
      inkscape:window-height="990"
      inkscape:window-x="0"
@@ -41,32 +41,32 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.47642"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.61038"
        id="rect1"
        width="1080"
-       height="900"
+       height="1000"
        x="0"
        y="0"
-       ry="1.0547323e-13" />
+       ry="1.1719247e-13" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none"
-       d="M 75,75 V 875"
+       d="M 75,75 V 975"
        id="path1" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none"
-       d="M 255,75 V 875"
+       d="M 255,75 V 975"
        id="path1-1" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none"
-       d="M 435,75 V 875"
+       d="M 435,75 V 975"
        id="path22" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none"
-       d="M 795,75 V 875"
+       d="M 795,75 V 975"
        id="path1-7-2" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none"
-       d="M 975,75 V 875"
+       d="M 975,75 V 975"
        id="path1-1-6-7" />
     <text
        xml:space="preserve"
@@ -227,32 +227,32 @@
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="1022.9675"
-       y="637.7973"
+       y="719.7973"
        id="text1-3-8-6-3"><tspan
          sodipodi:role="line"
          x="1022.9675"
-         y="637.7973"
+         y="719.7973"
          id="tspan3-2-8"
          style="stroke-width:1.5">Generate</tspan><tspan
          sodipodi:role="line"
          x="1022.9675"
-         y="657.7973"
+         y="739.7973"
          id="tspan7"
          style="stroke-width:1.5">response</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="1010.2371"
-       y="793.14313"
+       y="867.14313"
        id="text1-3-8-6-3-8"><tspan
          sodipodi:role="line"
          x="1010.2371"
-         y="793.14313"
+         y="867.14313"
          id="tspan7-0"
          style="stroke-width:1.5">Serve</tspan><tspan
          sodipodi:role="line"
          x="1010.2371"
-         y="813.14313"
+         y="887.14313"
          style="stroke-width:1.5"
          id="tspan10">image</tspan></text>
     <path
@@ -324,91 +324,91 @@
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="261.28442"
-       y="403.42981"
+       y="433.42981"
        id="text1-0-5"><tspan
          sodipodi:role="line"
          id="tspan1-9-2"
          x="261.28442"
-         y="403.42981"
+         y="433.42981"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET page</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="261.28442"
-       y="452.9761"
+       y="490.9761"
        id="text1-0-9-3"><tspan
          sodipodi:role="line"
          id="tspan1-9-7-8"
          x="261.28442"
-         y="452.9761"
+         y="490.9761"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET image</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="80.427216"
-       y="376.49365"
+       y="406.49365"
        id="text1-0-4-7"><tspan
          sodipodi:role="line"
          id="tspan1-9-8-8"
          x="80.427216"
-         y="376.49365"
+         y="406.49365"
          style="text-align:start;text-anchor:start;stroke-width:1.5">Navigate (again)</tspan><tspan
          sodipodi:role="line"
          x="80.427216"
-         y="396.49365"
+         y="426.49365"
          style="text-align:start;text-anchor:start;stroke-width:1.5"
          id="tspan9">to page</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 262.09251,435.70449 -6.37814,-3.5434 5.66945,-5.19699"
+       d="m 262.09251,469.70449 -6.37814,-3.5434 5.66945,-5.19699"
        id="path9-0" />
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="245.50128"
-       y="459.76062"
+       y="507.76062"
        id="text1-0-4-3-8-0"><tspan
          sodipodi:role="line"
          id="tspan1-9-8-7-1-2"
          x="245.50128"
-         y="459.76062"
+         y="507.76062"
          style="text-align:end;text-anchor:end;stroke-width:1.5">Render page</tspan><tspan
          sodipodi:role="line"
          x="245.50128"
-         y="479.76062"
+         y="527.76062"
          style="text-align:end;text-anchor:end;stroke-width:1.5"
          id="tspan8">&amp; image</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 254.85929,489.13635 -179.03241,9.4202"
+       d="m 254.85929,535.13635 -179.03241,9.4202"
        id="path10-0-3"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 434.41299,422.84576 -179.33393,9.08535"
+       d="m 434.41299,456.84576 -179.33393,9.08535"
        id="path10-0-3-0"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 261.86374,485.89877 -6.37814,-3.5434 5.66945,-5.19699"
+       d="m 261.86374,529.89877 -6.37814,-3.5434 5.66945,-5.19699"
        id="path9-0-9" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 434.40745,475.422 -179.03241,6.59177"
+       d="m 434.40745,519.422 -179.03241,6.59177"
        id="path10-0-3-0-4"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 434.45001,415.95426 75.524969,404.8606"
+       d="M 434.45001,445.95426 75.524969,434.8606"
        id="path10-0-3-4"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 427.47451,419.35994 6.14191,-3.54341 -6.61437,-3.54342"
+       d="m 427.47451,449.35994 6.14191,-3.54341 -6.61437,-3.54342"
        id="path5-5" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 82.120746,501.80796 -6.614355,-2.83473 5.43321,-5.66944"
+       d="m 82.120746,547.80796 -6.614355,-2.83473 5.43321,-5.66944"
        id="path11-3-2" />
     <text
        xml:space="preserve"
@@ -440,227 +440,227 @@
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="261.28442"
-       y="576.5863"
+       y="658.5863"
        id="text1-0-95"><tspan
          sodipodi:role="line"
          id="tspan1-9-1"
          x="261.28442"
-         y="576.5863"
+         y="658.5863"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET page</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.10004"
-       y="566.67218"
+       y="648.67218"
        id="text1-0-95-2"><tspan
          sodipodi:role="line"
          id="tspan1-9-1-4"
          x="444.10004"
-         y="566.67218"
+         y="648.67218"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET page</tspan><tspan
          sodipodi:role="line"
          x="444.10004"
-         y="586.67218"
-         style="text-align:start;text-anchor:start;stroke-width:1.5"
+         y="668.67218"
+         style="text-align:start;text-anchor:start;fill:#0000ff;fill-opacity:1;stroke-width:1.5"
          id="tspan12">Cache-Control: no-cache</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.10004"
-       y="749.79352"
+       y="823.79352"
        id="text1-0-95-2-3"><tspan
          sodipodi:role="line"
          id="tspan1-9-1-4-7"
          x="444.10004"
-         y="749.79352"
+         y="823.79352"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET image</tspan><tspan
          sodipodi:role="line"
          x="444.10004"
-         y="769.79352"
-         style="text-align:start;text-anchor:start;stroke-width:1.5"
+         y="843.79352"
+         style="text-align:start;text-anchor:start;fill:#0000ff;fill-opacity:1;stroke-width:1.5"
          id="tspan12-9">Cache-Control: no-cache</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="261.28442"
-       y="761.20178"
+       y="835.20178"
        id="text1-0-9-7"><tspan
          sodipodi:role="line"
          id="tspan1-9-7-4"
          x="261.28442"
-         y="761.20178"
+         y="835.20178"
          style="text-align:start;text-anchor:start;stroke-width:1.5">GET image</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="80.013153"
-       y="555.20587"
+       y="637.20587"
        id="text1-0-4-5"><tspan
          sodipodi:role="line"
          id="tspan1-9-8-1"
          x="80.013153"
-         y="555.20587"
+         y="637.20587"
          style="text-align:start;text-anchor:start;stroke-width:1.5">Force refresh</tspan><tspan
          sodipodi:role="line"
          x="80.013153"
-         y="575.20587"
+         y="657.20587"
          style="text-align:start;text-anchor:start;stroke-width:1.5"
          id="tspan11">Ctrl+Shift+R</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="245.50128"
-       y="834.21039"
+       y="908.21039"
        id="text1-0-4-3-4"><tspan
          sodipodi:role="line"
          id="tspan1-9-8-7-6"
          x="245.50128"
-         y="834.21039"
+         y="908.21039"
          style="text-align:end;text-anchor:end;stroke-width:1.5">Render image</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.10004"
-       y="716.8548"
+       y="798.8548"
        id="text1-3-8-6-6-4-2"><tspan
          sodipodi:role="line"
          x="444.10004"
-         y="716.8548"
+         y="798.8548"
          id="tspan3-2-0-9-1"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Cached</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="833.80963"
-       y="700.25482"
+       y="782.25482"
        id="text1-3-8-6-6-4-2-4"><tspan
          sodipodi:role="line"
          x="833.80963"
-         y="700.25482"
+         y="782.25482"
          id="tspan3-2-0-9-1-4"
          style="fill:#0000ee;fill-opacity:1;stroke-width:1.5">Cached</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.10004"
-       y="849.40631"
+       y="923.40631"
        id="text1-3-8-6-6-4-5-4"><tspan
          sodipodi:role="line"
          x="444.10004"
-         y="849.40631"
+         y="923.40631"
          id="tspan3-2-0-9-7-7"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Cached</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="833.80963"
-       y="834.22076"
+       y="908.22076"
        id="text1-3-8-6-6-4-5-4-4"><tspan
          sodipodi:role="line"
          x="833.80963"
-         y="834.22076"
+         y="908.22076"
          id="tspan3-2-0-9-7-7-0"
          style="fill:#0000ee;fill-opacity:1;stroke-width:1.5">Cached</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 75.017831,582.81458 974.41967,606.16525"
+       d="M 75.017831,664.81458 974.41967,688.16525"
        id="path4-7-1"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 967.98741,609.48074 6.14191,-3.54341 -6.61437,-3.54342"
+       d="m 967.98741,691.48074 6.14191,-3.54341 -6.61437,-3.54342"
        id="path5-0" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 974.7695,674.21668 255.80698,707.30566"
+       d="M 974.7695,756.21668 255.80698,789.30566"
        id="path8-9-0"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 261.85883,711.01772 -6.37814,-3.5434 5.66945,-5.19699"
+       d="m 261.85883,793.01772 -6.37814,-3.5434 5.66945,-5.19699"
        id="path9-5" />
     <path
        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 255.04142,767.66434 719.42499,26.6838"
+       d="m 255.04142,841.66434 719.42499,26.6838"
        id="path4-4-7-4"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 967.81463,797.76517 6.14191,-3.54341 -6.61437,-3.54342"
+       d="m 967.81463,871.76517 6.14191,-3.54341 -6.61437,-3.54342"
        id="path5-3-2" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.85048;stroke-dasharray:none;stroke-opacity:1"
-       d="M 974.01034,805.61221 255.54085,838.24842"
+       d="M 974.01034,879.61221 255.54085,912.24842"
        id="path8-8-9-2"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 262.00692,841.93287 -6.37814,-3.5434 5.66945,-5.19699"
+       d="m 262.00692,915.93287 -6.37814,-3.5434 5.66945,-5.19699"
        id="path9-4-7" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 254.69391,846.57996 74.609963,857.6895"
+       d="M 254.69391,920.57996 74.609963,931.6895"
        id="path10-6"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 81.813803,860.53593 -6.61435,-2.83473 5.43321,-5.66944"
+       d="m 81.813803,934.53593 -6.61435,-2.83473 5.43321,-5.66944"
        id="path11-8" />
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="245.50128"
-       y="708.90405"
+       y="790.90405"
        id="text1-0-4-3-8-2"><tspan
          sodipodi:role="line"
          id="tspan1-9-8-7-1-9"
          x="245.50128"
-         y="708.90405"
+         y="790.90405"
          style="text-align:end;text-anchor:end;stroke-width:1.5">Render page</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 254.65962,718.02364 74.825683,728.38318"
+       d="M 254.65962,800.02364 74.825683,810.38318"
        id="path10-0-9"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="m 82.500013,731.70233 -6.61436,-2.83473 5.43321,-5.66944"
+       d="m 82.500013,813.70233 -6.61436,-2.83473 5.43321,-5.66944"
        id="path11-3-8" />
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.17816"
-       y="416.54193"
+       y="446.54193"
        id="text1-3-8-6-6-0-01-6"><tspan
          sodipodi:role="line"
          x="444.17816"
-         y="416.54193"
+         y="446.54193"
          id="tspan3-2-0-97-6-6"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Reuse</tspan><tspan
          sodipodi:role="line"
          x="444.17816"
-         y="436.54193"
+         y="466.54193"
          id="tspan21-4-6"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">cached</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        x="444.17816"
-       y="476.18881"
+       y="516.18884"
        id="text1-3-8-6-6-0-01-6-6"><tspan
          sodipodi:role="line"
          x="444.17816"
-         y="476.18881"
+         y="516.18884"
          id="tspan3-2-0-97-6-6-5"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Reuse</tspan><tspan
          sodipodi:role="line"
          x="444.17816"
-         y="496.18881"
+         y="536.18884"
          id="tspan21-4-6-3"
          style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">cached</tspan></text>
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       d="M 434.6638,468.5299 255.0677,457.92698"
+       d="M 434.6638,508.5299 255.0677,497.92698"
        id="path10-0-3-0-5"
        sodipodi:nodetypes="cc" />
   </g>

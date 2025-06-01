@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1125"
+   height="450"
+   viewBox="0 0 1125 450"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="cache-static-parts.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.73036275"
+     inkscape:cx="533.98123"
+     inkscape:cy="168.40947"
+     inkscape:window-width="1792"
+     inkscape:window-height="991"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.836251"
+       id="rect1"
+       width="1125"
+       height="450"
+       x="0"
+       y="0"
+       ry="2.6783351e-14" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 75,75 V 425"
+       id="path1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 975,75 V 425"
+       id="path1-1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 675,75 V 425"
+       id="path1-5" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       x="73.59137"
+       y="57.460869"
+       id="text1"><tspan
+         sodipodi:role="line"
+         x="73.59137"
+         y="57.460869"
+         id="tspan3"
+         style="font-size:16px;stroke-width:1.5">Client</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       x="676.55951"
+       y="46.297497"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         x="676.55951"
+         y="46.297497"
+         style="font-size:16px;stroke-width:1.5">Shared</tspan><tspan
+         sodipodi:role="line"
+         x="676.55951"
+         y="66.297501"
+         style="font-size:16px;stroke-width:1.5"
+         id="tspan14">cache</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       x="970.78235"
+       y="55.838463"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         x="970.78235"
+         y="55.838463"
+         style="font-size:16px;stroke-width:1.5">Server</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 73.959959,279.87995 973.03971,321.10994"
+       id="path5" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 964.06221,326.76244 9.64249,-5.6525 -8.9775,-6.31749"
+       id="path6"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 973.03971,338.39995 75.289965,359.67994"
+       id="path7" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 82.27245,364.00243 -6.982485,-4.32249 6.31749,-5.6525"
+       id="path8" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="88.420883"
+       y="252.42896"
+       id="text8"><tspan
+         sodipodi:role="line"
+         x="88.420883"
+         y="252.42896"
+         id="tspan6"
+         style="stroke-width:1.5">GET dynamic section</tspan><tspan
+         sodipodi:role="line"
+         x="88.420883"
+         y="272.42896"
+         style="fill:#0000ff;fill-opacity:1;stroke-width:1.5"
+         id="tspan15">cookie: session-token</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="756.73505"
+       y="371.15625"
+       id="text8-3"><tspan
+         sodipodi:role="line"
+         x="756.73505"
+         y="371.15625"
+         id="tspan6-2"
+         style="stroke-width:1.5">200 OK</tspan><tspan
+         sodipodi:role="line"
+         x="756.73505"
+         y="391.15625"
+         style="fill:#0000ff;fill-opacity:1;stroke-width:1.5"
+         id="tspan15-7">Cache-Control: no-store</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="89.908287"
+       y="99.116081"
+       id="text8-1"><tspan
+         sodipodi:role="line"
+         x="89.908287"
+         y="99.116081"
+         id="tspan6-3"
+         style="stroke-width:1.5">GET page</tspan><tspan
+         sodipodi:role="line"
+         x="89.908287"
+         y="119.11608"
+         style="fill:#0000ff;fill-opacity:1;stroke-width:1.5"
+         id="tspan16">cookie: session-token</tspan></text>
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 75.979445,127.56992 675.47678,162.81491"
+       id="path9"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 665.54122,167.80242 9.30999,-4.9875 -7.98,-5.98501"
+       id="path10"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 674.38737,177.43951 75.465621,205.82903"
+       id="path12"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 84.083606,208.98347 -6.15126,-3.32499 6.65001,-4.15626"
+       id="path13"
+       sodipodi:nodetypes="ccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:13.3333px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;stroke:#000000"
+       x="336.93323"
+       y="219.89326"
+       id="text7"><tspan
+         sodipodi:role="line"
+         id="tspan7"
+         x="336.93323"
+         y="219.89326" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       x="689.70294"
+       y="166.63281"
+       id="text1-3-8-6-6-0-01"><tspan
+         sodipodi:role="line"
+         x="689.70294"
+         y="166.63281"
+         id="tspan3-2-0-97-6"
+         style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Reuse</tspan><tspan
+         sodipodi:role="line"
+         x="689.70294"
+         y="186.63281"
+         id="tspan21-4"
+         style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">cached</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#0000ee;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       x="986.65643"
+       y="322.8479"
+       id="text1-3-8-6-6-0-01-8"><tspan
+         sodipodi:role="line"
+         x="986.65643"
+         y="322.8479"
+         id="tspan21-4-4"
+         style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5">Generate</tspan><tspan
+         sodipodi:role="line"
+         x="986.65643"
+         y="342.8479"
+         style="text-align:start;text-anchor:start;fill:#0000ee;fill-opacity:1;stroke-width:1.5"
+         id="tspan17">section</tspan></text>
+  </g>
+</svg>

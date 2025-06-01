@@ -365,22 +365,22 @@ We want to leverage caching for the static elements while still being able to pr
 
 For examples of how to do this, check out:
 
-- [Caching the Uncacheable: CSRF Security](https://www.fastly.com/blog/caching-uncacheable-csrf-security): This article from 2014 explains how to inject dynamic, user-specific CSRF tokens into cached HTML pages.
+- [Caching the Uncacheable: CSRF Security (2014)](https://www.fastly.com/blog/caching-uncacheable-csrf-security): This article explains how to inject dynamic, user-specific CSRF tokens into cached HTML pages.
 - Features from different frameworks allowing webpages to fetch page parts using separate HTTP requests:
   - [Hotwire Turbo](https://turbo.hotwired.dev/)'s [Frames](https://turbo.hotwired.dev/handbook/introduction#turbo-frames%3A-decompose-complex-pages).
   - [HTMX](https://htmx.org/)'s [Lazy Loading](https://htmx.org/examples/lazy-load/) feature.
   - [Unpoly](https://unpoly.com/)'s [deferred fragments](https://unpoly.com/lazy-loading).
   - [Astro](https://astro.build/)'s [Server Islands](https://docs.astro.build/en/guides/server-islands/).
 
-<figure id="figure-request-dynamic-page-parts">
+<figure id="figure-cache-static-parts">
     <img
         alt="Fetching dynamic page parts with a separate request"
-        src="/blog/web-frontend-performance/request-dynamic-page-parts.svg"
+        src="/blog/web-frontend-performance/cache-static-parts.svg"
         width="1000"
     />
     <figcaption>
         <p>
-            <a href="#figure-request-dynamic-page-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
+            <a href="#figure-cache-static-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
         </p>
     </figcaption>
 </figure>
@@ -530,27 +530,25 @@ Some network latency is introduced each time an HTML document or one of its reso
 - JavaScript modules and their dependencies can be bundled together and sent as a single file to the client.
 - Multiple images can be combined into a single sprite image that is split back into individual pieces using [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Implementing_image_sprites_in_CSS) or [SVG](https://www.sitepoint.com/use-svg-image-sprites/) techniques.
 
-<figure id="figure-no-resource-bundling">
+<figure id="figure-without-bundling">
     <img
         alt="Without resource bundling"
-        src="/blog/web-frontend-performance/resource-bundling.svg"
-        width="700"
-        height="475"
+        src="/blog/web-frontend-performance/without-bundling.svg"
+        width="600"
     />
     <figcaption>
-       <a href="#figure-no-resource-bundling">Without resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load icons 1, 2, and 3, as well as a script file. The client fetches these resources via additional HTTP requests. Once the script is loaded, the client finds that it depends on another JavaScript module, necessitating yet another request to the server to load this module. The page finishes loading once all six resources are fully loaded.
+       <a href="#figure-without-bundling">Without resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load icons 1, 2, and 3, as well as a script file. The client fetches these resources via additional HTTP requests. Once the script is loaded, the client finds that it depends on another JavaScript module, necessitating yet another request to the server to load this module. The page finishes loading once all six resources are fully loaded.
     </figcaption>
 </figure>
 
-<figure id="figure-resource-bundling">
+<figure id="figure-with-bundling">
     <img
         alt="With resource bundling"
-        src="/blog/web-frontend-performance/resource-bundling.svg"
-        width="700"
-        height="475"
+        src="/blog/web-frontend-performance/with-bundling.svg"
+        width="600"
     />
     <figcaption>
-       <a href="#figure-resource-bundling">With resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load the <code>icons_sprite.png</code> file, which contains icons 1, 2, and 3, as well as a script file that includes both the page's script and its dependencies. The page finishes loading once the HTML, the sprite, and the script are fully loaded.
+       <a href="#figure-with-bundling">With resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load the <code>icons-sprite.svg</code> file, which contains icons 1, 2, and 3, as well as a script file that includes both the page's script and its dependencies. The page finishes loading once the HTML, the sprite, and the script are fully loaded.
     </figcaption>
 </figure>
 
