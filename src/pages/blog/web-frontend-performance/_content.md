@@ -724,7 +724,7 @@ In contrast, many modern JavaScript frameworks are hybrids that do both SSR and 
 - Finally, HTML templates that are reused multiple times on the same page are sent repeatedly in HTML, in addition to being sent again in CSR code. In contrast, with pure CSR, they are sent only once.
 
 <figure id="figure-pure-ssr-vs-hydration-vs-pure-csr">
-    <img alt="Pure SSR vs Hydration vs Pure CSR" href="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" />
+    <img width="950" height="950" alt="Pure SSR vs Hydration vs Pure CSR" src="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" />
     <figcaption>
        <a href="#figure-pure-ssr-vs-hydration-vs-pure-csr">Pure SSR vs Hydration vs Pure CSR:</a> ...
     </figcaption>
@@ -737,7 +737,7 @@ To help reduce code size, some frameworks allow developers to control which part
 Right now, the most popular frameworks supporting partial hydration are [Astro](https://astro.build/) via [Islands](https://docs.astro.build/en/concepts/islands/), and [NextJS](https://nextjs.org/) via [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
 
 <figure id="figure-full-vs-partial-hydration">
-    <img alt="Full Hydration vs Partial Hydration" href="/blog/web-frontend-performance/full-vs-partial-hydration.svg" />
+    <img alt="Full Hydration vs Partial Hydration" src="/blog/web-frontend-performance/full-vs-partial-hydration.svg" />
     <figcaption>
        <a href="#figure-full-vs-partial-hydration">Full Hydration vs Partial Hydration:</a> ...
     </figcaption>
