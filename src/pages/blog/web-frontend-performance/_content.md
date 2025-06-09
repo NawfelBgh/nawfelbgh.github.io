@@ -692,16 +692,42 @@ TODO FIGURE LIBRARIES REACT + MOMENT + MUI (Button, Modal, Select, Input) + DATE
 
 ### Keeping code in the server
 
-Another way to reduce the amount of code sent to the client is to keep as much of it as possible on the server, execute it there, and never send it to the client.
+Sometimes, when some portions of code are very large, it can make sense to keep them in the server and to execute them on client requests to avoid burdening the client by downloading and executing them.
 
-Offloading code to the server can sometimes worsen user experience due to the extra requests that have to go to the server, which add network latency. This is not a problem when the offloaded code's work involves reaching out to the server anyway, as no additional network requests may be required.
+This doesn't always pay off:
+
+- Depending on the server to respond to some user inputs introduces network latency, which users may not tolerate. This is not a problem when some of the work has to happen on the server anyway, as no additional network requests may be required.
+- The savings made from keeping code in the server should be weighed against the cost of clients sending requests and downloading results from the server.
+- The server has to be sized adequately to support the added load, and the server owner will be the one paying for that.
+
+<figure id="figure-run-code-on-the-client">
+    <img
+        alt="Running code on the client"
+        src="/blog/web-frontend-performance/run-code-on-the-client.svg"
+        width="700"
+        height="700"
+    />
+    <figcaption>
+       <a href="#figure-run-code-on-the-client">Running a lot of code on the client:</a> In this example, a large script <code>a-lot-of-code.js</code> is requested, downloaded and loaded by the client. When the user triggers events needing this script, the client executes the script locally without having to involve to the server.
+    </figcaption>
+</figure>
+
+<figure id="figure-run-code-on-the-server">
+    <img
+        alt="Running code on the server"
+        src="/blog/web-frontend-performance/run-code-on-the-server.svg"
+        width="700"
+        height="700"
+    />
+    <figcaption>
+       <a href="#figure-run-code-on-the-server">Keeping large code on the server:</a> In this example, the script <code>a-lot-of-code.js</code> is kept in the server and never transferred to the client. Each time the user triggers events needing this script, the client has to send a request to the server which runs <code>a-lot-of-code.js</code> and sends results. Each time, the scripts inputs and output are sent through the network.
+    </figcaption>
+</figure>
 
 Offloading code to the server can also negatively impact developer experience (DX), as it can require tedious tasks such as creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
 
 - If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side rendering](#server-side-rendering).
-- If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/) where developers can load these fragments without writing client-side JavaScript.
-
-TODO ADD 2 FIGURES showcasing sending code or keeping it in the server
+- If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/), then developers can load these fragments without writing client-side JavaScript.
 
 Some frameworks improve the DX of making API requests:
 
@@ -712,21 +738,68 @@ Some frameworks improve the DX of making API requests:
 
 In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
-Rendering can be done on the client or the server. Client-side rendering (CSR) requires the client to load rendering code. In contrast, with server-side rendering (SSR), in its pure form as we will see shortly, no rendering code has to be shipped to the client, thus reducing client-side code size. SSR also leads to better initial page-load times, which we will explore later in [section blah](#).
+Rendering can be done on the client, on the server, or on both:
 
-In traditional SSR approaches, a form of template language is used on the server to render HTML in a declarative style, while some less declarative JavaScript code is written to make the server-generated HTML interactive.
+- Client-side rendering (CSR) requires the client to load the code that renders the raw data into HTML.
+- Server-side rendering (SSR) in its pure form, in contrast, requires no rendering code to be shipped to the client, thus reducing client-side code size.
+  - SSR can provide better initial page-load time compared to CSR when the page can be rendered in the server and received by the client before the client has the time to download the page's JavaScript code.
+  - Client side code quality can suffer with pure SSR frameworks: Sometimes, a declarative templating language is used on the server to render data to HTML, while some imperative client side code is written to make the server-generated HTML interactive.
 
-In contrast, many modern JavaScript frameworks are hybrids that do both SSR and CSR. These frameworks offer developers a better experience compared to traditional SSR approaches as they allow them to write a single codebase in a declarative style that works on both the server and the client. While these frameworks reduce initial page-load times through SSR, they also increase network usage compared to both pure SSR and pure CSR approaches:
+Hybrid approaches also exist:
 
-- Since they also do CSR, the client has to download rendering code.
+An application can render some parts of the page on the server and other parts on the client. For example: Non-interactive page sections can be rendered on the server while dynamics sections can be rendered on the client. This approach can lead to better code quality compared to doing pure SSR with imperative JavaScript for interactivity, as both SSR and CSR code can be written in a declarative style.
+
+Many modern JavaScript frameworks are hybrids that do both SSR and CSR: The page is rendered a first time on the server, and then rerendered again on the client when the user interacts with the page (and sometimes also on page load). These frameworks have some nice properties for users and developers:
+
+- Thanks to rendering on the server, the page may load earlier than it would with pure CSR, if the the client receives it before it gets the chance to load the page's code.
+- Developers can write a single codebase in a declarative style that works on both the server and the client.
+
+As these modern frameworks do both SSR and CSR, using them has a cost:
+
+- Unlike with pure SSR approaches, the client has to download rendering code.
 - The framework's code size is increased (compared to a pure CSR version) in order to support [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>): The process by which components rendered on the server are made interactive on the client.
 - These frameworks also face what [Ryan Carniato](https://x.com/RyanCarniato) (the creator of SolidJS) calls [the double data problem](https://dev.to/this-is-learning/why-efficient-hydration-in-javascript-frameworks-is-so-challenging-1ca3): The server has to send data in two formats to the client. Once in HTML format to optimize page-load time, and a second time in JSON format serving as input and state initialization for client-side code.
 - Finally, HTML templates that are reused multiple times on the same page are sent repeatedly in HTML, in addition to being sent again in CSR code. In contrast, with pure CSR, they are sent only once.
 
+<figure id="figure-pure-ssr">
+    <img width="1050" height="650" alt="Pure SSR" src="/blog/web-frontend-performance/pure-ssr.svg" />
+    <figcaption>
+        <p>
+            <a href="#figure-pure-ssr">Pure SSR:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it, making the page interactive.
+        </p>
+</figure>
+
+<figure id="figure-pure-csr">
+    <img width="1050" height="800" alt="Pure CSR" src="/blog/web-frontend-performance/pure-csr.svg" />
+    <figcaption>
+        <p>
+            <a href="#figure-pure-csr">Pure CSR:</a> In this example, the server responds with an empty page. The client downloads the page's code, loads it, figures which data it needs to get from the backend, gets it, and only then can render the page to the user. At that point the page is immediately interactive.
+        </p>
+</figure>
+
+<figure id="figure-ssr-with-hydration">
+    <img width="1050" height="750" alt="SSR with hydration" src="/blog/web-frontend-performance/ssr-with-hydration.svg" />
+    <figcaption>
+        <p>
+            <a href="#figure-ssr-with-hydration">SSR with hydration:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML and raw page data. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it and applies hydration code to make the page interactive.
+        </p>
+</figure>
+
 <figure id="figure-pure-ssr-vs-hydration-vs-pure-csr">
     <img width="950" height="950" alt="Pure SSR vs Hydration vs Pure CSR" src="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" />
     <figcaption>
-       <a href="#figure-pure-ssr-vs-hydration-vs-pure-csr">Pure SSR vs Hydration vs Pure CSR:</a> ...
+        <p>
+            <a href="#figure-pure-ssr-vs-hydration-vs-pure-csr">Pure SSR vs Hydration vs Pure CSR:</a> This figure compares 3 approaches for implementing the same page which renders some data using 2 HTML templates, both of which are interactive requiring some client-side JavaScript code.
+        </p>
+        <p>
+            The first approach is pure server side rendering. The client downloads the rendered HTML and the code that makes the page interactive. Notice how template 2 is repeated 3 times in the downloaded HTML.
+        </p>
+        <p>
+            The second approach is doing server side rendering, hydration and client side rendering. The client downloads the rendered HTML, the code to render both templates 1 and 2, and the code that makes the page interactive. Like with the first framework, template 2 is repeated 3 times in the downloaded HTML. Notice also that the page loads more code to support hydration and client-side-routing. The page also loads the raw non-rendered data in order to support rerendering on the client when necessary. The page's data is downloaded twice: both in the rendered HTML and in raw format. This is sometimes called the <b>double data problem</b>.
+        </p>
+        <p>
+            The third approach is pure client side rendering. The client downloads no rendered HTML. It downloads the code to render both templates 1 and 2, and the code that makes the page interactive. Unlike with the other frameworks, there is no repetition of template 2 because no HTML is downloaded. And like the second framework, the page loads the code for client-side-routing the raw non-rendered data in order to support rendering on the client, on first load and when necessary on user interaction afterwards.
+        </p>
     </figcaption>
 </figure>
 
@@ -739,11 +812,19 @@ Right now, the most popular frameworks supporting partial hydration are [Astro](
 <figure id="figure-full-vs-partial-hydration">
     <img alt="Full Hydration vs Partial Hydration" src="/blog/web-frontend-performance/full-vs-partial-hydration.svg" />
     <figcaption>
-       <a href="#figure-full-vs-partial-hydration">Full Hydration vs Partial Hydration:</a> ...
+       <p>
+            <a href="#figure-full-vs-partial-hydration">Full Hydration vs Partial Hydration:</a> This figure compares 2 approaches for implementing the same page which renders some data using 2 HTML templates. The first template is interactive requiring some client-side JavaScript code while the second template is not interactive.
+        </p>
+        <p>
+            The first approach is full hydration: Both page's templates are rendered on the server and hydrated on the the client.
+        </p>
+        <p>
+            The second approach is partial hydration: Template 2 is only rendered on the server. Notice how the client doesn't need to download template 2's code or raw data.
+        </p>
     </figcaption>
 </figure>
 
-Note that partial hydration excels in larger applications. In a small application like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [NextJS](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
+Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [NextJS](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
 
 <figure id="figure-movies-app">
     <table>
