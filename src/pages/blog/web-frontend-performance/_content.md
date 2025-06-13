@@ -1029,6 +1029,31 @@ map.set(makeStableKey(3, 4), {
 // ...
 ```
 
+The Java equivalent code is:
+
+```java
+record Key (int x, int y) {}
+class Value {
+  Value(int id, String name, ArrayList<String> tags) { /* ... */ }
+  int id;
+  String name;
+  String[] tags;
+}
+
+// Our map object of interest
+HashMap<Key, Value> map = new HashMap<>();
+map.put(new Key(1, 2), new Value(
+  1,
+  "name1",
+  new String[] {"tag 1.1", "tag 1.2"}
+));
+map.put(new Key(3, 4), new Value(
+  2,
+  "name2",
+  new String[] {"tag 2.1", "tag 2.2"}
+));
+```
+
 The Rust code for creating the equivalent object is :
 
 ```rust
@@ -1058,37 +1083,12 @@ map.insert(Key(3, 4), Box::new(MapValue {
 }));
 ```
 
-The Java equivalent code is:
-
-```java
-record Key (int x, int y) {}
-class Value {
-  Value(int id, String name, ArrayList<String> tags) { /* ... */ }
-  int id;
-  String name;
-  ArrayList<String> tags;
-}
-
-// Our map object of interest
-HashMap<Key, Value> map = new HashMap<>();
-map.put(new Key(1, 2), new Value(
-  1,
-  "name1",
-  new ArrayList<>(Arrays.asList("tag 1.1", "tag 1.2" /*, ...*/))
-));
-map.put(new Key(3, 4), new Value(
-  2,
-  "name2",
-  new ArrayList<>(Arrays.asList("tag 2.1", "tag 2.2" /*, ...*/))
-));
-```
-
 <figure id="figure-memory-layout-js">
     <img
         alt="Memory layout in JavaScript"
-        src="/blog/web-frontend-performance/memory-layout-high-level-lang.svg"
-        width="600"
-        height="600"
+        src="/blog/web-frontend-performance/memory-layout-js.svg"
+        height="800"
+        width="1400"
  />
     <figcaption>
         <p>
@@ -1098,6 +1098,26 @@ map.put(new Key(3, 4), new Value(
             Note all the indirections needed at each level to represent this data structure. This problem is common in hight level languages.
         </p>
         <p>Note also the extra properties pointers added in each object to support any code that would extend our objects with more properties. We will get back to this in <a href="#dynamic-vs-static-typing">the following section</a>.
+        </p>
+    </figcaption>
+</figure>
+
+<figure id="figure-memory-layout-wasm-gc-mvp">
+    <img
+        alt="Memory layout in Wasm GC MVP"
+        src="/blog/web-frontend-performance/memory-layout-wasm-gc.svg"
+        width="1400"
+        height="750"
+ />
+    <figcaption>
+        <p>
+        <a href="#figure-memory-layout-wasm-gc-mvp">Memory layout in Wasm GC MVP:</a> In this example, I show the memory layout of the object constructed by the Java example compiled to use Wasm GC.
+        </p>
+        <p>
+        Indirection-wise, this example resembles more the JavaScript version than the Rust compiled to Wasm version. This example also uses a hash table implemented in Wasm GC, which in addition to requiring loading the hash table code, is likely to be less compact in memory compared to the native JS Map.
+        </p>
+        <p>
+        On the positive side and thanks to static typing, objects allocated by Wasm code take less space than JavaScript objects. There is no space wasted to account for dynamically added properties. And shape objects (commonly called Runtime Types or RTTs) are only needed to validate subtypes-casting meaning that they contain less data compared to the JS equivalent which we'll explore in <a href="#dynamic-vs-static-typing">the following section</a>.
         </p>
     </figcaption>
 </figure>
@@ -1118,26 +1138,6 @@ map.put(new Key(3, 4), new Value(
         </p>
         <p>
         There is a catch though, and we will revisit it in the section <a href="#runtime-services-available-to-the-code">Runtime services available to the code</a>. Unlike the JavaScript example which uses a native hash table implementation provided by the browser, the Wasm hash table code must be bundled with the application code.
-        </p>
-    </figcaption>
-</figure>
-
-<figure id="figure-memory-layout-wasm-gc-mvp">
-    <img
-        alt="Memory layout in Wasm GC MVP"
-        src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
-        width="600"
-        height="600"
- />
-    <figcaption>
-        <p>
-        <a href="#figure-memory-layout-wasm-gc-mvp">Memory layout in Wasm GC MVP:</a> In this example, I show the memory layout of the object constructed by the Java example compiled to use Wasm GC.
-        </p>
-        <p>
-        Indirection-wise, this example resembles more the JavaScript version than the Rust compiled to Wasm version. This example also uses a hash table implemented in Wasm GC, which in addition to requiring loading the hash table code, is likely to be less compact in memory compared to the native JS Map.
-        </p>
-        <p>
-        On the positive side and thanks to static typing, objects allocated by Wasm code take less space than JavaScript objects. There is no space wasted to account for dynamically added properties. And shape objects (commonly called Runtime Types or RTTs) are only needed to validate subtypes-casting meaning that they contain less data compared to the JS equivalent which we'll explore in <a href="#dynamic-vs-static-typing">the following section</a>.
         </p>
     </figcaption>
 </figure>
