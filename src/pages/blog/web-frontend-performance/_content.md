@@ -1019,12 +1019,12 @@ const map = new Map<StableKey, Value>();
 map.set(makeStableKey(1, 2), {
   id: 1,
   name: "name 1",
-  tags: ["tag 1.1", "tag 1.2" /*, ...*/],
+  tags: ["tag 1.1", "tag 1.2"],
 });
 map.set(makeStableKey(3, 4), {
   id: 2,
   name: "name 2",
-  tags: ["tag 2.1", "tag 2.2" /*, ...*/],
+  tags: ["tag 2.1", "tag 2.2"],
 });
 // ...
 ```
@@ -1034,7 +1034,7 @@ The Java equivalent code is:
 ```java
 record Key (int x, int y) {}
 class Value {
-  Value(int id, String name, ArrayList<String> tags) { /* ... */ }
+  Value(int id, String name, String[] tags) { /* ... */ }
   int id;
   String name;
   String[] tags;
@@ -1071,15 +1071,15 @@ type Map = HashMap<Key, Box<MapValue>>;
 
 // Our map object of interest
 let mut map = Map::new();
-map.insert(Key(1, 2), Box::new(MapValue {
+map.insert(Key {x: 1, y: 2}, Box::new(MapValue {
   id: 1,
   name: String::from("name 1"),
-  tags: vec![String::from("tag 1.1"), String::from("tag 1.2") /*, ...*/],
+  tags: vec![String::from("tag 1.1"), String::from("tag 1.2")],
 }));
-map.insert(Key(3, 4), Box::new(MapValue {
+map.insert(Key {x: 3, y: 4}, Box::new(MapValue {
   id: 2,
   name: String::from("name 2"),
-  tags: vec![String::from("tag 2.1"), String::from("tag 2.2") /*, ...*/],
+  tags: vec![String::from("tag 2.1"), String::from("tag 2.2")],
 }));
 ```
 
@@ -1126,8 +1126,8 @@ map.insert(Key(3, 4), Box::new(MapValue {
     <img
         alt="Memory layout in a low level language"
         src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
-        width="600"
-        height="600"
+        width="1100"
+        height="625"
  />
     <figcaption>
         <p>
@@ -1173,6 +1173,7 @@ function callMethod0(object) {
   object.method0();
 }
 
+/* This function can only work thanks to dynamic typing */
 function addNewProperty(object) {
   object.newProperty = 2;
 }
@@ -1181,16 +1182,16 @@ function addNewProperty(object) {
 <figure id="figure-accessing-js-object-properties">
     <img
         alt="Accessing JS objects' properties"
-        src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
-        width="600"
-        height="600"
+        src="/blog/web-frontend-performance/memory-access-js.svg"
+        width="1200"
+        height="750"
  />
     <figcaption>
         <p>
         <a href="#figure-accessing-js-object-properties">Accessing JS objects' properties:</a> This example shows the JS objects and the Shape objects needed to represent <code>myObject</code> from the previous code example.
         </p>
         <p>
-        Steps 1 to 8 represent the memory accesses needed for the function <code>callMethod0</code> to get the address of <code>method0</code>. Steps A to D represent the memory accesses needed for <code>method0</code> to read <code>property0</code> from the object.
+        Steps 1 to 11 represent the memory accesses needed for the function <code>callMethod0</code> to get the address of <code>method0</code>. Steps A to D represent the memory accesses needed for <code>method0</code> to read <code>property0</code> from the object.
         </p>
         <p>
         All the extra properties fields are set to null in this example. But they are needed in case functions like <code>addNewProperty</code> are called with one of our objects.
@@ -1205,9 +1206,9 @@ Unlike JavaScript, **Wasm** gives programmers the tools to represent constructs 
 <figure id="figure-accessing-statically-typed-object-properties">
     <img
         alt="Accessing a statically typed objects' properties"
-        src="/blog/web-frontend-performance/memory-layout-low-level-lang.svg"
-        width="600"
-        height="600"
+        src="/blog/web-frontend-performance/memory-access-statically-typed.svg"
+        width="725"
+        height="225"
  />
     <figcaption>
         <p>
