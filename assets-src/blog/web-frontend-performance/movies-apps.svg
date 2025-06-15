@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1000"
+   height="650"
+   viewBox="0 0 1000 650"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="library-sizes.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.70710675"
+     inkscape:cx="506.28848"
+     inkscape:cy="338.70416"
+     inkscape:window-width="1792"
+     inkscape:window-height="988"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-25)">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.10461"
+       id="rect2"
+       width="1000"
+       height="650"
+       x="25"
+       y="0"
+       ry="5.0241986e-14" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 842.72056,56 v 63.24"
+       id="path1-2" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:6, 3;stroke-dashoffset:0"
+       d="m 905.22056,56 v 63.24"
+       id="path1-2-3" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 75,600.75 H 950"
+       id="path5-2-6"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 841.97056,118.75 h 63.24"
+       id="path5-2-6-5"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:6, 3;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 841.97056,56.75 h 63.24"
+       id="path5-2-6-5-3"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="164.79688"
+       y="625.28101"
+       id="text8-7-8"><tspan
+         sodipodi:role="line"
+         x="164.79688"
+         y="625.28101"
+         id="tspan7-5">App using large libraries (508.9KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="113.79689"
+       y="569.65625"
+       id="text8-7-8-1"><tspan
+         sodipodi:role="line"
+         x="113.79689"
+         y="569.65625"
+         id="tspan7-5-1">React (53.7KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="757.4375"
+       y="590.15625"
+       id="text8-7-8-1-12"><tspan
+         sodipodi:role="line"
+         x="757.4375"
+         y="590.15625"
+         id="tspan7-5-1-8">SolidJS (7.5KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="757.4375"
+       y="560.15625"
+       id="text8-7-8-1-0"><tspan
+         sodipodi:role="line"
+         x="757.4375"
+         y="560.15625"
+         id="tspan7-5-1-81">SolidRouter (7.9KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="757.10938"
+       y="529.15625"
+       id="text8-7-8-1-9"><tspan
+         sodipodi:role="line"
+         x="757.10938"
+         y="529.15625"
+         id="tspan7-5-1-0">@corvu/calendar (4.4KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="758.28125"
+       y="449.15625"
+       id="text8-7-8-1-90"><tspan
+         sodipodi:role="line"
+         x="758.28125"
+         y="449.15625"
+         id="tspan7-5-1-13">ALTCHA (23.9KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="113.00425"
+       y="521.25244"
+       id="text8-7-8-1-1"><tspan
+         sodipodi:role="line"
+         x="113.00425"
+         y="521.25244"
+         id="tspan7-5-1-1">NextJS (46.5KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="112.49995"
+       y="386.07047"
+       id="text8-7-8-1-1-1"><tspan
+         sodipodi:role="line"
+         x="112.49995"
+         y="386.07047"
+         id="tspan7-5-1-1-4">MUI DatePicker &amp; dependencies (133.7KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="604.79688"
+       y="626.90625"
+       id="text8-7-8-7"><tspan
+         sodipodi:role="line"
+         x="604.79688"
+         y="626.90625"
+         id="tspan7-5-5">App using lightweight libraries (93.7KB)</tspan></text>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1"
+       width="400"
+       height="53.700001"
+       x="105.75"
+       y="546.5"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8"
+       width="400"
+       height="46.5"
+       x="105.75"
+       y="500.04553"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2"
+       width="400"
+       height="133.7"
+       x="105.75"
+       y="366.375"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8"
+       width="400"
+       height="225"
+       x="105.75"
+       y="141.14592"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3"
+       width="400"
+       height="50"
+       x="105.75"
+       y="91.25"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3-0"
+       width="100"
+       height="30"
+       x="647.75"
+       y="570.75"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3-0-0"
+       width="100"
+       height="31.6"
+       x="647.75"
+       y="538.75"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3-0-0-0"
+       width="100"
+       height="17.6"
+       x="647.75"
+       y="521.75"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3-0-0-0-7"
+       width="100"
+       height="95.599998"
+       x="647.75"
+       y="426.75"
+       ry="6.9901895e-14" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-2-8-3-0-0-0-7-3"
+       width="100"
+       height="200"
+       x="647.75"
+       y="227.20926"
+       ry="6.9901895e-14" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0"
+       x="744.10156"
+       y="38.15625"
+       id="text1"><tspan
+         sodipodi:role="line"
+         x="744.10156"
+         y="38.15625"
+         id="tspan3">Client-side bundle size (Gzipped)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0"
+       x="853.05237"
+       y="93.23468"
+       id="text1-7"><tspan
+         sodipodi:role="line"
+         x="853.05237"
+         y="93.23468"
+         id="tspan3-0">10KB</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="114.43748"
+       y="163.65625"
+       id="text8-7-8-1-1-5"><tspan
+         sodipodi:role="line"
+         x="114.43748"
+         y="163.65625"
+         id="tspan7-5-1-1-2">Recaptcha (225KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="114.43748"
+       y="112.65625"
+       id="text8-7-8-1-1-5-1"><tspan
+         sodipodi:role="line"
+         x="114.43748"
+         y="112.65625"
+         id="tspan7-5-1-1-2-9">App code (50KB)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="758.28125"
+       y="247.15625"
+       id="text8-7-8-1-1-5-1-7"><tspan
+         sodipodi:role="line"
+         x="758.28125"
+         y="247.15625"
+         id="tspan7-5-1-1-2-9-2">App code (50KB)</tspan></text>
+  </g>
+</svg>

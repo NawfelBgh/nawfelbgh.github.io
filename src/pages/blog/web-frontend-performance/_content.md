@@ -688,7 +688,25 @@ For example, check out the [You-Dont-Need-Momentjs](https://github.com/you-dont-
 
 It is important to note that tree-shaking has its limits, as libraries typically contain a set of core modules that cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules, which include a style engine and various other utilities. Therefore, instead of reaching for MUI to use just one of its components, it is better to look for a specialized library.
 
-TODO FIGURE LIBRARIES REACT + MOMENT + MUI (Button, Modal, Select, Input) + DATE_PICKER + GTM + Recaptcha vs LIGHTWEIGHT ALTERNATIVES
+<figure id="figure-library-sizes">
+    <img
+        alt="Comparing library sizes"
+        src="/blog/web-frontend-performance/library-sizes.svg"
+        width="1000"
+        height="650"
+    />
+    <figcaption>
+        <p>
+            <a href="#figure-library-sizes">Large vs lightweight libraries:</a> This figure compares the gzipped client side bundle size of two versions of the same applications. In both versions, application code weighs 50KB.
+        </p>
+        <p>
+            The first app uses very popular but quite large libraries: React (53.7KB), NextJS App router (~46.5KB), MUI Date picker and its dependencies (133.7KB) and Recaptcha (~225KB). In total the app weighs 508.9KB.
+        </p>
+        <p>
+            The second app uses SolidJS (7.5KB), SolidRouter (7.9KB), <code>@corvu/calendar</code> (4.4KB) and ALTCHA (23.9KB). In total the app weighs 93.7KB (18.4% the size of the large libraries version)
+        </p>
+    </figcaption>
+</figure>
 
 ### Keeping code in the server
 
@@ -838,17 +856,17 @@ Note that partial hydration benefits can be seen in large applications. In small
         <tbody>
             <tr>
                 <td>SolidStart</td>
-                <td>15kB</td>
+                <td>15.5kB</td>
                 <td>Full</td>
             </tr>
             <tr>
                 <td>Astro+Alpine</td>
-                <td>42kB</td>
+                <td>17.1kB</td>
                 <td>Partial</td>
             </tr>
             <tr>
                 <td>Next.js</td>
-                <td>100kB</td>
+                <td>94kB</td>
                 <td>Partial</td>
             </tr>
         </tbody>
