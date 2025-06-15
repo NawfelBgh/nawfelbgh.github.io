@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="1000"
+   width="700"
    height="500"
-   viewBox="0 0 1000 500"
+   viewBox="0 0 700 500"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="0.70710675"
-     inkscape:cx="531.74432"
-     inkscape:cy="234.05235"
+     inkscape:zoom="0.99999996"
+     inkscape:cx="328.00001"
+     inkscape:cy="291.50001"
      inkscape:window-width="1792"
      inkscape:window-height="988"
      inkscape:window-x="0"
@@ -42,42 +42,42 @@
     <rect
        style="fill:#ffffff;fill-opacity:1;stroke-width:1.10461"
        id="rect2"
-       width="1000"
+       width="700"
        height="500"
        x="25"
        y="0"
        ry="5.0241986e-14" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
-       d="M 834.72056,56 V 96"
+       d="M 514.72056,56 V 96"
        id="path1-2" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:6, 3;stroke-dashoffset:0"
-       d="M 933.22056,56 V 96"
+       d="M 613.22056,56 V 96"
        id="path1-2-3" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 75,430.7501 H 950"
+       d="M 50,430.7501 H 700"
        id="path5-2-6"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 833.97056,95.75 h 100"
+       d="m 513.97056,95.75 h 100"
        id="path5-2-6-5"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:6, 3;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 833.97056,56.75 h 100"
+       d="m 513.97056,56.75 h 100"
        id="path5-2-6-5-3"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="729.79431"
+       x="420.84375"
        y="457.63306"
        id="text8-7-8-1-12"><tspan
          sodipodi:role="line"
-         x="729.79431"
+         x="420.84375"
          y="457.63306"
          id="tspan7-5-1-8">SolidStart (15.5KB)</tspan></text>
     <rect
@@ -85,55 +85,37 @@
        id="rect1-8-2-8-3-0"
        width="100"
        height="62"
-       x="753.75"
+       x="444.79944"
        y="368.75009"
        ry="6.9901895e-14" />
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0"
-       x="744.10156"
+       x="424.10156"
        y="38.15625"
        id="text1"><tspan
          sodipodi:role="line"
-         x="744.10156"
+         x="424.10156"
          y="38.15625"
          id="tspan3">Client-side bundle size (Gzipped)</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0"
-       x="863.43713"
+       x="543.43713"
        y="81.744194"
        id="text1-7"><tspan
          sodipodi:role="line"
-         x="863.43713"
+         x="543.43713"
          y="81.744194"
          id="tspan3-0">10KB</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="423.95312"
-       y="456.63306"
-       id="text8-7-8-1-12-1"><tspan
-         sodipodi:role="line"
-         x="423.95312"
-         y="456.63306"
-         id="tspan7-5-1-8-0">Astro + Alpine (17.1KB)</tspan></text>
-    <rect
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
-       id="rect1-8-2-8-3-0-5"
-       width="100"
-       height="68.400002"
-       x="469.64279"
-       y="362.09323"
-       ry="6.9901895e-14" />
-    <text
-       xml:space="preserve"
-       style="font-size:16px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="174.54689"
+       x="165.4375"
        y="456.03992"
        id="text8-7-8-1-12-1-9"><tspan
          sodipodi:role="line"
-         x="174.54689"
+         x="165.4375"
          y="456.03992"
          id="tspan7-5-1-8-0-2">Next.js (94KB)</tspan></text>
     <rect
@@ -141,7 +123,7 @@
        id="rect1-8-2-8-3-0-5-3"
        width="100"
        height="376"
-       x="185.53557"
+       x="176.42618"
        y="54.780998"
        ry="6.9901895e-14" />
   </g>

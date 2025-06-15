@@ -842,15 +842,17 @@ Right now, the most popular frameworks supporting partial hydration are [Astro](
     </figcaption>
 </figure>
 
-Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [Next.js](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
+Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Next.js](https://movies.sst.dev) version. This is due to SolidStart being more lightweight compared to Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
 
 <figure id="figure-movies-app">
     <img
-        alt="Comparison of the client-side code size of multiple implementations of the Movies App demo"
-        src="/blog/web-frontend-performance/waterfall-diagram/layout-thrashing.svg"
+        alt="Comparison of the client-side code size of two implementations of the Movies App demo"
+        src="/blog/web-frontend-performance/movies-apps.svg"
+        height="500"
+        width="700"
     />
     <figcaption>
-        <a href="#figure-movies-app">Comparison of the client-side code size of multiple implementations of the Movies App demo:</a> This figure shows the client-side code size of 3 implementations of the Movies App demo. While the Next.js (94KB) and Astro+Alpine (17.1KB) versions partially hydrate the page, the SolidJS version fully hydrates the page but it loads less JavaScript code (15.5KB).
+        <a href="#figure-movies-app">Comparison of the client-side code size of two implementations of the Movies App demo:</a> This figure shows the client-side code size of 2 implementations of the Movies App demo. While the Next.js (94KB) version partially hydrates the page, the SolidJS version fully hydrates it but still manages to load less JavaScript code (15.5KB).
     </figcaption>
 </figure>
 
