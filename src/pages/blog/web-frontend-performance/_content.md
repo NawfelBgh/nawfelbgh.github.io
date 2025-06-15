@@ -700,7 +700,7 @@ It is important to note that tree-shaking has its limits, as libraries typically
             <a href="#figure-library-sizes">Large vs lightweight libraries:</a> This figure compares the gzipped client side bundle size of two versions of the same applications. In both versions, application code weighs 50KB.
         </p>
         <p>
-            The first app uses very popular but quite large libraries: React (53.7KB), NextJS App router (~46.5KB), MUI Date picker and its dependencies (133.7KB) and Recaptcha (~225KB). In total the app weighs 508.9KB.
+            The first app uses very popular but quite large libraries: React (53.7KB), Next.js App router (~46.5KB), MUI Date picker and its dependencies (133.7KB) and Recaptcha (~225KB). In total the app weighs 508.9KB.
         </p>
         <p>
             The second app uses SolidJS (7.5KB), SolidRouter (7.9KB), <code>@corvu/calendar</code> (4.4KB) and ALTCHA (23.9KB). In total the app weighs 93.7KB (18.4% the size of the large libraries version)
@@ -750,7 +750,7 @@ Offloading code to the server can also negatively impact developer experience (D
 Some frameworks improve the DX of making API requests:
 
 - [tRPC](https://trpc.io/) offers a simple API for creating both server and client sides of API routes, resulting in well-typed and readable code.
-- [NextJS](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
+- [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
 
 #### Server-side rendering
 
@@ -825,7 +825,7 @@ As these modern frameworks do both SSR and CSR, using them has a cost:
 
 To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (meaning that this code is never sent to the client) and which parts can be rendered on both the server and the client. The code for the components that are rendered only on the server does not need to be sent to the client, which reduces client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
 
-Right now, the most popular frameworks supporting partial hydration are [Astro](https://astro.build/) via [Islands](https://docs.astro.build/en/concepts/islands/), and [NextJS](https://nextjs.org/) via [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+Right now, the most popular frameworks supporting partial hydration are [Astro](https://astro.build/) via [Islands](https://docs.astro.build/en/concepts/islands/), and [Next.js](https://nextjs.org/) via [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
 
 <figure id="figure-full-vs-partial-hydration">
     <img alt="Full Hydration vs Partial Hydration" src="/blog/web-frontend-performance/full-vs-partial-hydration.svg" />
@@ -842,37 +842,15 @@ Right now, the most popular frameworks supporting partial hydration are [Astro](
     </figcaption>
 </figure>
 
-Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [NextJS](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
+Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Astro+Alpine](https://astro-movies-app.netlify.app/) and [Next.js](https://movies.sst.dev) versions. This is due to SolidStart being more lightweight compared to Alpine and Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
 
 <figure id="figure-movies-app">
-    <table>
-        <thead>
-            <tr>
-                <th>Framework</th>
-                <th>Client bundle size (compressed)</th>
-                <th>Hydration type</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>SolidStart</td>
-                <td>15.5kB</td>
-                <td>Full</td>
-            </tr>
-            <tr>
-                <td>Astro+Alpine</td>
-                <td>17.1kB</td>
-                <td>Partial</td>
-            </tr>
-            <tr>
-                <td>Next.js</td>
-                <td>94kB</td>
-                <td>Partial</td>
-            </tr>
-        </tbody>
-    </table>
+    <img
+        alt="Comparison of the client-side code size of multiple implementations of the Movies App demo"
+        src="/blog/web-frontend-performance/waterfall-diagram/layout-thrashing.svg"
+    />
     <figcaption>
-        <a href="#figure-movies-app">Comparison of the client-side code of multiple implementations of the Movies App demo:</a> . We can see that although the SolidJS version fully hydrates the page, it still loads less JavaScript code than the Astro+Alpine and the Next.js versions.
+        <a href="#figure-movies-app">Comparison of the client-side code size of multiple implementations of the Movies App demo:</a> This figure shows the client-side code size of 3 implementations of the Movies App demo. While the Next.js (94KB) and Astro+Alpine (17.1KB) versions partially hydrate the page, the SolidJS version fully hydrates the page but it loads less JavaScript code (15.5KB).
     </figcaption>
 </figure>
 
