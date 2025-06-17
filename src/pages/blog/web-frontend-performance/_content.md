@@ -1,4 +1,6 @@
-# Introduction
+# How to make fast web frontends
+
+## Introduction
 
 In this article, I will discuss techniques for optimizing the performance of web frontends.
 There are many reasons to focus on this:
@@ -11,26 +13,21 @@ There are many reasons to focus on this:
 
 The article is structured as follows:
 
-- I start with an overview of the logical and physical components that make up the web.
-- Next, I explore optimization strategies that minimize the workload required to display web content.
+- I start by presenting the physical components underlying the web, highlighting its environmental impact.
+- Next, I explore optimization strategies that work by reducing the workload required to deliver web content.
 - Finally, I discuss strategies for scheduling tasks efficiently to minimize user wait times.
 
-Here are some key takeaways from the article:
+Although performance analysis should be informed by measurements, I do not delve into how
+to use DevTools to measure performance or what metrics to use. Please check other articles for that.
+Instead, I focus on the why behind many optimizations and the interaction between different ones.
 
-- Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. I tried to highlight this whenever possible throughout the document.
-- Websites and apps can still perform well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
-- Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
-
-Finally, this article is by no means a comprehensive guide to web performance. It completely glosses over backend performance. And, It is inevitably biased by my experience using JavaScript frameworks (mainly React) and with WordPress.
-
-# Table of content
+## Table of content
 
 - [Introduction](#introduction)
 - [Table of content](#table-of-content)
-- [What makes up Web frontends](#what-makes-up-web-frontends)
+- [The Web as a physical system](#the-web-as-a-physical-system)
+  - [Frontends contribution to the web's environmental footprint](#frontends-contribution-to-the-webs-environmental-footprint)
   - [Improving performance by using more powerful hardware](#improving-performance-by-using-more-powerful-hardware)
-  - [The environmental footprint of the Web](#the-environmental-footprint-of-the-web)
-    - [Frontends contribution to the web's environmental footprint](#frontends-contribution-to-the-webs-environmental-footprint)
 - [Optimizing performance by doing less work](#optimizing-performance-by-doing-less-work)
   - [Caching](#caching)
     - [HTTP caching](#http-caching)
@@ -77,35 +74,21 @@ Finally, this article is by no means a comprehensive guide to web performance. I
   - [On the environmental footprint of the Web](#on-the-environmental-footprint-of-the-web)
 - [Conclusion](#conclusion)
 
-# What makes up Web frontends
-
-Let's begin with a simple overview of the key components that make up the web:
-
-The [Internet](https://en.wikipedia.org/wiki/Internet) is a global network of computers linked by relay devices. These computers include users' devices and server machines.
-
-The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web), or simply the Web, is an information system that uses the Internet infrastructure.
-
-Organizations and businesses can have presence on the web by making [websites](https://en.wikipedia.org/wiki/Website), hosted by [web servers](https://en.wikipedia.org/wiki/Web_server) (Software and hardware components serving [web content](https://en.wikipedia.org/wiki/Web_content) to the users).
-
-To access websites, users use [web browsers](https://en.wikipedia.org/wiki/Web_browser), also referred to as web [clients](<https://en.wikipedia.org/wiki/Client_(computing)>), installed on their devices: Web clients request [Web resources](https://en.wikipedia.org/wiki/Web_resource) (referred to simply as "resources" in this article) from servers, and process server responses. These resources are essentially files that can be identified by [URLs](https://en.wikipedia.org/wiki/URL) (Uniform Resource Locators).
-
-In this article, we will explore how to improve web frontends performance by optimizing client code (that is, code running in clients devices), frontend servers code (code running in the server and generating web content) and by reducing network usage between clients and servers.
-
 ## The Web as a physical system
 
-The web is a gigantic distributed system of hardware components that require physical resources throughout their entire lifecycle:
+The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web) is a major user of the [Internet](https://en.wikipedia.org/wiki/Internet): a gigantic distributed system of machines and network infrastructure.
+Like any other physical system, the Internet competes for resources with other human activities and with the natural world more broadly.
 
-- Building the hardware requires mining and manufacturing, both of which take away space from nature, consume energy and generate pollution.
-- Hardware consumes energy during its usage.
-- Finally, disposing of retired hardware has an impact on the environment.
+The hardware components making the Internet require physical resources and generate waste throughout their entire lifecycle: During mining and manufacturing, during their usage, and finally when they are disposed of.
 
-If we only take into account carbon emissions, which are a proxy for energy consumption, the Internet is currently estimated to account for around 4% of global carbon emissions. This is comparable to the entire aviation industry (See: [Introduction to web sustainability](https://developer.mozilla.org/en-US/blog/introduction-to-web-sustainability/)).
+One measure of the environmental footprint of the Internet is its carbon emissions: estimated around 4% of global carbon emissions, which is comparable to the entire aviation industry (See: [Introduction to web sustainability](https://developer.mozilla.org/en-US/blog/introduction-to-web-sustainability/)).
 
 <figure id="figure-physical-web">
     <img
         alt="Web infrastructure"
         src="/blog/web-frontend-performance/physical-web.svg"
-        width="1000"
+        width="1200"
+        height="800"
     />
     <figcaption>
        <p><a href="#figure-physical-web">The Web as a system with Physical components:</a> This figure shows components of the infrastructure of the Web: Servers, users' devices and network relay devices. It shows also that the web is embedded in a natural system. Space and resources are taken from nature to build and run the infrastructure of the Web. This is represented here by a mine, a factory and solar panels.</p>
@@ -142,29 +125,30 @@ This means that frontend developers have both the power and the responsibility t
     </figcaption>
 </figure>
 
-## Improving performance by using more powerful hardware
+### Improving performance by using more powerful hardware
 
-One way to make web frontends faster is by using more powerful hardware:
+One way to make web applications run faster is by using more powerful hardware:
 
 - Upgrading users' devices,
-- Building faster networks,
-- Using more powerful server machines, and
+- Using faster networks,
+- Upgrading server machines, and
 - Using more server machines.
 
-The first two options usually require users to pay, as they cannot change the web applications themselves. Users may upgrade their devices or internet plans, or they may look for faster alternative web applications.
+The first two options usually require users to pay when they upgrade their devices and/or internet plans.
 
-The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimizations are not feasible—perhaps because the software is already optimized for the existing hardware, or due to a lack of time or manpower for software optimization.
+The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimization is not an option.
 
-Relying on hardware upgrades to solve performance issues should be a last resort, as it can be costly and therefore only affordable for those with financial resources. Furthermore, the production of hardware and the consumption of energy for web services compete for physical resources with other human and non-human activities.
+Relying on hardware upgrades to solve performance issues should be a last resort as it is costly both financially and from an environmental point of view.
 
 <figure id="figure-physical-web-bigger">
     <img
         alt="Bigger Web Infrastructure"
         src="/blog/web-frontend-performance/physical-web-bigger.svg"
-        width="1000"
+        width="1200"
+        height="800"
     />
     <figcaption>
-       <p><a href="#figure-physical-web-bigger">Bigger Web Infrastructure:</a> This figure shows a similar infrastructure to the one from <a href="#figure-physical-web">the previous figure</a>. Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. The network connections are of bigger capacity. Users devices and connection speed increased a little bit, and the rich user's increased even more.
+       <p><a href="#figure-physical-web-bigger">Expending the Web Infrastructure in size:</a> This figure shows a similar infrastructure to the one from <a href="#figure-physical-web">the previous figure</a>. Here, the servers and the network relay devices are more powerful. This is depicted using bigger sizes. The network connections are of bigger capacity. Users devices and connection speed increased a little bit, and the rich user's increased even more.
        </p>
        <p>
        In order to support the growth of the infrastructure of the Web, more space is taken from nature. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
@@ -174,7 +158,7 @@ Relying on hardware upgrades to solve performance issues should be a last resort
 
 ---
 
-# Optimizing performance by doing less work
+## Optimizing performance by doing less work
 
 In this chapter, I present techniques that reduce the workload for server machines, user devices, and the network, by shifting work within the system as to:
 
@@ -182,7 +166,7 @@ In this chapter, I present techniques that reduce the workload for server machin
 - reduce the overall work required in the whole system,
 - and reduce the time needed to serve the frontend to the user.
 
-## Performance through minimalism
+### Performance through minimalism
 
 Before diving into the technical side of things, it is worth mentioning minimalism as a non technical, or a less technical, solution to make frontends fast.
 
@@ -200,7 +184,7 @@ Minimalism is one way to approach this issue of web bloat. It is encouraged in t
 
 [Sustainable Web design](https://sustainablewebdesign.org/) goes beyond minimalism. It encompasses user experience design, carbon intensity and also the technical solutions addressed in the rest of this article.
 
-## Caching
+### Caching
 
 Caching is a powerful tool for optimizing performance. Instead of repeatedly performing the same task, such as sending identical data to the client over and over or regenerating the same page on the server multiple times, server responses can be stored in caches on both the client and server sides for reuse when requested again.
 
@@ -210,7 +194,7 @@ Caching can be implemented to some extent without users noticing. However, the b
 
 As a result, caching decisions should not be made by developers alone; input from the product owner is crucial. Both developers and product owners need to understand the level of cache control that web technologies offer and what is acceptable for different types of resources on their websites and applications to implement effective caching.
 
-### HTTP caching
+#### HTTP caching
 
 To support [caching requirements](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching), the HTTP protocol provides a range of [standard headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers). For example:
 
@@ -231,7 +215,7 @@ Caching can be done both by clients and intermediary servers. Cache-Control head
     </figcaption>
 </figure>
 
-#### Fresh and stale cached data
+##### Fresh and stale cached data
 
 When an HTTP response is stored in a cache, it remains fresh for a certain duration. Once that duration is elapsed, the response becomes stale. If the freshness duration is not specified by a `Cache-Control: max-age` header or an `Expires` header, caches will chose it heuristically.
 Additionally, the freshness duration can be explicitly set to 0 (using `Cache-Control: max-age=0`), which makes the cached response stale immediately.
@@ -266,7 +250,7 @@ When making a conditional request, we still have to:
     </figcaption>
 </figure>
 
-#### Revalidating stale data in the background
+##### Revalidating stale data in the background
 
 `Stale-while-revalidate` (also referred to as SWR) is another cache control option that the server can provide alongside `max-age`. It defines a period during which the cache can respond with stale data while revalidating the content in the background using a conditional request.
 The stale-while-revalidate strategy can only be used when it is acceptable to show not up-to-date content to the user. It has the advantage of hiding the delays associated with the revalidation of cached data.
@@ -290,7 +274,7 @@ The stale-while-revalidate strategy can only be used when it is acceptable to sh
     </figcaption>
 </figure>
 
-#### Client-requested cache revalidation
+##### Client-requested cache revalidation
 
 Clients can ask intermediary caches to [disregard cached responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#reload_and_force_reload) and to reach to the origin server:
 
@@ -315,7 +299,7 @@ Clients can ask intermediary caches to [disregard cached responses](https://deve
     </figcaption>
 </figure>
 
-#### Cache busting
+##### Cache busting
 
 [Cache busting](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#cache_busting) is a caching strategy commonly used to address the dilemma of having to choose between short and long cache freshness durations (`max-age`):
 
@@ -357,7 +341,7 @@ Cache busting, as explained so far, can be further optimized:
 
 - Wikipedia, being one of the largest and most visited websites, want to cache their pages for as long as possible and cannot afford to update all their pages whenever a script or a style file is modified. So, [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script that points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way, pages can have long `max-age`s while still being able to load newly published sub-resources.
 
-#### Caching static portions of webpages
+##### Caching static portions of webpages
 
 Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For example, on a product page of an e-commerce site, the static elements would include the product details, while the dynamic elements would consist of the contents of the user's shopping basket, along with action forms that are secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
 
@@ -385,27 +369,27 @@ For examples of how to do this, check out:
     </figcaption>
 </figure>
 
-### Service Workers
+#### Service Workers
 
 Since 2018, all major browsers support the [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) and [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) APIs. The former API allows websites to register a JavaScript worker in clients’ browsers. This worker acts like a proxy server intercepting and responding to client network requests. As for the Cache Storage API, it allows web applications to programmatically manage a cache. Together, those APIs make it possible to write offline web applications and to implement caching rules that go beyond what is possible in standard HTTP.
 
-### Caching in interactive WebApps
+#### Caching in interactive WebApps
 
 In interactive [AJAX](<https://en.wikipedia.org/wiki/Ajax_(programming)>)-heavy web applications, client-side JavaScript code loads data from the server and later decides when to refetch the data again, for example, after a certain time interval or after the user performs an action that writes to the server's database.
 
 This data loading and reloading by client-side code can be seen as cache management, where the data loaded on the client is regarded as a cached version of the server data. Many developers in the JavaScript community reach for the [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) library, which provides APIs for cache management, as well as DevTools and integrations with various web frameworks.
 
-### Caching compiled code
+#### Caching compiled code
 
 Browsers do not only cache server responses; they can also cache compiled JavaScript code to optimize the startup time of frequently used web applications. For more information on this, check out the following articles by the [Chromium](https://v8.dev/blog/code-caching) and [Firefox](https://blog.mozilla.org/javascript/2017/12/12/javascript-startup-bytecode-cache/) teams.
 
 ---
 
-## Reducing content size
+### Reducing content size
 
 Now, we will look at techniques to reduce the size of webpages and their sub-resources. This helps reduce network traffic and the amount of data that the client has to process.
 
-### Image optimization
+#### Image optimization
 
 Images make up [around 50%](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia) of the bandwidth of the average website , making them a good candidate for optimization. Image file sizes can be reduced by:
 
@@ -419,13 +403,13 @@ This allows us to cater to the needs of all users, by providing alternative vers
 
 As setting up a system that provides multiple sources for each image can be quite complex, many web frameworks and hosting services include image optimization tools to automate this task.
 
-### Subsetting web font files
+#### Subsetting web font files
 
 Web pages can use text fonts installed on users' systems or load custom web font files. [Web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define the glyphs of subsets of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
 
 When a web font is defined by multiple subset files, the browser ensures it downloads only the files containing glyphs that actually appear on the page. Check out the MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and the section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
 
-### HTTP responses compression
+#### HTTP responses compression
 
 [Compressing HTTP responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression) can substantially reduce network usage. This feature is implemented by practically all web browsers, as well as most popular web server stacks and web hosting services, making its activation a matter of proper server configuration.
 
@@ -458,7 +442,7 @@ HTTP response compression works through content negotiation between clients and 
 
 Note that not all resources need to use HTTP compression: Some file formats, such as images and video files, are already compressed. Therefore, recompressing them again would waste CPU cycles and can increase their sizes (although slightly).
 
-### HTTP headers compression
+#### HTTP headers compression
 
 In addition to response body compression, [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Header compression is implemented by browsers and the HTTP stack of web servers, requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
 
@@ -486,7 +470,7 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
 
 ---
 
-## Content Delivery Networks
+### Content Delivery Networks
 
 The longer the distance between the client and the server, the more time it takes for data packets to travel between the two. The resulting time delays are called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency) and are the result of physical limits; it takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
 
@@ -520,7 +504,7 @@ CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_terminatio
 
 ---
 
-## Bundling resources
+### Bundling resources
 
 Some network latency is introduced each time an HTML document or one of its resources loads other resources. This latency and network overhead can be avoided by embedding resources inline instead of referencing them by URL. Depending on the context, this is referred to as inlining, embedding, concatenation, or bundling. For example:
 
@@ -591,7 +575,7 @@ Because of the performance drawbacks of bundling, [some optimization tools](http
     </figcaption>
 </figure>
 
-### Bundling in the HTTP/2+ era
+#### Bundling in the HTTP/2+ era
 
 With the advent of HTTP/2, many web articles declared the death of resource bundling, because:
 
@@ -605,15 +589,15 @@ On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](ht
 
 ---
 
-## Reducing client-side code size
+### Reducing client-side code size
 
-### Using optimizing bundlers
+#### Using optimizing bundlers
 
 Developers typically do not ship their source code unchanged to clients. Instead, they use bundling tools or frameworks that include such tools to transform the website's source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
 
 As we discussed in [Bundling resources](#bundling-resources), bundling reduces network overhead. Additionally, bundling tools implement features like [Minification](#minification) and [Tree-Shaking](#tree-shaking), which help reduce code size.
 
-#### Minification
+##### Minification
 
 Text files such as HTML, CSS, JavaScript and SVG files contain elements that are useful for developers but not for end users: whitespace formatting, comments and intuitive variable names.
 [Minification](https://developer.mozilla.org/en-US/docs/Glossary/Minification) is the process of removing those elements.
@@ -639,7 +623,7 @@ function add(n,t){return n+t}
 function multiply(n,t){return n*t}
 ```
 
-#### Tree-shaking
+##### Tree-shaking
 
 Bundlers can also reduce code size with [Tree-Shaking](https://en.wikipedia.org/wiki/Tree_shaking); by removing code that static analysis shows to be unreachable from the bundle's entry points. Outside web circles, this concept is more generally known as [Dead-code Elimination](https://en.wikipedia.org/wiki/Dead-code_elimination).
 
@@ -668,7 +652,7 @@ function add(first, second) {
 console.log(add(0.1, 0.2));
 ```
 
-### Using small libraries and third-party scripts
+#### Using small libraries and third-party scripts
 
 When choosing libraries and third-party services, **code size** should be one of the selection criteria.
 
@@ -708,7 +692,7 @@ It is important to note that tree-shaking has its limits, as libraries typically
     </figcaption>
 </figure>
 
-### Keeping code in the server
+#### Keeping code in the server
 
 Sometimes, when some portions of code are very large, it can make sense to keep them in the server and to execute them on client requests to avoid burdening the client by downloading and executing them.
 
@@ -752,7 +736,7 @@ Some frameworks improve the DX of making API requests:
 - [tRPC](https://trpc.io/) offers a simple API for creating both server and client sides of API routes, resulting in well-typed and readable code.
 - [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
 
-#### Server-side rendering
+##### Server-side rendering
 
 In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
@@ -821,7 +805,7 @@ As these modern frameworks do both SSR and CSR, using them has a cost:
     </figcaption>
 </figure>
 
-##### Partial hydration
+###### Partial hydration
 
 To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (meaning that this code is never sent to the client) and which parts can be rendered on both the server and the client. The code for the components that are rendered only on the server does not need to be sent to the client, which reduces client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
 
@@ -858,7 +842,7 @@ Note that partial hydration benefits can be seen in large applications. In small
 
 ---
 
-## Reducing CPU work in the client
+### Reducing CPU work in the client
 
 In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page — a process commonly referred to as layout — and finally paint the result on the screen.
 The browser has to repeat some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating page layout is known as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
@@ -897,7 +881,7 @@ Performance issues related to layout can arise from inefficient CSS, for instanc
 
 Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution that became widely available recently (September 2024) is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment), which allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
 
-### Client-side navigation
+#### Client-side navigation
 
 In web applications that load a lot of JavaScript code, re-executing the app's code on every page navigation is both slow and wasteful of CPU cycles. Client-side navigation, in contrast to traditional browser navigation, can help address this issue.
 
@@ -947,7 +931,7 @@ Moreover, client-side navigation is often a performance requirement in JavaScrip
     </figcaption>
 </figure>
 
-### Using WebAssembly
+#### Using WebAssembly
 
 Yet another solution for reducing work on the CPU is to use a faster programming language. On the web, only two client side programming languages are supported: JavaScript and [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) (abbreviated as Wasm for short).
 
@@ -970,7 +954,7 @@ Now, for the patient, let's derive the strengths and weaknesses of both language
 - Runtime services available to the code
 - Design goals
 
-#### Control over Memory layout
+##### Control over Memory layout
 
 The term [memory layout](https://en.wikipedia.org/wiki/Data_structure_alignment) is often used to describe the way objects are represented in memory. That is, each object's size, alignment, and the relative offsets of its fields.
 
@@ -1055,7 +1039,7 @@ map.put(new Key(3, 4), new Value(
 The Rust code for creating the equivalent object is :
 
 ```rust
-#[derive(Hash, Eq)]
+##[derive(Hash, Eq)]
 struct Key {
   x: i32,
   y: i32,
@@ -1140,7 +1124,7 @@ map.insert(Key {x: 3, y: 4}, Box::new(MapValue {
     </figcaption>
 </figure>
 
-#### Dynamic vs Static Typing
+##### Dynamic vs Static Typing
 
 JavaScript is a dynamically typed programming language were object shapes are determined dynamically at runtime. When code reads from or writes to a property of an object, it has to check out the shape of the object to know where in the memory the data to be read or written is stored.
 
@@ -1220,7 +1204,7 @@ Unlike JavaScript, **Wasm** gives programmers the tools to represent constructs 
     </figcaption>
 </figure>
 
-#### Human-readable vs Binary code
+##### Human-readable vs Binary code
 
 Blah JS has to be completely downloaded, then parsed . JS parsing is complex because the language is optimized for human readability.
 
@@ -1233,11 +1217,11 @@ When Wasm's binary format [was designed](https://github.com/WebAssembly/design/b
 
 Nowadays, browsers can even [parallelize](https://www.infoq.com/news/2018/01/firefox-58-web-assembly-gets-10x/) wasm code compilation.
 
-#### Runtime services available to the code
+##### Runtime services available to the code
 
 Blah blah GC, Stdlib
 
-##### No automatic garbage collection
+###### No automatic garbage collection
 
 WebAssembly doesn't offer automatic garbage collection. Developers have control about when and where new objects are allocated in memory and when they are freed, which is more control over performance and increased complexity. In Wasm we can write code that allocates and frees memory less often than garbage collected code.
 
@@ -1245,14 +1229,14 @@ Although, it [recently](https://webassembly.org/features/) got the capability to
 
 During the execution of JavaScript code, and especially when it allocates a lot of memory, the browser can decide to pause the program to collect unused memory which can lead to delayed renders or unresponsiveness to user events. In contrast, Wasm code doesn't trigger browser's built in garbage collection. The developers has to manage the memory themselves though. When done correctly, this can lead to very low latency code. When done incorrectly it can be slower than browser garbage collection which is quite optimized. For example, check out SpiderMonkey's (Firefox's JavaScript engine) garbage collector [documentation page](https://firefox-source-docs.mozilla.org/js/gc.html) showcasing the features it implements.
 
-#### Design goals
+##### Design goals
 
 Probably delete this
 
 https://webassembly.org/docs/use-cases/
 https://webassembly.org/docs/high-level-goals/
 
-#### WebAssembly Web frameworks
+##### WebAssembly Web frameworks
 
 WasAssembly can be used in the parts of web applications that require it, and to run programs written in other programming languages in th
 Today, web frameworks like [Leptos](https://www.leptos.dev/) and [Sycamore](https://sycamore.dev/) let you write your client-side in Rust and compile it to WebAssembly. These framework implement high level features like components, fine-grained reactivity, SSR and hydration, making them technically a valid replacement for many of the modern JavaScript frameworks.
@@ -1271,7 +1255,7 @@ Wasm being a way to securely run near native speed code, it also found uses in t
 
 ---
 
-## Reducing CPU work in the server
+### Reducing CPU work in the server
 
 - Using faster languages and frameworks
 - Using better algorithms
@@ -1280,7 +1264,7 @@ Wasm being a way to securely run near native speed code, it also found uses in t
 
 ---
 
-# Scheduling work to make users wait less
+## Scheduling work to make users wait less
 
 In this chapter, I present techniques that allow web sites and applications to minimize the time users have to wait, without reducing the the amount of work the sites/apps have to do, but by scheduling work smartly.
 
@@ -1288,7 +1272,7 @@ To visualize the effect of different scheduling strategies, I generated waterfal
 
 Feel free to [download the code](#) and to generate charts with different parameters.
 
-## Do not block the UI thread
+### Do not block the UI thread
 
 The browser runs JavaScript code in an [event loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop). When the user manipulates the page and when input/output operations progress, events are generated and JavaScript event handlers are run.
 The browser has to wait for any currently running JavaScript code to finish before it can respond to new events.
@@ -1335,9 +1319,9 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
 
 ---
 
-## Optimizing resources loading
+### Optimizing resources loading
 
-### Gradual content delivery with streaming
+#### Gradual content delivery with streaming
 
 Dynamically generated web pages are sometimes composed of parts that are fast to generate and some other parts that take longer to generate.
 It's desirable to deliver the parts that are ready to the user while the slower parts are still in the making. This way:
@@ -1348,7 +1332,7 @@ It's desirable to deliver the parts that are ready to the user while the slower 
 
 It is possible to do exactly that thanks to the streaming capability of HTTP (since version 1.1 of the protocol) and thanks to the HTML format being streaming-friendly (Browsers can process and show HTML documents progressively as they are received),
 
-#### Unlocking Parallelism with Streaming
+##### Unlocking Parallelism with Streaming
 
 When the server receives a request for a page, it can:
 
@@ -1371,7 +1355,7 @@ This way, the client can start loading the page's sub-resources in parallel with
     </figcaption>
 </figure>
 
-#### Out-Of-Order Streaming
+##### Out-Of-Order Streaming
 
 Certain frameworks offer APIs that allow for the concurrent loading of page sections on the server, which can then be streamed to the client in any order as they become available.
 These frameworks ensure that the page sections are rendered in the correct positions on the client side.
@@ -1398,7 +1382,7 @@ An interesting example among them is [SolidStart](https://start.solidjs.com/):
     </figcaption>
 </figure>
 
-#### Beyond HTTP responses streaming
+##### Beyond HTTP responses streaming
 
 The Web platform provides APIs to stream data between the client and the server like:
 
@@ -1413,9 +1397,9 @@ More recently, newer APIs arrived like:
 
 ---
 
-### Loading resources at the right time
+#### Loading resources at the right time
 
-#### Preloading
+##### Preloading
 
 In order to optimize the loading of webpages, browsers assign different loading priorities to different types of resources: The loading HTML document takes precedence over stylesheets, fonts and script files which themselves take precedence over images.
 
@@ -1446,7 +1430,7 @@ In the previous example, this would look like the following:
 </head>
 ```
 
-##### Preloading web fonts
+###### Preloading web fonts
 
 By default, browsers load [web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) only when they determine that they are actually needed. This makes them a great candidate for preloading, as when they are loaded late, they cause layout shifts that disturb the user experience.
 Also, it is [good practice](https://web.dev/learn/performance/optimize-web-fonts#self-host_your_web_fonts) to host web fonts on your own server, rather than relying on a third-party server, to minimize network latency caused by connection overhead.
@@ -1465,7 +1449,7 @@ Also, it is [good practice](https://web.dev/learn/performance/optimize-web-fonts
     </figcaption>
 </figure>
 
-##### Speeding up SPAs startup
+###### Speeding up SPAs startup
 
 In single-page applications that rely on client-side code for data retrieval, data fetching takes place only after the code has been fully loaded and executed. This process can be optimized using a preload tag, which instructs the browser to start loading the page's data as soon as it retrieves the head tag of the page. This allows the data fetching to occur concurrently with the loading of the client-side code.
 
@@ -1489,7 +1473,7 @@ The added cost of this preloading-enhanced client-side solution is limited to th
 
 ---
 
-#### Deferring non-critical styles and scripts
+##### Deferring non-critical styles and scripts
 
 CSS and JavaScript resources can be [render-blocking](https://developer.mozilla.org/en-US/docs/Glossary/Render_blocking), which means that the browser has to wait for these files to load before rendering the page to the user. This is necessary to prevent the [Flash Of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content), where users briefly see unstyled elements before the styles are applied.
 
@@ -1518,7 +1502,7 @@ This can be achieved using:
 
 ---
 
-#### Lazy loading
+##### Lazy loading
 
 Loading content only when necessary, a technique known as [lazy loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading), can enhance performance by allowing high-priority resources to load without the interference of low-priority ones.
 This can be achieved in HTML by marking images and iframes with the attribute `loading="lazy"` to delay their loading until they appear on the screen.
@@ -1558,6 +1542,10 @@ A further optimization is to prefetch next page's code when the user hovers over
 ---
 
 ## Conclusion
+
+- Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. I tried to highlight this whenever possible throughout the document.
+- Websites and apps can still perform well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
+- Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
 
 I encourage you to explore other important web performance topics:
 
