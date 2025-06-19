@@ -134,11 +134,7 @@ One way to make web applications run faster is by using more powerful hardware:
 - Upgrading server machines, and
 - Using more server machines.
 
-The first two options usually require users to pay when they upgrade their devices and/or internet plans.
-
-The last three upgrades are paid for by the website owners, which can lead to higher costs for users. These upgrades are necessary when the current infrastructure cannot adequately serve users and when software optimization is not an option.
-
-Relying on hardware upgrades to solve performance issues should be a last resort as it is costly both financially and from an environmental point of view.
+Relying on hardware upgrades to solve performance issues should be a considered after software optimizations as it is costly both financially and from an environmental point of view.
 
 <figure id="figure-physical-web-bigger">
     <img
@@ -152,6 +148,9 @@ Relying on hardware upgrades to solve performance issues should be a last resort
        </p>
        <p>
        In order to support the growth of the infrastructure of the Web, more space is taken from nature. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
+       </p>
+       <p>
+       The facial expression drawn on the 3 characters in this figure is the same as in the previous one, to point to <a href="https://en.wikipedia.org/wiki/Hedonic_treadmill">hedonic adaptation</a> (The shifting of the baseline human expectation) and to <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons paradox</a> (The nullification of gains from efficiency because of the raise in consumption).
        </p>
     </figcaption>
 </figure>
@@ -170,7 +169,7 @@ In this chapter, I present techniques that reduce the workload for server machin
 
 Before diving into the technical side of things, it is worth mentioning minimalism as a non technical, or a less technical, solution to make frontends fast.
 
-Bloat is a very well known phenomenon in [software in general](https://en.wikipedia.org/wiki/Software_bloat) and in the web in particular. According to [the HTTP Archive](https://httparchive.org/reports/page-weight#bytesTotal), as of december 2024, the median desktop web pages loads 2.67 MB of data (almost 6 times the median web page from 2011).
+Bloat is a very well known phenomenon in [software in general](https://en.wikipedia.org/wiki/Software_bloat) and in the web in particular. According to [the HTTP Archive](https://httparchive.org/reports/page-weight#bytesTotal), as of june 2025, the median desktop web pages loads 2.8 MB of data (5.8 times the size of the median web page from early 2011).
 
 On this subject, I recommend Maciej Cegłowski's hilarious talk: [The Website Obesity Crisis](https://idlewords.com/talks/bsite_obesity.htm):
 
@@ -190,7 +189,7 @@ Caching is a powerful tool for optimizing performance. Instead of repeatedly per
 
 This approach sacrifices some memory on the client and server to reduce CPU workload on the server and decrease network bandwidth usage.
 
-Caching can be implemented to some extent without users noticing. However, the best performance gains can only be realized by accepting that some users may not see the most recent version of certain data immediately after it is published. The challenge arises when clients are instructed to store and reuse a response until a certain expiration time without contacting the server; it can be difficult to inform them of updates that occur before that expiration.
+Caching can be implemented to some extent without users noticing. However, the best performance gains can only be realized by accepting that some users may not see the most recent version of certain data immediately after it is published: Clients are instructed to store and reuse a response until a certain expiration time without contacting the server. During that period, users may not see the latest content on the server.
 
 As a result, caching decisions should not be made by developers alone; input from the product owner is crucial. Both developers and product owners need to understand the level of cache control that web technologies offer and what is acceptable for different types of resources on their websites and applications to implement effective caching.
 
@@ -198,7 +197,7 @@ As a result, caching decisions should not be made by developers alone; input fro
 
 To support [caching requirements](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching), the HTTP protocol provides a range of [standard headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers). For example:
 
-- Response [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) headers allow servers to tell clients and intermediary caches when they can store and reuse server’s responses, and for how long,
+- Response [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) headers allow servers to tell clients and intermediary caches (between servers and clients) when they can store and reuse servers' responses, and for how long,
 - Request Cache-Control headers allow clients to ask intermediary caches to reach to the origin server to get fresher content,
 - Other response headers such as `Last-Modified` and `ETag` and request headers such as `If-Modified-Since` and `If-None-Match` allow implementing [conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Conditional_requests) as we will see shortly.
 
@@ -209,6 +208,7 @@ Caching can be done both by clients and intermediary servers. Cache-Control head
         alt="Caching with shared cache"
         src="/blog/web-frontend-performance/caching-with-shared-cache.svg"
         width="1000"
+        height="700"
     />
     <figcaption>
        <a href="#caching-with-shared-cache">Shared and private caches</a>: In this example, when the server responds to Client 1's request, both the shared cache and Client 1's private cache save the response. When Client 2 requests the same data, the shared cache responds without contacting the origin server, and Client 2's private cache saves the response as well. When both Clients 1 and 2 need the same data again, they can reuse the version saved in their private caches without requiring any network traffic. The origin server generates this piece of data only once.
@@ -217,7 +217,7 @@ Caching can be done both by clients and intermediary servers. Cache-Control head
 
 ##### Fresh and stale cached data
 
-When an HTTP response is stored in a cache, it remains fresh for a certain duration. Once that duration is elapsed, the response becomes stale. If the freshness duration is not specified by a `Cache-Control: max-age` header or an `Expires` header, caches will chose it heuristically.
+When an HTTP response is stored in a cache, it remains fresh for a certain duration. Once that duration is elapsed, the response becomes stale. If the freshness duration is not specified by a `Cache-Control: max-age` header or an `Expires` header, caches will choose it heuristically.
 Additionally, the freshness duration can be explicitly set to 0 (using `Cache-Control: max-age=0`), which makes the cached response stale immediately.
 
 Cached responses that are still fresh can be reused on subsequent requests without soliciting the server. This eliminates the following steps:
@@ -238,28 +238,29 @@ When making a conditional request, we still have to:
     <img
         alt="Cache with revalidation"
         src="/blog/web-frontend-performance/cache-revalidation.svg"
-        width="1000"
+        width="1050"
+        height="1380"
     />
     <figcaption>
         <p>
-            <a href="#cache-revalidation">Cache revalidation</a>: In this example, the user requests a page and receives a 50KB response containing version 1 of the page, which stays fresh in the cache for 10 minutes. The user requests the page a second time after 5 minutes, and since the response stored in the cache is still fresh, the cache sends it to the user. After another 5 minutes, the user requests the page again, but the cached version is now stale. Therefore, the cache sends a conditional request (<code>If-None-Match: "version 1"</code>) to the server to verify that version 1 of the page is still the currently published version. In response to this conditional request, the server sends a 304 Not Modified header with no body. Seeing this, the cache marks the response it already has as fresh again and uses it to respond to the user.
+            <a href="#cache-revalidation">Cache revalidation</a>: In this example, the user requests a page and receives a 50KB response containing version 1 of the page, which stays fresh in the cache for 10 minutes. The user requests the page a second time after 5 minutes, and since the response stored in the cache is still fresh, the cache sends it to the user. After another 5 minutes, the user requests the page again, but the cached version is now stale. Therefore, the cache sends a conditional request (<code>If-None-Match: "version 1"</code>) to the server to verify that version 1 of the page is still the currently published version. The server sends back a 304 Not Modified header with no body. Seeing this, the cache marks the response it already has as fresh again and uses it to respond to the user.
        </p>
        <p>
-            After that, the site editor publishes version 2 of the page. When the user requests the page once more, the cached version is now stale. The cache sends another conditional request to the server, to which the server responds with a new 50KB response containing version 2 of the page. The cache stores this new version (replacing the old one) and responds to the user with it.
+            After that, the site editor publishes version 2 of the page. The user requests the page again. They get a version 1 response from the cache instead of version 2 because the cached data is still considered fresh. Finally, the user requests the page which is now stale in the cache. The cache sends another conditional request to the server, the server responds with a new 50KB response containing version 2 of the page, and the cache stores this new version (replacing the old one) and responds to the user with it.
        </p>
     </figcaption>
 </figure>
 
 ##### Revalidating stale data in the background
 
-`Stale-while-revalidate` (also referred to as SWR) is another cache control option that the server can provide alongside `max-age`. It defines a period during which the cache can respond with stale data while revalidating the content in the background using a conditional request.
-The stale-while-revalidate strategy can only be used when it is acceptable to show not up-to-date content to the user. It has the advantage of hiding the delays associated with the revalidation of cached data.
+`Stale-while-revalidate` (also referred to as SWR) is another cache control option that the server can provide alongside `max-age`. It defines a period during which the cache can respond with stale data while revalidating the content in the background using a conditional request, and therefore hiding the delays associated with the revalidation of cached data.
 
 <figure id="cache-swr">
     <img
         alt="Stale While Revalidate caching mechanism"
         src="/blog/web-frontend-performance/cache-swr.svg"
-        width="1000"
+        width="1020"
+        height="1395"
     />
     <figcaption>
         <p>
@@ -278,21 +279,22 @@ The stale-while-revalidate strategy can only be used when it is acceptable to sh
 
 Clients can ask intermediary caches to [disregard cached responses](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#reload_and_force_reload) and to reach to the origin server:
 
-- When the user presses the reload page button, the browser sends a conditional request with `Cache-Control: max-age=0` so that cached responses are not reused.
+- When the user presses the reload page button, the browser sends a conditional request (to revalidate the data it has in its cache) with `Cache-Control: max-age=0` to tell intermediary servers to do the same even if they have fresh data.
 - And when the user does a forced reload (typically using the keyboard command Ctrl+Shift+R), the browser sends non-conditional requests with `Cache-Control: no-cache`, telling caches to ignore their stored content and forward the request to the origin server.
 
 <figure id="figure-cache-revalidation-request">
     <img
         alt="Client-requested cache revalidation"
         src="/blog/web-frontend-performance/cache-revalidation-request.svg"
-        width="1000"
+        width="1080"
+        height="1000"
     />
     <figcaption>
         <p>
-            <a href="#figure-cache-revalidation-request">Client-requested cache revalidation:</a> In this example, the user vistes a page containing an image. Both the page and the image are received from a shared cache and are stored in the user's browser local cache.
+            <a href="#figure-cache-revalidation-request">Client-requested cache revalidation:</a> In this example, the user visits a page containing an image. Both the page and the image are received from a shared cache and are stored in the user's browser local cache.
         </p>
         <p>
-            Laten when the user navigates back to the page, it is served directly from the browser cache.
+            Later when the user navigates back to the page, it is served directly from the browser's cache.
         </p>
         <p>The user then presses Ctrl+Shift+R to trigger a forced reload. Although the page is still fresh in the local cache, the browser ignores its stored version and sends a request with <code>Cache-Control: no-cache</code> header to the server. Seeing this header, the shared cache ignores its stored version and forwards the request to the server which generates the page and sends the response. Once the browser receives the page, it requests the image referenced by the page, always using <code>Cache-Control: no-cache</code> header.
         </p>
@@ -320,7 +322,8 @@ Cache busting works as follows:
     <img
         alt="Cache busting"
         src="/blog/web-frontend-performance/cache-busting.svg"
-        width="1000"
+        width="1125"
+        height="1600"
     />
     <figcaption>
         <p>
@@ -339,13 +342,13 @@ Cache busting, as explained so far, can be further optimized:
 
 - Since sub-resources can link to other sub-resources, updating a sub-resource downstream requires not only republishing it with a new URL, but also republishing all sub-resources that link to it, recursively, which can invalidate many cached files. Import maps can be used to [solve this problem for javascript modules](https://spidermonkey.dev/blog/2023/02/23/javascript-import-maps-part-1-introduction.html), and Service Workers can [solve this problem more generally](https://banno.com/articles/improving-caching-with-import-maps/)
 
-- Wikipedia, being one of the largest and most visited websites, want to cache their pages for as long as possible and cannot afford to update all their pages whenever a script or a style file is modified. So, [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script that points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way, pages can have long `max-age`s while still being able to load newly published sub-resources.
+- Wikipedia, being one of the largest and most visited websites, want to cache their pages for as long as possible and cannot afford to update all their pages whenever a script or a style file is modified. So, [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script that points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way, pages can have long `max-age`s while still being able to load newly published sub-resources (Basically the [fundamental theorem of software engineering](https://en.wikipedia.org/wiki/Fundamental_theorem_of_software_engineering) in work).
 
 ##### Caching static portions of webpages
 
-Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For example, on a product page of an e-commerce site, the static elements would include the product details, while the dynamic elements would consist of the contents of the user's shopping basket, along with action forms that are secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
+Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For example, on a product page of an e-commerce site, the static elements would be the product details, while the dynamic elements would consist of the contents of the user's shopping basket, along with action forms that are secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
 
-We want to leverage caching for the static elements while still being able to provide personalized dynamic content. One approach to achieve this is to include only the static elements in the main HTML document, which can be cached on the client side and in intermediary caches. To retrieve the dynamic parts of the page, additional requests are made, which introduce some latency for these parts.
+We want to leverage caching for the static elements while still being able to provide personalized dynamic content. One approach to achieve this is to include only the static elements in the main HTML document, which can be cached on the client side and in intermediary caches. To retrieve the dynamic parts of the page, additional requests are made, introducing some added latency for these parts.
 
 For examples of how to do this, check out:
 
@@ -360,11 +363,12 @@ For examples of how to do this, check out:
     <img
         alt="Fetching dynamic page parts with a separate request"
         src="/blog/web-frontend-performance/cache-static-parts.svg"
-        width="1000"
+        width="1125"
+        height="450"
     />
     <figcaption>
         <p>
-            <a href="#figure-cache-static-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
+            <a href="#figure-cache-static-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-publicly-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
         </p>
     </figcaption>
 </figure>
