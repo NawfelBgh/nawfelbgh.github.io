@@ -378,13 +378,13 @@ For examples of how to do this, check out:
 
 #### Service Workers
 
-Since 2018, all major browsers support the [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) and [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) APIs. The former API allows websites to register a JavaScript worker in clients’ browsers. This worker acts like a proxy server intercepting and responding to client network requests. As for the Cache Storage API, it allows web applications to programmatically manage a cache. Together, those APIs make it possible to write offline web applications and to implement caching rules that go beyond what is possible in standard HTTP.
+Since 2018, all major browsers support the [Service Worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) and [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage) APIs. The former API allows websites to register a JavaScript worker in the user's browser. This worker acts like a proxy server intercepting and responding to client network requests. As for the Cache Storage API, it allows web applications to programmatically manage a cache. Together, those APIs make it possible to write offline web applications and to implement caching rules that go beyond what is possible in standard HTTP.
 
 #### Caching in interactive WebApps
 
-In interactive [AJAX](<https://en.wikipedia.org/wiki/Ajax_(programming)>)-heavy web applications, client-side JavaScript code loads data from the server and later decides when to refetch the data again, for example, after a certain time interval or after the user performs an action that writes to the server's database.
+In interactive [AJAX](<https://en.wikipedia.org/wiki/Ajax_(programming)>)-heavy web applications, it belongs to the client-side JavaScript code to decide when to load and reload data from the server. For example, it can automatically reload data after a certain time interval or after the user performs an action that writes to the database in the server.
 
-This data loading and reloading by client-side code can be seen as cache management, where the data loaded on the client is regarded as a cached version of the server data. Many developers in the JavaScript community reach for the [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) library, which provides APIs for cache management, as well as DevTools and integrations with various web frameworks.
+This data loading and reloading by client-side code can be seen as a form of cache management, where the data loaded on the client is a cached version of server's data. Many developers in the JavaScript community reach for the [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview) library, which provides APIs for cache management, as well as DevTools and integrations with various web frameworks.
 
 #### Caching compiled code
 
@@ -394,7 +394,7 @@ Browsers do not only cache server responses; they can also cache compiled JavaSc
 
 ### Reducing content size
 
-Now, we will look at techniques to reduce the size of webpages and their sub-resources. This helps reduce network traffic and the amount of data that the client has to process.
+Now, we will look at techniques that reduce the size of webpages and their sub-resources. This helps reduce network traffic and the amount of data that the client has to process.
 
 #### Image optimization
 
@@ -406,13 +406,13 @@ Images make up [around 50%](https://developer.mozilla.org/en-US/docs/Learn/Perfo
 - Encoding images using modern, well-optimized file formats like [AVIF](https://en.wikipedia.org/wiki/AVIF) or [WEBP](https://en.wikipedia.org/wiki/WebP).
 
 The HTML `<img>`, `<picture>` and `<video>` elements allow webpages to [provide multiple sources for the same multimedia item](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) and let the browser pick the version of the appropriate format and size.
-This allows us to cater to the needs of all users, by providing alternative versions of each image: Different resolutions for different screen sizes, and images in both modern, well-optimized file formats for new browsers and in older formats for legacy browsers.
+This allows us to provide alternative versions of the same image: Different resolutions for different screen sizes, and images in both modern, well-optimized file formats for new browsers and in older formats for legacy browsers.
 
 As setting up a system that provides multiple sources for each image can be quite complex, many web frameworks and hosting services include image optimization tools to automate this task.
 
 #### Subsetting web font files
 
-Web pages can use text fonts installed on users' systems or load custom web font files. [Web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define the glyphs of subsets of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
+Web pages can use text fonts installed on users' systems, and can also load custom [Web font](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) files. These files can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define each the glyphs of a subset of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
 
 When a web font is defined by multiple subset files, the browser ensures it downloads only the files containing glyphs that actually appear on the page. Check out the MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and the section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
 
@@ -422,16 +422,17 @@ When a web font is defined by multiple subset files, the browser ensures it down
 
 HTTP response compression works through content negotiation between clients and servers:
 
-- Clients send a list of supported compression formats using the `Accept-Encoding` request header,
-- Servers can compress their responses using an algorithm that both they and the client support.
+- Clients can send the list of the compression formats they support using the `Accept-Encoding` request header,
+- Servers can choose to compress their responses using an algorithm that both they and the client support.
   - They indicate which algorithm they used with the `Content-Encoding` response header.
-  - They also send the `Vary` response header to instruct caches to treat requests to the same URL with different `Accept-Encoding` header values as separately cacheable entities.
+  - They also send the `Vary` response header to instruct caches to treat requests to the same URL but with different `Accept-Encoding` header values as separately cacheable entities.
 
 <figure id="figure-response-compression">
     <img
         alt="Cache busting"
         src="/blog/web-frontend-performance/content-negociation.svg"
-        width="1000"
+        width="1050"
+        height="930"
     />
     <figcaption>
         <p>
@@ -451,14 +452,14 @@ Note that not all resources need to use HTTP compression: Some file formats, suc
 
 #### HTTP headers compression
 
-In addition to response body compression, [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Header compression is implemented by browsers and the HTTP stack of web servers, requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
+In addition to response body compression, the HTTP protocol introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format in [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Header compression is implemented by browsers and the HTTP stack of web servers, requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
 
 Header compression uses:
 
 - A static dictionary containing a set of commonly used header fields,
 - Per-connection dynamic dictionaries that are kept in sync between the client and the server, storing previously sent header fields.
 
-Request and response header fields can be encoded either literally or, when possible, using indices that reference entries in the static or dynamic dictionaries. This translates to replacing potentially long strings with one or a few bytes.
+Request and response header fields can be encoded either literally or, when possible, using indices that reference entries in the static or dynamic dictionaries.
 
 Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be sent only once during the lifetime of an HTTP connection, reducing network usage compared to HTTP/1.1, where they need to be sent with every request. This makes it possible to forgo the practice of hosting static content in cookie-less domains to avoid the cost of cookie retransmission.
 
@@ -466,11 +467,18 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
     <img
         alt="HPack HTTP header compression"
         src="/blog/web-frontend-performance/hpack.svg"
-        width="1000"
+        width="1150"
+        height="1230"
     />
     <figcaption>
         <p>
-            <a href="#hpack">Header compression:</a> This example shows how headers in textual format are encoded using HPACK, replacing literal values with one-byte-sized indices to the static and dynamic tables whenever possible.
+            <a href="#hpack">Header compression using HPACK:</a> In this example, the client requests two resources (the index page <code>"/"</code> and <code>"/favicon.ico"</code>) from the server using the large cookie header each time.
+        </p>
+        <p>
+            In the first request (to <code>"/"</code>), the client encodes the cookie value literally in HPACK format tagging it with the HPACK <code>store</code> command so that both it and the server store the cookie value in the HTTP session's dynamic table. The HPACK store command adds an overhead of 3 bytes here because the cookie string is very long.
+        </p>
+        <p>
+            In the second request (to <code>/favicon.ico</code>), the client encodes the cookie header value as a reference to the entry in the dynamic HPACK table. Instead of sending the whole cookie string, only one single byte is send to the server. Notice also that in this second request, the string <code>/favicon.ico</code> was also saved in the dynamic HPACK table, so that later requests to the same resource can replace it with one byte only. Since the string <code>/favicon.ico</code> is short, the HPACK store command adds 2 bytes of overhead.
         </p>
     </figcaption>
 </figure>
