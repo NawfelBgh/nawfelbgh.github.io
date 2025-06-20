@@ -100,16 +100,16 @@ One measure of the environmental footprint of the Internet is its carbon emissio
 
 ### Frontends contribution to the web's environmental footprint
 
-Studies [Environmental footprint of the digital world (2019)](https://www.greenit.fr/environmental-footprint-of-the-digital-world/) and [Estimating Digital Emissions (2023)](https://sustainablewebdesign.org/estimating-digital-emissions/) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers. This can be explained by the sheer number of user devices, and by the size of the network infrastructure.
+Studies [Environmental footprint of the digital world (2019)](https://www.greenit.fr/environmental-footprint-of-the-digital-world/) and [Estimating Digital Emissions (2023)](https://sustainablewebdesign.org/estimating-digital-emissions/) estimate that user devices have larger environmental impact than both networks and data centers, and that networks have a greater impact than data centers. This makes sense given the sheer number of user devices, the size of the network infrastructure, and the fact that manufacturing the devices is a big contributor to their environmental impact.
 
-This means that frontend developers have both the power and the responsibility to reduce the environmental impact of the web.
+Based on these estimations, it appears that frontend developers have both the power and the responsibility to reduce the environmental impact of the web.
 
 <figure id="figure-emissions-breakdown">
     <img
         alt="Emissions breakdown of the web's infrastructure"
         src="/blog/web-frontend-performance/energy-footprint-breakdown.svg"
-        width="800"
-        height="700"
+        width="600"
+        height="600"
     />
     <figcaption>
         <p>
@@ -134,7 +134,7 @@ One way to make web applications run faster is by using more powerful hardware:
 - Upgrading server machines, and
 - Using more server machines.
 
-Relying on hardware upgrades to solve performance issues should be a considered after software optimizations as it is costly both financially and from an environmental point of view.
+Relying on hardware upgrades to solve performance issues should be a considered after software optimizations as it can be costly financially and/or from an environmental point of view.
 
 <figure id="figure-physical-web-bigger">
     <img
@@ -344,7 +344,7 @@ Cache busting, as explained so far, can be further optimized:
 
 - Wikipedia, being one of the largest and most visited websites, want to cache their pages for as long as possible and cannot afford to update all their pages whenever a script or a style file is modified. So, [they implement cache busting as follows](https://www.mediawiki.org/wiki/ResourceLoader/Architecture): Their pages load a startup script from a fixed URL, and it is this startup script that points to versioned and cache-busted sub-resources. The startup script has a `max-age` of 5 minutes. This way, pages can have long `max-age`s while still being able to load newly published sub-resources (Basically the [fundamental theorem of software engineering](https://en.wikipedia.org/wiki/Fundamental_theorem_of_software_engineering) in work).
 
-##### Caching static portions of webpages
+##### Caching the static portions of webpages
 
 Web pages often contain both static elements, which are the same for all users, and dynamic elements that vary based on individual user sessions. For example, on a product page of an e-commerce site, the static elements would be the product details, while the dynamic elements would consist of the contents of the user's shopping basket, along with action forms that are secured by session-specific [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) tokens.
 
@@ -364,11 +364,14 @@ For examples of how to do this, check out:
         alt="Fetching dynamic page parts with a separate request"
         src="/blog/web-frontend-performance/cache-static-parts.svg"
         width="1125"
-        height="450"
+        height="750"
     />
     <figcaption>
         <p>
-            <a href="#figure-cache-static-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-publicly-cacheable response. The client requests the page again. This time, it is loaded directly from its local cache, and a second request is sent to retrieve the dynamic parts from the server.
+            <a href="#figure-cache-static-parts">Fetching dynamic page parts with a separate request:</a> In this example, the client requests a page and receives a response from a shared cache. The page includes a script that fetches the dynamic parts of the page using a second request. This second request reaches the server, which responds with a non-publicly-cacheable response.
+        </p>
+        <p>
+            Laten on, the client requests the page again. This time, the page is loaded directly from the client's cache, and a request is sent to retrieve the dynamic parts from the server.
         </p>
     </figcaption>
 </figure>
