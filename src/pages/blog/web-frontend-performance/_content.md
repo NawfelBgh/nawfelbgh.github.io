@@ -487,11 +487,11 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
 
 ### Content Delivery Networks
 
-The longer the distance between the client and the server, the more time it takes for data packets to travel between the two. The resulting time delays are called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency) and are the result of physical limits; it takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
+It takes for data packets more time to travel between the client and the server the longer the distance is between the two. The time data takes to arrive from point A to B is called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency). It is determined by physical limits such as the speed of light: It takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
 
-[Content Delivery Networks](https://en.wikipedia.org/wiki/Content_delivery_network) (CDNs) aim to address the issue of latency caused by the physical distance between servers and clients. A CDN is a group of geographically distributed proxy servers that sit between servers and clients, caching server responses when possible and delivering them to clients from a nearby node (called a PoP, or Point of Presence).
+[Content Delivery Networks](https://en.wikipedia.org/wiki/Content_delivery_network) (CDNs) aim to address the issue of latency caused by the physical distance between servers and clients. A CDN is a group of geographically distributed proxy servers (called Point of Presence or PoP) that sit between the servers (called origin servers) and the clients. CDNs cache origin server responses when possible and deliver them to clients from a nearby PoP.
 
-CDNs take care of [TLS termination](https://en.wikipedia.org/wiki/TLS_termination_proxy), HTTP caching, and compression, in addition to other features that vary from one provider to another.
+Typical CDN features include taking care of [TLS termination](https://en.wikipedia.org/wiki/TLS_termination_proxy), HTTP caching, and compression, in addition to other features that vary from provider to another.
 
 <figure id="world-map-no-cdn">
     <img
