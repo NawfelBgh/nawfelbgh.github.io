@@ -487,7 +487,7 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
 
 ### Content Delivery Networks
 
-It takes for data packets more time to travel between the client and the server the longer the distance is between the two. The time data takes to arrive from point A to B is called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency). It is determined by physical limits such as the speed of light: It takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
+It takes more time for data packets to travel between the client and the server the longer the distance is between the two. The time data takes to arrive from point A to B is called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency). Technological advancement can reduce latency only to a certain point due to physical limits such as the speed of light: It takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
 
 [Content Delivery Networks](https://en.wikipedia.org/wiki/Content_delivery_network) (CDNs) aim to address the issue of latency caused by the physical distance between servers and clients. A CDN is a group of geographically distributed proxy servers (called Point of Presence or PoP) that sit between the servers (called origin servers) and the clients. CDNs cache origin server responses when possible and deliver them to clients from a nearby PoP.
 
@@ -534,9 +534,10 @@ Some network latency is introduced each time an HTML document or one of its reso
         alt="Without resource bundling"
         src="/blog/web-frontend-performance/without-bundling.svg"
         width="600"
+        height="1300"
     />
     <figcaption>
-       <a href="#figure-without-bundling">Without resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load icons 1, 2, and 3, as well as a script file. The client fetches these resources via additional HTTP requests. Once the script is loaded, the client finds that it depends on another JavaScript module, necessitating yet another request to the server to load this module. The page finishes loading once all six resources are fully loaded.
+       <a href="#figure-without-bundling">Without resource bundling:</a> In this example, the client requests a page. Receiving the HTML file, it discovers that it needs to load icons 1, 2, and 3, as well as a script file. The client fetches these resources via additional HTTP requests. Once the script is loaded, the client finds that the script depends on another JavaScript module, necessitating yet another request to the server to load this module. The page finishes loading once all six resources are fully loaded.
     </figcaption>
 </figure>
 
@@ -545,9 +546,10 @@ Some network latency is introduced each time an HTML document or one of its reso
         alt="With resource bundling"
         src="/blog/web-frontend-performance/with-bundling.svg"
         width="600"
+        height="850"
     />
     <figcaption>
-       <a href="#figure-with-bundling">With resource bundling:</a> In this example, the client requests a page. When it receives the HTML file, it discovers that it needs to load the <code>icons-sprite.svg</code> file, which contains icons 1, 2, and 3, as well as a script file that includes both the page's script and its dependencies. The page finishes loading once the HTML, the sprite, and the script are fully loaded.
+       <a href="#figure-with-bundling">With resource bundling:</a> In this example, the client requests a page. It discovers when it receives the HTML file that it needs to load the <code>icons-sprite.svg</code> file, which contains icons 1, 2, and 3, as well as a script file that includes both the page's script and its dependencies. The page finishes loading once the HTML, the sprite, and the script are fully loaded.
     </figcaption>
 </figure>
 
@@ -559,8 +561,8 @@ As stated previously, the main benefit of bundling is reducing network overhead.
 However, these gains come at a cost:
 
 - Bundling makes caching less efficient:
-  - Resources that are bundled together can only be cached as much as the least cacheable resource. We discussed this earlier in the section [Caching static portions of webpages](#caching-static-portions-of-webpages) where dynamic content must be separated from static content to enable the caching of the static content.
-  - If a resource is loaded on multiple pages, inlining it in HTML documents leads to it being downloaded and sometimes cached multiple times.
+  - Resources that are bundled together can only be cached as much as the least cacheable resource. We discussed this earlier in the section [Caching the static portions of webpages](#caching-the-static-portions-of-webpages) where dynamic content is loaded separately from static content to enable the caching of the static content.
+  - If a resource is loaded on multiple pages, inlining it in the HTML documents leads to it being downloaded multiple times, and potentially also being cached multiple times.
   - When a single resource inside a bundle is updated, the bundle is updated as a unit, and users have to download the whole thing again.
 - Bundling resources together also gives them all the same priority, which can lead to worse loading performance. We will revisit properly prioritizing resources in the section [Loading resources at the right time](#loading-resources-at-the-right-time).
 
@@ -594,10 +596,10 @@ Because of the performance drawbacks of bundling, [some optimization tools](http
 
 With the advent of HTTP/2, many web articles declared the death of resource bundling, because:
 
-- HTTP/2 can multiplex the loading of several resources using a single HTTP connection, significantly reducing network overhead. This is an improvement over HTTP/1.1, where HTTP connections can only transmit a single resource at a time and only a limited number of HTTP connections can be opened simultaneously.
-- HTTP/2 defines the [server push extension](https://en.wikipedia.org/wiki/HTTP/2_Server_Push) which allows servers to push resources to the client before the client requests them. When a client requests a page, servers can push the page's sub-resources before the client discovers that it needs them, thereby eliminating latency without having to bundle files together and without compromising caching.
+- HTTP/2 can multiplex the loading of several resources using a single HTTP connection, significantly reducing network overhead. This is an improvement over HTTP/1.1, where HTTP connections can only transmit a single resource at a time and where only a limited number of HTTP connections can be opened simultaneously.
+- HTTP/2 defines the [server push extension](https://en.wikipedia.org/wiki/HTTP/2_Server_Push) which allows servers to push resources to the client before the client requests them. When a client requests a page, servers can push the page's sub-resources before the client discovers that it needs them, thereby eliminating some latency without having to bundle resources together.
 
-On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) which explains that bundling is still relevant in HTTP/2 and HTTP/3. Some of the reasons are:
+[Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) explains in details why bundling is still relevant in HTTP/2 and HTTP/3. Some of the reasons are:
 
 - Even with multiplexing, requests still incur overhead.
 - HTTP Server Push support has been removed from [Chrome](https://developer.chrome.com/blog/removing-push) and [Firefox](https://www.mozilla.org/en-US/firefox/132.0/releasenotes/).
@@ -608,7 +610,7 @@ On this subject, I recommend [Smashing Magazine’s article series on HTTP/3](ht
 
 #### Using optimizing bundlers
 
-Developers typically do not ship their source code unchanged to clients. Instead, they use bundling tools or frameworks that include such tools to transform the website's source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
+Developers do not typically ship their source code unchanged to clients. Instead, they use bundling tools or frameworks that include such tools to transform the website's source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
 
 As we discussed in [Bundling resources](#bundling-resources), bundling reduces network overhead. Additionally, bundling tools implement features like [Minification](#minification) and [Tree-Shaking](#tree-shaking), which help reduce code size.
 
@@ -640,7 +642,7 @@ function multiply(n,t){return n*t}
 
 ##### Tree-shaking
 
-Bundlers can also reduce code size with [Tree-Shaking](https://en.wikipedia.org/wiki/Tree_shaking); by removing code that static analysis shows to be unreachable from the bundle's entry points. Outside web circles, this concept is more generally known as [Dead-code Elimination](https://en.wikipedia.org/wiki/Dead-code_elimination).
+Bundlers can also reduce code size with [Tree-Shaking](https://en.wikipedia.org/wiki/Tree_shaking); by removing any code that static analysis shows to be unreachable from the bundle's entry points. Outside web circles, this concept is more generally known as [Dead-code Elimination](https://en.wikipedia.org/wiki/Dead-code_elimination).
 
 Here is an example of source code:
 
@@ -667,25 +669,25 @@ function add(first, second) {
 console.log(add(0.1, 0.2));
 ```
 
-#### Using small libraries and third-party scripts
+#### Using small libraries and small third-party scripts
 
-When choosing libraries and third-party services, **code size** should be one of the selection criteria.
+When choosing libraries and third-party services, code size should be one of the selection criteria.
 
-As a general rule, we should avoid using [kitchen sink libraries](https://www.quora.com/What-is-a-%E2%80%9Ckitchen-sink%E2%80%9D-in-the-context-of-programming) (i.e., libraries that integrate all sorts of features) and instead choose libraries that meet the specific needs of our applications. For example, the appropriate libraries will differ when rendering read-only tables versus editable ones. In the former case, a small and simple library may suffice, whereas in the latter case, a larger and more feature-rich library might be necessary.
+As a general rule, we should avoid using [kitchen sink libraries](https://www.quora.com/What-is-a-%E2%80%9Ckitchen-sink%E2%80%9D-in-the-context-of-programming) (i.e., libraries that integrate all sorts of features) and instead choose libraries that meet the specific needs of our applications. For instance, the appropriate libraries will differ when rendering, say, read-only tables versus editable ones. In the former case, a small and simple library may suffice, whereas in the latter case, a larger and more feature-rich library may be necessary.
 
-Many tools can be used to determine the sizes of JavaScript libraries:
+Many tools can be used to determine the size of JavaScript libraries:
 
-- [Webpack Bundle analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup Bundle Visualizer](https://www.npmjs.com/package/rollup-plugin-visualizer) provide an exact breakdown of the contribution of each JavaScript module and package to your application bundle.
-- The [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extension for VSCode displays the code size of npm packages based on your imports.
-- The [bundlejs](https://bundlejs.com/) website lets you partially import code from many JavaScript packages and measures the bundle size for you.
+- [Webpack Bundle analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer) and [Rollup Bundle Visualizer](https://www.npmjs.com/package/rollup-plugin-visualizer) provide an exact breakdown of the contribution of each JavaScript module and package to the built application bundle.
+- The [Bundle Size](https://marketplace.visualstudio.com/items?itemName=ambar.bundle-size) extension for VSCode displays the code size of npm packages next to the imports in the code.
+- The [bundlejs](https://bundlejs.com/) website allows users to partially import code from many JavaScript packages and then measures the resulting bundle size.
 - The [bundlephobia](https://bundlephobia.com/) website shows code size of npm packages.
-- The network tab in the [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) that come with web browsers provides the exact size of each resource a webpage loads.
+- The network tab in the web browsers' [DevTools](https://developer.mozilla.org/en-US/docs/Glossary/Developer_Tools) provides the exact size of each resource a webpage loads.
 
 In addition to library size, the ability to **tree-shake** should also be considered when choosing libraries.
 
-For example, check out the [You-Dont-Need-Momentjs](https://github.com/you-dont-need/You-Dont-Need-Momentjs) page comparing Moment.js, a utility library for handling date objects, with alternative libraries that are smaller, and tree-shakable in the case of date-fns.
+For example, check out the [You-Dont-Need-Momentjs](https://github.com/you-dont-need/You-Dont-Need-Momentjs) page comparing Moment.js, a utility library for handling date objects, with alternative libraries that are smaller and in the case of `date-fns` also tree-shakable.
 
-It is important to note that tree-shaking has its limits, as libraries typically contain a set of core modules that cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules, which include a style engine and various other utilities. Therefore, instead of reaching for MUI to use just one of its components, it is better to look for a specialized library.
+It is important to note that tree-shaking has its limits as libraries typically contain a set of core modules that cannot be eliminated. For example, even though the MUI components library supports tree-shaking, using a single component from the library also loads the library's core modules, which include a style engine and various other utilities. Therefore, instead of reaching for MUI to use just one of its components, it is better to look for a specialized library.
 
 <figure id="figure-library-sizes">
     <img
@@ -709,13 +711,13 @@ It is important to note that tree-shaking has its limits, as libraries typically
 
 #### Keeping code in the server
 
-Sometimes, when some portions of code are very large, it can make sense to keep them in the server and to execute them on client requests to avoid burdening the client by downloading and executing them.
+Sometimes, when some portions of code are very large, it makes sense to keep them in the server and to execute them on client requests to avoid burdening the client by downloading and executing them.
 
-This doesn't always pay off:
+Before adopting such a strategy, some concerns have to be considered:
 
-- Depending on the server to respond to some user inputs introduces network latency, which users may not tolerate. This is not a problem when some of the work has to happen on the server anyway, as no additional network requests may be required.
+- Depending on the server to respond to certain user inputs introduces network latency, which users may not tolerate.
 - The savings made from keeping code in the server should be weighed against the cost of clients sending requests and downloading results from the server.
-- The server has to be sized adequately to support the added load, and the server owner will be the one paying for that.
+- The server has to be sized adequately to support the added load.
 
 <figure id="figure-run-code-on-the-client">
     <img
@@ -737,46 +739,46 @@ This doesn't always pay off:
         height="700"
     />
     <figcaption>
-       <a href="#figure-run-code-on-the-server">Keeping large code on the server:</a> In this example, the script <code>a-lot-of-code.js</code> is kept in the server and never transferred to the client. Each time the user triggers events needing this script, the client has to send a request to the server which runs <code>a-lot-of-code.js</code> and sends results. Each time, the scripts inputs and output are sent through the network.
+       <a href="#figure-run-code-on-the-server">Keeping large code on the server:</a> In this example, the script <code>a-lot-of-code.js</code> is kept in the server and never transferred to the client. Each time the user triggers events needing this script, the client sends a request to the server which runs <code>a-lot-of-code.js</code> and sends results. Each time, the script's inputs and output are serialized and sent through the network.
     </figcaption>
 </figure>
 
-Offloading code to the server can also negatively impact developer experience (DX), as it can require tedious tasks such as creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
+Offloading code to the server can negatively impact developer experience (DX), as it can require creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
 
 - If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side rendering](#server-side-rendering).
 - If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/), then developers can load these fragments without writing client-side JavaScript.
 
-Some frameworks improve the DX of making API requests:
+Some frameworks also improve the DX of making API requests:
 
-- [tRPC](https://trpc.io/) offers a simple API for creating both server and client sides of API routes, resulting in well-typed and readable code.
-- [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, creates API routes, and transforms the client code to communicate with the server through these APIs.
+- [tRPC](https://trpc.io/) offers a simple API for creating both the server and client sides of API routes, resulting in well-typed and well-structured code.
+- [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, generates API routes, and transforms the client code to communicate with the server through these routes.
 
 ##### Server-side rendering
 
-In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into HTML that is displayed to the user. This is not not be confused by the rendering performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
+In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into the HTML that is displayed to the user. This is not not be confused by the rendering to the screen which is performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
 Rendering can be done on the client, on the server, or on both:
 
 - Client-side rendering (CSR) requires the client to load the code that renders the raw data into HTML.
 - Server-side rendering (SSR) in its pure form, in contrast, requires no rendering code to be shipped to the client, thus reducing client-side code size.
   - SSR can provide better initial page-load time compared to CSR when the page can be rendered in the server and received by the client before the client has the time to download the page's JavaScript code.
-  - Client side code quality can suffer with pure SSR frameworks: Sometimes, a declarative templating language is used on the server to render data to HTML, while some imperative client side code is written to make the server-generated HTML interactive.
+  - Client side code quality can suffer with pure SSR frameworks: Typically, a declarative templating language is used on the server to render data to HTML, while some imperative client side code is written to make the server-generated HTML interactive.
 
 Hybrid approaches also exist:
 
-An application can render some parts of the page on the server and other parts on the client. For example: Non-interactive page sections can be rendered on the server while dynamics sections can be rendered on the client. This approach can lead to better code quality compared to doing pure SSR with imperative JavaScript for interactivity, as both SSR and CSR code can be written in a declarative style.
+An application can render some parts of the page on the server and other parts on the client. For example: Non-interactive page sections can be rendered on the server while interactive sections can be rendered on the client. This approach can lead to better code quality compared to doing pure SSR with imperative JavaScript for interactivity, as both SSR and CSR code can be written in a declarative style.
 
-Many modern JavaScript frameworks are hybrids that do both SSR and CSR: The page is rendered a first time on the server, and then rerendered again on the client when the user interacts with the page (and sometimes also on page load). These frameworks have some nice properties for users and developers:
+Many modern JavaScript frameworks implement a more elaborate hybrid approach to rendering mixing SSR and CSR: The page is rendered a first time on the server. Then it is made interactive on the client by a process called [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>) which attaches event handlers to the server-rendered HTML. The page is rerendered again on the client when the user interacts with it. These frameworks have some nice properties for users and developers:
 
 - Thanks to rendering on the server, the page may load earlier than it would with pure CSR, if the the client receives it before it gets the chance to load the page's code.
 - Developers can write a single codebase in a declarative style that works on both the server and the client.
 
-As these modern frameworks do both SSR and CSR, using them has a cost:
+As such frameworks do both SSR and CSR, using them has a cost:
 
 - Unlike with pure SSR approaches, the client has to download rendering code.
-- The framework's code size is increased (compared to a pure CSR version) in order to support [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>): The process by which components rendered on the server are made interactive on the client.
+- The framework's code size is increased (compared to a pure CSR version) in order to support hydration.
 - These frameworks also face what [Ryan Carniato](https://x.com/RyanCarniato) (the creator of SolidJS) calls [the double data problem](https://dev.to/this-is-learning/why-efficient-hydration-in-javascript-frameworks-is-so-challenging-1ca3): The server has to send data in two formats to the client. Once in HTML format to optimize page-load time, and a second time in JSON format serving as input and state initialization for client-side code.
-- Finally, HTML templates that are reused multiple times on the same page are sent repeatedly in HTML, in addition to being sent again in CSR code. In contrast, with pure CSR, they are sent only once.
+- Finally, like with pure SSR, HTML templates that are reused multiple times on the same page are included multiple times in the rendered HTML. But in addition to that, the templates are also sent in the CSR code.
 
 <figure id="figure-pure-ssr">
     <img width="1050" height="650" alt="Pure SSR" src="/blog/web-frontend-performance/pure-ssr.svg" />
@@ -790,12 +792,12 @@ As these modern frameworks do both SSR and CSR, using them has a cost:
     <img width="1050" height="800" alt="Pure CSR" src="/blog/web-frontend-performance/pure-csr.svg" />
     <figcaption>
         <p>
-            <a href="#figure-pure-csr">Pure CSR:</a> In this example, the server responds with an empty page. The client downloads the page's code, loads it, figures which data it needs to get from the backend, gets it, and only then can render the page to the user. At that point the page is immediately interactive.
+            <a href="#figure-pure-csr">Pure CSR:</a> In this example, the server responds with an empty page. The client downloads the page's code, loads it, figures which data it needs to get from the backend, requests it, and only upon receiving it can it render the page to the user. At that point the page is immediately interactive.
         </p>
 </figure>
 
 <figure id="figure-ssr-with-hydration">
-    <img width="1050" height="750" alt="SSR with hydration" src="/blog/web-frontend-performance/ssr-with-hydration.svg" />
+    <img width="1050" height="700" alt="SSR with hydration" src="/blog/web-frontend-performance/ssr-with-hydration.svg" />
     <figcaption>
         <p>
             <a href="#figure-ssr-with-hydration">SSR with hydration:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML and raw page data. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it and applies hydration code to make the page interactive.
@@ -806,42 +808,47 @@ As these modern frameworks do both SSR and CSR, using them has a cost:
     <img width="950" height="950" alt="Pure SSR vs Hydration vs Pure CSR" src="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" />
     <figcaption>
         <p>
-            <a href="#figure-pure-ssr-vs-hydration-vs-pure-csr">Pure SSR vs Hydration vs Pure CSR:</a> This figure compares 3 approaches for implementing the same page which renders some data using 2 HTML templates, both of which are interactive requiring some client-side JavaScript code.
+            <a href="#figure-pure-ssr-vs-hydration-vs-pure-csr">Pure SSR vs Hydration vs Pure CSR:</a> This figure compares 3 approaches for implementing the same page. The page renders some data using 2 HTML templates, both of which are interactive requiring some client-side JavaScript code.
         </p>
         <p>
             The first approach is pure server side rendering. The client downloads the rendered HTML and the code that makes the page interactive. Notice how template 2 is repeated 3 times in the downloaded HTML.
         </p>
         <p>
-            The second approach is doing server side rendering, hydration and client side rendering. The client downloads the rendered HTML, the code to render both templates 1 and 2, and the code that makes the page interactive. Like with the first framework, template 2 is repeated 3 times in the downloaded HTML. Notice also that the page loads more code to support hydration and client-side-routing. The page also loads the raw non-rendered data in order to support rerendering on the client when necessary. The page's data is downloaded twice: both in the rendered HTML and in raw format. This is sometimes called the <b>double data problem</b>.
+            The second approach is to do server-side rendering, hydration and client-side rendering. The client downloads the rendered HTML, the code to render both templates 1 and 2, and the code that makes the page interactive. Like with the first framework, template 2 is repeated 3 times in the downloaded HTML. Notice also that the page loads more code to support hydration and client-side routing. The page also loads the raw non-rendered data in order to support hydration and rerendering on the client when necessary. The page's data is downloaded twice: both in the rendered HTML and in raw format. This is sometimes called the <b>double data problem</b>.
         </p>
         <p>
-            The third approach is pure client side rendering. The client downloads no rendered HTML. It downloads the code to render both templates 1 and 2, and the code that makes the page interactive. Unlike with the other frameworks, there is no repetition of template 2 because no HTML is downloaded. And like the second framework, the page loads the code for client-side-routing the raw non-rendered data in order to support rendering on the client, on first load and when necessary on user interaction afterwards.
+            The third approach is pure client side rendering. The client downloads no rendered HTML. It downloads the code to render both templates 1 and 2, and the code that makes the page interactive. Unlike with the previous frameworks, there is no repetition of template 2 because no HTML is downloaded. And like the second framework, the page loads the code for client-side routing the raw non-rendered data in order to support rendering on the client.
         </p>
     </figcaption>
 </figure>
 
 ###### Partial hydration
 
-To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (meaning that this code is never sent to the client) and which parts can be rendered on both the server and the client. The code for the components that are rendered only on the server does not need to be sent to the client, which reduces client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
+To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (server-only components) and which parts can be rendered on both the server and the client. Server-only components code does not need to be sent to the client, reducing client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
 
 Right now, the most popular frameworks supporting partial hydration are [Astro](https://astro.build/) via [Islands](https://docs.astro.build/en/concepts/islands/), and [Next.js](https://nextjs.org/) via [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
 
 <figure id="figure-full-vs-partial-hydration">
-    <img alt="Full Hydration vs Partial Hydration" src="/blog/web-frontend-performance/full-vs-partial-hydration.svg" />
+    <img
+        alt="Full Hydration vs Partial Hydration"
+        src="/blog/web-frontend-performance/full-vs-partial-hydration.svg" 
+        width="660"
+        height="900"
+    />
     <figcaption>
        <p>
-            <a href="#figure-full-vs-partial-hydration">Full Hydration vs Partial Hydration:</a> This figure compares 2 approaches for implementing the same page which renders some data using 2 HTML templates. The first template is interactive requiring some client-side JavaScript code while the second template is not interactive.
+            <a href="#figure-full-vs-partial-hydration">Full Hydration vs Partial Hydration:</a> This figure compares 2 approaches for implementing the same page. The page renders some data using 2 HTML templates. The first template is interactive requiring some client-side JavaScript code while the second template is not interactive.
         </p>
         <p>
             The first approach is full hydration: Both page's templates are rendered on the server and hydrated on the the client.
         </p>
         <p>
-            The second approach is partial hydration: Template 2 is only rendered on the server. Notice how the client doesn't need to download template 2's code or raw data.
+            The second approach is partial hydration: Template 2 is only rendered on the server. Notice that the client doesn't need to download template 2's code or raw data.
         </p>
     </figcaption>
 </figure>
 
-Note that partial hydration benefits can be seen in large applications. In small applications like the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than both the partially hydrated [Next.js](https://movies.sst.dev) version. This is due to SolidStart being more lightweight compared to Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of larger frameworks.
+Note that partial hydration gains can be nullified in small applications if the framework is too large. For instance, in the demo [Movies App](https://movies-app.zaps.dev/), the fully hydrated [SolidStart version](https://solid-movies.app/) is smaller than the partially hydrated [Next.js](https://movies.sst.dev) version. This is due to SolidStart being more lightweight compared to Next.js, as well as the fact that the app itself isn't large enough for the code size savings from partial hydration to outweigh the overhead of the larger framework.
 
 <figure id="figure-movies-app">
     <img
