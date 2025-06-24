@@ -745,7 +745,7 @@ Before adopting such a strategy, some concerns have to be considered:
 
 Offloading code to the server can negatively impact developer experience (DX), as it can require creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
 
-- If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side rendering](#server-side-rendering).
+- If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side and client-side rendering](#server-side-and-client-side-rendering).
 - If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/), then developers can load these fragments without writing client-side JavaScript.
 
 Some frameworks also improve the DX of making API requests:
@@ -753,32 +753,35 @@ Some frameworks also improve the DX of making API requests:
 - [tRPC](https://trpc.io/) offers a simple API for creating both the server and client sides of API routes, resulting in well-typed and well-structured code.
 - [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, generates API routes, and transforms the client code to communicate with the server through these routes.
 
-##### Server-side rendering
+##### Server-side and client-side rendering
 
-In this section, alse generally in web frameworks circules, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into the HTML that is displayed to the user. This is not not be confused by the rendering to the screen which is performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
+In this section, also generally in web frameworks circles, the word _rendering_ refers to the transformation of data from a structured format (like JSON) into the HTML that is displayed to the user. This is not not be confused by the rendering to the screen which is performed by [browser engines](https://en.wikipedia.org/wiki/Browser_engine).
 
-Rendering can be done on the client, on the server, or on both:
+Rendering can be done on the client, on the server, or on both. Where it is done has an effect on the amount of data that is sent to the client. Let's look first at client-side and server-side rendering in purest form:
 
-- Client-side rendering (CSR) requires the client to load the code that renders the raw data into HTML.
-- Server-side rendering (SSR) in its pure form, in contrast, requires no rendering code to be shipped to the client, thus reducing client-side code size.
-  - SSR can provide better initial page-load time compared to CSR when the page can be rendered in the server and received by the client before the client has the time to download the page's JavaScript code.
-  - Client side code quality can suffer with pure SSR frameworks: Typically, a declarative templating language is used on the server to render data to HTML, while some imperative client side code is written to make the server-generated HTML interactive.
+- Client-side rendering (CSR) requires the client to load the data to render and the code to render it into HTML.
+  - Typically, pure CSR code is written in a developer friendly declarative style using a frontend library or framework, which can lead to good development velocity.
+- In contrast, with server-side rendering (SSR), in its pure form, the client receives rendered HTML from the server.
+  - Client-side code can still be needed to implement interactivity, but not rendering, reducing its size.
+  - SSR can also provide better initial page-load time compared to CSR when the server can render and send the page to the client before the client gets the time to download the page's JavaScript code. We will look at more techniques similar to this in the section [Scheduling work to make users wait less](#scheduling-work-to-make-users-wait-less).
+  - The HTML received by the client can sometimes be larger in size than the original data and the code to render it combined. This can happen when HTML templates are rendered repeatedly in a page. [Compression](#http-responses-compression) can be used to solve this issue as it eliminates repetition. In fact, I would say that client-side rendering is itself a form of compression.
+  - Client-side code quality can suffer with pure SSR frameworks: Typically, a declarative templating language is used on the server to render data to HTML, while some imperative client-side code is written to make the server-generated HTML interactive. This can lead to less development velocity as imperative code is harder to reason about.
 
-Hybrid approaches also exist:
+Hybrid approaches to rendering are possible too:
 
-An application can render some parts of the page on the server and other parts on the client. For example: Non-interactive page sections can be rendered on the server while interactive sections can be rendered on the client. This approach can lead to better code quality compared to doing pure SSR with imperative JavaScript for interactivity, as both SSR and CSR code can be written in a declarative style.
+An application can render some parts of the page on the server and other parts on the client. For example, by rendering non-interactive page sections on the server and interactive ones on the client. This approach can lead to a better code quality compared to doing pure SSR with imperative JavaScript for interactivity, as both SSR and CSR code can be written in a declarative style.
 
-Many modern JavaScript frameworks implement a more elaborate hybrid approach to rendering mixing SSR and CSR: The page is rendered a first time on the server. Then it is made interactive on the client by a process called [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>) which attaches event handlers to the server-rendered HTML. The page is rerendered again on the client when the user interacts with it. These frameworks have some nice properties for users and developers:
+Many modern JavaScript frameworks implement a more elaborate hybrid approach to rendering mixing SSR and CSR: The page is rendered a first time on the server. Then it is made interactive on the client by a process called [hydration](<https://en.wikipedia.org/wiki/Hydration_(web_development)>) which attaches event handlers to the server-rendered HTML. The page is, or sections of it are, rerendered again on the client when the user interacts with it. Such frameworks have some nice properties for users and developers:
 
-- Thanks to rendering on the server, the page may load earlier than it would with pure CSR, if the the client receives it before it gets the chance to load the page's code.
-- Developers can write a single codebase in a declarative style that works on both the server and the client.
+- Like with pure SSR, the page may load earlier than it would with pure CSR, because the the client may receive the HTML before it would load the page's code and data if it did CSR.
+- Developers can write a single codebase in a declarative style that works both on the server and the client.
 
-As such frameworks do both SSR and CSR, using them has a cost:
+As such frameworks do both SSR and CSR, using them comes at a cost:
 
 - Unlike with pure SSR approaches, the client has to download rendering code.
 - The framework's code size is increased (compared to a pure CSR version) in order to support hydration.
 - These frameworks also face what [Ryan Carniato](https://x.com/RyanCarniato) (the creator of SolidJS) calls [the double data problem](https://dev.to/this-is-learning/why-efficient-hydration-in-javascript-frameworks-is-so-challenging-1ca3): The server has to send data in two formats to the client. Once in HTML format to optimize page-load time, and a second time in JSON format serving as input and state initialization for client-side code.
-- Finally, like with pure SSR, HTML templates that are reused multiple times on the same page are included multiple times in the rendered HTML. But in addition to that, the templates are also sent in the CSR code.
+- Finally, like with pure SSR, HTML templates that are reused multiple times on the same page are included multiple times in the rendered HTML. And in addition to that, the templates are also sent in the CSR code.
 
 <figure id="figure-pure-ssr">
     <img width="1050" height="650" alt="Pure SSR" src="/blog/web-frontend-performance/pure-ssr.svg" />
@@ -800,7 +803,7 @@ As such frameworks do both SSR and CSR, using them has a cost:
     <img width="1050" height="700" alt="SSR with hydration" src="/blog/web-frontend-performance/ssr-with-hydration.svg" />
     <figcaption>
         <p>
-            <a href="#figure-ssr-with-hydration">SSR with hydration:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML and raw page data. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it and applies hydration code to make the page interactive.
+            <a href="#figure-ssr-with-hydration">SSR with hydration:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML and page data. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it and applies hydration code to make the page interactive.
         </p>
 </figure>
 
@@ -814,10 +817,10 @@ As such frameworks do both SSR and CSR, using them has a cost:
             The first approach is pure server side rendering. The client downloads the rendered HTML and the code that makes the page interactive. Notice how template 2 is repeated 3 times in the downloaded HTML.
         </p>
         <p>
-            The second approach is to do server-side rendering, hydration and client-side rendering. The client downloads the rendered HTML, the code to render both templates 1 and 2, and the code that makes the page interactive. Like with the first framework, template 2 is repeated 3 times in the downloaded HTML. Notice also that the page loads more code to support hydration and client-side routing. The page also loads the raw non-rendered data in order to support hydration and rerendering on the client when necessary. The page's data is downloaded twice: both in the rendered HTML and in raw format. This is sometimes called the <b>double data problem</b>.
+            The second approach is to do server-side rendering, hydration and client-side rendering. The client downloads the rendered HTML, the code to render both templates 1 and 2, and the code that makes the page interactive. Like with the first framework, template 2 is repeated 3 times in the downloaded HTML. Notice also that the page loads more code to support hydration and client-side routing. The page also loads the non-rendered data in order to support hydration and rerendering on the client when necessary. The page's data is downloaded twice: both in the rendered HTML and in raw format. This is sometimes called the <b>double data problem</b>.
         </p>
         <p>
-            The third approach is pure client side rendering. The client downloads no rendered HTML. It downloads the code to render both templates 1 and 2, and the code that makes the page interactive. Unlike with the previous frameworks, there is no repetition of template 2 because no HTML is downloaded. And like the second framework, the page loads the code for client-side routing the raw non-rendered data in order to support rendering on the client.
+            The third approach is pure client side rendering. The client downloads no rendered HTML. It downloads the code to render both templates 1 and 2, and the code that makes the page interactive. Unlike with the previous frameworks, there is no repetition of template 2 because no HTML is downloaded. And like the second framework, the page loads the code for client-side routing the non-rendered data in order to support rendering on the client.
         </p>
     </figcaption>
 </figure>
@@ -843,7 +846,7 @@ Right now, the most popular frameworks supporting partial hydration are [Astro](
             The first approach is full hydration: Both page's templates are rendered on the server and hydrated on the the client.
         </p>
         <p>
-            The second approach is partial hydration: Template 2 is only rendered on the server. Notice that the client doesn't need to download template 2's code or raw data.
+            The second approach is partial hydration: Template 2 is only rendered on the server. Notice that the client doesn't need to download template 2's code or data.
         </p>
     </figcaption>
 </figure>
