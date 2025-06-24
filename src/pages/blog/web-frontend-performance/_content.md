@@ -764,7 +764,7 @@ Rendering can be done on the client, on the server, or on both. Where it is done
 - In contrast, with server-side rendering (SSR), in its pure form, the client receives rendered HTML from the server.
   - Client-side code can still be needed to implement interactivity, but not rendering, reducing its size.
   - SSR can also provide better initial page-load time compared to CSR when the server can render and send the page to the client before the client gets the time to download the page's JavaScript code. We will look at more techniques similar to this in the section [Scheduling work to make users wait less](#scheduling-work-to-make-users-wait-less).
-  - The HTML received by the client can sometimes be larger in size than the original data and the code to render it combined. This can happen when HTML templates are rendered repeatedly in a page. [Compression](#http-responses-compression) can be used to solve this issue as it eliminates repetition. In fact, I would say that client-side rendering is itself a form of compression.
+  - The HTML received by the client can sometimes be larger in size than the original data and the code to render it combined. This can happen when HTML templates are rendered repeatedly in a page. [Compression](#http-responses-compression) can be used to solve this issue as it eliminates repetition. It is interesting that client-side rendering is in fact a form of compression.
   - Client-side code quality can suffer with pure SSR frameworks: Typically, a declarative templating language is used on the server to render data to HTML, while some imperative client-side code is written to make the server-generated HTML interactive. This can lead to less development velocity as imperative code is harder to reason about.
 
 Hybrid approaches to rendering are possible too:
@@ -872,18 +872,20 @@ Note that partial hydration gains can be nullified in small applications if the 
 In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page — a process commonly referred to as layout — and finally paint the result on the screen.
 The browser has to repeat some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating page layout is known as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
-To avoid overwhelming users' devices with CPU work, the DOM should be kept small, CSS rules should be simple, and JavaScript code should run as infrequently as possible and should avoid inducing unnecessary layouts and paints.
+To avoid overwhelming users' devices with too much CPU work, the DOM should be kept small, CSS rules should be simple, and JavaScript code should avoid running for too long or inducing unnecessary layouts and paints.
 
 Browser DevTools can be used to determine where web pages spend their time: executing JavaScript code, calculating layout, doing garbage collection, etc.
 
-If JavaScript execution is the performance bottleneck, profiling can help pinpoint the source of the problem. The solution will vary widely depending on your data, code, and libraries. But ultimately, it boils down to [algorithmic optimization](https://en.wikipedia.org/wiki/Algorithmic_efficiency).
+If JavaScript execution is the performance bottleneck, profiling can help pinpoint the source of the problem and the fix ultimately it boils down to doing [algorithmic optimization](https://en.wikipedia.org/wiki/Algorithmic_efficiency).
 
-If the performance problem comes from the browser repeatedly recalculating the layout, the cause may be inefficient JavaScript code that triggers unnecessary layout recalculations — a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). This is showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)). When JavaScript code writes to the DOM, the browser has to recalculate the layout, but it doesn't do this immediately. It waits to catch multiple DOM updates and then recalculates the layout once, repainting the page in its new state. However, when JavaScript code reads certain properties from the DOM, it forces the browser to calculate the layout immediately. Therefore, reading and writing to the DOM in a loop can result in more layout recalculations than necessary.
+If the performance problem comes from the browser repeatedly recalculating the layout, the cause may be inefficient JavaScript code that triggers unnecessary layout recalculations — a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). This is showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)). When JavaScript code writes to the DOM, the browser has to recalculate the layout to update the UI for the user, but it doesn't do that immediately. It waits to catch multiple DOM updates and then recalculates the layout once, repainting the page in its new state. However, when JavaScript code reads certain properties from the DOM, it forces the browser to calculate the layout immediately. Therefore, reading and writing to the DOM in a loop can result in more layout recalculations than necessary.
 
 <figure id="layout-thrashing">
     <img
         alt="Layout thrashing"
         src="/blog/web-frontend-performance/waterfall-diagram/layout-thrashing.svg"
+        width="1241"
+        height="580"
     />
     <figcaption>
        <a href="#layout-thrashing">Layout thrashing:</a> In this example, the click event handler writes to the DOM and then reads the state of the DOM repeatedly in a loop. Each DOM-write invalidates the current layout calculations, so each subsequent DOM-read requires the browser to recalculate layout to read the correct current state of the DOM. The result is that it takes the browser 1.2 seconds to process the click event handler, leaving it unresponsive to user events during this time.
@@ -894,41 +896,44 @@ If the performance problem comes from the browser repeatedly recalculating the l
     <img
         alt="No layout thrashing"
         src="/blog/web-frontend-performance/waterfall-diagram/no-layout-thrashing.svg"
+        width="341"
+        height="220"
     />
     <figcaption>
        <a href="#no-layout-thrashing">No Layout thrashing:</a> In this example, the click event handler performs all the necessary DOM reads first. Then, it does all the DOM writes, invalidating the current layout calculations. Once the event handler has finished executing, the browser recalculates the layout once to render the final state to the user. The entire process takes 200 milliseconds to complete. Contrast it with the 1.2 seconds from the previous example.
     </figcaption>
+
 </figure>
 
-If no layout thrashing is occurring but the DOM is still being updated too frequently, forcing the browser to recalculate the layout repeatedly, it may be helpful to apply techniques such as [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) or [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle). These techniques are commonly used to avoid overwhelming the browser with work when the user is actively filling out inputs that trigger actions on the page.
+If no layout thrashing is occurring but the DOM is still being updated too frequently, it may be helpful to apply techniques such as [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) or [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle). These techniques help avoid overwhelming the browser with work when the user is actively filling in inputs that trigger actions on the page.
 
 Performance issues related to layout can arise from inefficient CSS, for instance, when using CSS animations or transitions on properties that trigger reflow. For more information on this, check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
 
-Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution that became widely available recently (September 2024) is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment), which allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
+Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which is widely available since september 2024. It allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
 
 #### Client-side navigation
 
-In web applications that load a lot of JavaScript code, re-executing the app's code on every page navigation is both slow and wasteful of CPU cycles. Client-side navigation, in contrast to traditional browser navigation, can help address this issue.
+In web applications that load a lot of JavaScript code, it is slow to re-execute the app's code on every page navigation. Client-side navigation, in contrast to traditional browser navigation, can help address this issue.
 
 Let's first examine how browsers handle navigation by default. When a user clicks on a link:
 
 - The browser fetches the new page and its resources from the server and renders it on the screen.
 - The browser creates a new JavaScript execution context in which the scripts for the new page are executed.
-  - The browser can freeze the execution context of the previous page, allowing it to be resumed later if the user clicks the back button, without having to reload the page. This is known as the [Back/Forward Cache (bfcache)](https://developer.mozilla.org/en-US/docs/Glossary/bfcache) and it is good practice to avoid APIs that disable it.
+  - The browser can freeze the execution context of the previous page, allowing it to be resumed later if the user clicks the back button, without having to reload it. This is known as the [Back/Forward Cache (bfcache)](https://developer.mozilla.org/en-US/docs/Glossary/bfcache) and it is good practice to avoid APIs that disable it.
 - The browser also updates its UI to reflect the URL change and to enable the user to navigate back to the previous page.
 
 An alternative way to handle navigation is through client-side navigation (also referred to as soft navigation or client-side routing):
 
 - The application installs event handlers that cancel the browser's default behavior when links are clicked.
   - The current JavaScript execution context is preserved, and live objects such as video/audio elements and WebSocket/WebRTC/EventSource connections are not interrupted.
-- The application fetches the new page data and renders it into the DOM.
+- The application fetches the new page's content and inserts it into the DOM.
 - The application uses the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to:
   - Instruct the browser to update the URL in the address bar and the state of the back and forward buttons.
   - Install event handlers to intercept and handle clicks on the back and forward buttons.
 
-It’s important to recognize that client-side navigation is not a silver bullet. Implementing it requires the application to load additional code to simulate browser behavior and manage routing on the client side, rather than relying on the server side as in traditional navigation. This can lead to increased client side code size and added complexity, which may be excessive for many websites and applications.
+Client-side navigation requires the application to load additional code to simulate the default browser behavior and to manage routing on the client, rather than relying on the server-side code to do that like in traditional navigation. This can lead to increased client-side code size and added complexity, which may be excessive for certain websites and applications.
 
-However, client-side navigation is essential for applications that need to support URL-based navigation while maintaining the state of the page. For instance, in an audio streaming website, users expect the audio to continue playing seamlessly as they navigate between different pages.
+However, client-side navigation is essential for applications that want to support URL-based navigation while maintaining the state of the page. For instance, in an audio streaming website, users expect the audio to continue playing seamlessly as they navigate between different pages.
 
 Moreover, client-side navigation is often a performance requirement in JavaScript-heavy [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs).
 
@@ -952,7 +957,7 @@ Moreover, client-side navigation is often a performance requirement in JavaScrip
         height="600"
  />
     <figcaption>
-        <a href="#figure-soft-navigation">Client-side navigation:</a> In this example, a SPA handles navigation. To do so, it loads a client-side router script, which increases code size. Note that the shared resources of Page A and Page B are only loaded once.
+        <a href="#figure-soft-navigation">Client-side navigation:</a> In this example, a SPA handles navigation. To do so, it loads a client-side router script. Notice that the shared resources of Page A and Page B are only loaded once.
     </figcaption>
 </figure>
 
