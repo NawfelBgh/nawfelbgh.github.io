@@ -1235,8 +1235,8 @@ Before the browser gets to execute a JavaScript file, it has to download it full
 Wasm's binary format [was designed](https://github.com/WebAssembly/design/blob/main/Rationale.md#why-a-binary-encoding) as to address this issue. To optimize loading time, many criteria were taken into account:
 
 - Compact representation of code: Being a binary format, Wasm is more compact than if it was represented code using a textual representation.
-- Fast compilation: Unlike other pre-existing binary code formats like the JVM's, Wasm binary format is designed to be fast to parse and to validate.
 - Compressibility: Wasm is compressible with gzip. More so than equivalent asm.js code.
+- Fast parsing and validation: This disqualified the use of pre-existing binary code formats like the JVM's which isn't optimized for that.
 - [Streaming compilation](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/instantiateStreaming_static): The browser can start compiling Wasm code as it receives it from the network.
 
 Nowadays, browsers can even [parallelize](https://www.infoq.com/news/2018/01/firefox-58-web-assembly-gets-10x/) wasm code compilation.
