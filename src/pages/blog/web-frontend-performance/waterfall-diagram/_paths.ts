@@ -24,6 +24,7 @@ export const STATIC_PATHS = [
   { params: { diagramId: "no-layout-thrashing" } },
   { params: { diagramId: "web-worker" } },
   { params: { diagramId: "no-web-worker" } },
+  { params: { diagramId: "no-web-worker-split-long-task" } },
 ];
 
 export function getModule(diagramId: string): {
@@ -92,10 +93,14 @@ export function getModule(diagramId: string): {
     };
   }
 
-  if (["web-worker", "no-web-worker"].includes(diagramId)) {
+  if (
+    ["web-worker", "no-web-worker", "no-web-worker-split-long-task"].includes(
+      diagramId
+    )
+  ) {
     return {
       module: webWorker,
-      args: [diagramId === "web-worker"],
+      args: [diagramId === "web-worker", diagramId.includes("split-long-task")],
     };
   }
 

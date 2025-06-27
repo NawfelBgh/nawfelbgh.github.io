@@ -986,7 +986,7 @@ High level languages on the other hand try to be easy to use. To achieve this:
 - they control memory layout on behalf of the programmer
 - and they usually only expose a simple object model to the programmer where objects are always referred to by reference and never by value.
 
-**JavaScript** is such a high level language, imposing both of these limitations on programmers.
+**JavaScript** is one such a high level language, imposing both of these limitations on programmers.
 In spite of that, researchers came up with [asm.js](https://en.wikipedia.org/wiki/Asm.js), [a subset of JavaScript](http://asmjs.org/spec/latest/) that controls memory layout by never using JS objects and by instead only reading and writing numbers from and into a typed array.
 C++ programs can be compiled to asm.js code and can run in the browser. The Unreal 3D game engine, [for instance](https://blog.mozilla.org/futurereleases/2013/05/02/epic-citadel-demo-shows-the-power-of-the-web-as-a-platform-for-gaming/) was compiled back in 2013 to JavaScript and run at near native speed. Techniques from asm.js are still used today by [polywasm](https://github.com/evanw/polywasm) to run Wasm modules in browsers that don't support it or when it is disabled.
 
@@ -1245,11 +1245,10 @@ Nowadays, browsers can even [parallelize](https://www.infoq.com/news/2018/01/fir
 
 ## Scheduling work to make users wait less
 
-In this chapter, I present techniques that allow web sites and applications to minimize the time users have to wait, without reducing the the amount of work the sites/apps have to do, but by scheduling work smartly.
+In this chapter, I present techniques that allow websites and applications to reduce the time users have to wait for apps responses, without reducing the the amount of work the sites/apps have to do, but by scheduling work smartly.
 
 To visualize the effect of different scheduling strategies, I generated waterfall charts with fixed parameters such as file sizes, execution times and network bandwidth and latency. I set network parameters as to simulate [regular 3G performance](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency#network_throttling), and I divided the network bandwidth between simultaneously sent resources equally.
-
-Feel free to [download the code](#) and to generate charts with different parameters.
+Feel free to [download the code](https://github.com/NawfelBgh/nawfelbgh.github.io/tree/main/src/pages/blog/web-frontend-performance/waterfall-diagram) and to generate charts with different parameters.
 
 ### Do not block the UI thread
 
@@ -1259,30 +1258,30 @@ So if JavaScript code runs for too long without yielding control to the event lo
 
 Therefore, JavaScript code should execute in brief bursts to keep the UI responsive. Two strategies can be used to handle long JavaScript tasks:
 
-- Break them out into smaller tasks that interleave with other tasks running in the event loop, or
-- Run them in a separate thread which runs concurrently with the event loop thread (also called the main thread or UI thread) without blocking it.
-
-[Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) enable the second option. A web worker runs JavaScript code in a separate thread that is isolated from the main thread and from other web workers. The main thread and web workers can communicate with each other using asynchronous message passing.
-
-[Partytown](https://partytown.builder.io/) is an interesting application of web workers: It runs third-party scripts (analytics scripts for example) outside the main thread by simulating the DOM inside a web worker using proxy objects.
+- Break them out into smaller tasks that interleave with the other tasks running in the event loop, or
+- Run them in a separate thread which runs concurrently with the main thread (the thread running the UI's event loop) without blocking it. [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers) enable this second option. A web worker executes JavaScript code in a separate thread that is isolated from the main thread and from other web workers. The main thread and web workers can communicate with each other using asynchronous message passing.
 
 <figure id="figure-long-task">
     <img
         alt="Long task blocking the event loop"
         src="/blog/web-frontend-performance/waterfall-diagram/no-web-worker.svg"
+        width="auto"
+        height="260"
     />
     <figcaption>
-       <a href="#figure-long-task">Long task blocking the event loop:</a> In this example, before the browser handles the second click, it waits for the currently running event handler to finish, waiting 500ms.
+       <a href="#figure-long-task">Long task blocking the event loop:</a> In this example, the user clicks on the UI twice: Once at t=0 and a second time at t=500ms. The first click's event handler runs for 50ms and then calls a function <code>Long task</code> which runs for 800ms. When the second click event arrives, <code>Long task</code> is still running, so the browser waits for it to finish (waiting 350ms). At t=850ms the main thread is free again, the second click handler is run taking 50ms and the browser runs layout (taking 100ms) to show the updated UI to the user. The user sees the result of the second click at 1000ms (A latency of 500ms).
     </figcaption>
 </figure>
 
 <figure id="figure-long-task-split">
     <img
         alt="Long task split into short ones to not block the event loop"
-        src="/blog/web-frontend-performance/waterfall-diagram/no-web-worker.svg"
+        src="/blog/web-frontend-performance/waterfall-diagram/no-web-worker-split-long-task.svg"
+        width="auto"
+        height="400"
     />
     <figcaption>
-       <a href="#figure-long-task-split">Long task split into short ones to not block the event loop:</a> In this example, when the second click event occurs, the browser can handle it after only ??ms.
+       <a href="#figure-long-task-split">Long task split into short ones to not block the event loop:</a> In this example, the user clicks on the UI twice: Once at t=0 and a second time at t=500ms. The first click's event handler runs for 50ms and then calls a function <code>Long task</code>. This function takes 800ms in total but it splits its work to chunks of 100ms yielding control to the main thread after each chunk. When the second click event arrives, chunk number 5 of <code>Long task</code> is running, so the browser waits for it to finish (waiting 70ms). At t=571ms the main thread is free again, the second click handler is run taking 50ms and the browser runs layout (taking 100ms) to show the updated UI to the user. The user sees the result of the second click at 721ms (A latency of 221ms).
     </figcaption>
 </figure>
 
@@ -1290,15 +1289,19 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
     <img
         alt="Long task running in a Web Worker"
         src="/blog/web-frontend-performance/waterfall-diagram/web-worker.svg"
+        width="auto"
+        height="300"
     />
     <figcaption>
-       <a href="#figure-long-task-in-worker">Long task running in a Web Worker to not block the event loop:</a> In this example, when the second click event occurs, the browser starts handling it immediately.
+       <a href="#figure-long-task-in-worker">Long task running in a Web Worker to not block the event loop:</a> In this example, the user clicks on the UI twice: Once at t=0 and a second time at t=500ms. The first click's event handler runs for 50ms and trigger the execution of the function <code>Long task</code> in a Web Worker. When the second click event arrives, the function <code>Long task</code> is still running, but since it is running in a separate thread, the browser runs the second click's event handler immediately taking 50ms and then runs layout (taking 100ms) to show the updated UI to the user. The user sees the result of the second click at 650ms (A latency of 150ms). 
     </figcaption>
 </figure>
 
+> The [Partytown](https://partytown.builder.io/) library uses web workers in an interesting way: It allows running third-party scripts (analytics scripts for example) outside the main thread using proxy objects to simulate the DOM inside a web worker and using synchronous XHR to hide the asynchronicity of the communication between the main thread and the worker. This can help reduce jank coming from third-party scripts.
+
 ---
 
-### Optimizing resources loading
+### Optimizing resource loading
 
 #### Gradual content delivery with streaming
 
@@ -1321,14 +1324,22 @@ When the server receives a request for a page, it can:
 This way, the client can start loading the page's sub-resources in parallel with the server generating and sending the rest of the page.
 
 <figure id="figure-not-streaming-html">
-    <img alt="Not streaming HTML diagram" src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.svg" />
+    <img
+        alt="Not streaming HTML diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.svg"
+        width="auto"
+        height="760" />
     <figcaption>
         <a href="#figure-not-streaming-html">Not streaming HTML:</a> In this example, the server waits for the whole page to be generated before it sends it to the client. The user gets to start interacting with the page after a loading time of <a href="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.json">1 second</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-streaming-html">
-    <img alt="Streaming HTML diagram" src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.svg" />
+    <img
+        alt="Streaming HTML diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.svg"
+        width="auto"
+        height="780" />
     <figcaption>
         <a href="#figure-streaming-html">Streaming HTML:</a> In this example, the server streams the page parts as soon as they are ready. It starts by streaming the page head allowing the client to request <code>style.css</code> and <code>script.js</code> earlier than in the <a href="#figure-not-streaming-html">previous example</a>. The user gets to start interacting with the page after a loading time of <a href="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.json">785ms</a>.
     </figcaption>
@@ -1336,16 +1347,15 @@ This way, the client can start loading the page's sub-resources in parallel with
 
 ##### Out-Of-Order Streaming
 
-Certain frameworks offer APIs that allow for the concurrent loading of page sections on the server, which can then be streamed to the client in any order as they become available.
-These frameworks ensure that the page sections are rendered in the correct positions on the client side.
+Certain frameworks can load page sections concurrently and can stream them to the client as they become available, in whichever order that is, ensuring to render them in the correct positions. I'll call this **out-of-order streaming**.
 
-Ebay engineering wrote [an article in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/) about how they implemented this in [MarkoJS](https://markojs.com/#streaming).
+[In there 2014 article](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/) Ebay engineering described how they implemented this technique in [MarkoJS](https://markojs.com/#streaming).
 
-HTML Streaming was rediscovered again in the last years by more popular JavaScript frameworks.
+More popular JavaScript frameworks rediscovered out-of-order streaming in the last years.
 An interesting example among them is [SolidStart](https://start.solidjs.com/):
 
-- It supports streaming in server-side rendering (SSR) and in client-side rendering (CSR) modes, showing that streaming is not specific to server-rendered web applications.
-- Using the [Seroval](https://github.com/lxsmnsyc/seroval/blob/main/docs/compatibility.md#supported-types) library, SolidStart allows servers to send live objects (such as in-flight promises and ReadableStreams) to the clients, while transparently taking care of serialization, streaming, and deserialization.
+- It supports out-of-order streaming in server-side rendering (SSR) and in client-side rendering (CSR) modes.
+- It allows servers to send live objects (such as in-flight promises and ReadableStreams) to the clients, while transparently taking care of serialization, streaming, and deserialization thanks to the [Seroval](https://github.com/lxsmnsyc/seroval/blob/main/docs/compatibility.md#supported-types) library.
 
 <figure id="figure-no-ooo-streaming">
     <img alt="No Out-Of-Order Streaming diagram" src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.svg" />

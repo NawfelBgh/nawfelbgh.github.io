@@ -23,7 +23,7 @@ const CSSOM_DURATION = 100;
 const JS_EXEC_DURATION = 200;
 const LAYOUT_DURATION = 100;
 const SHORT_TASK_DURATION = 50;
-const LONG_TASK_DURATION = 600;
+const LONG_TASK_DURATION = 800;
 /* Unit: bytes per millisecond, or KB per second */
 const BANDWIDTH = 750;
 /* Unit: bytes */
@@ -33,12 +33,12 @@ const STYLE_SIZE = 50_000;
 const SCRIPT_SIZE = 100_000;
 const REQUEST_SIZE = 600;
 
-export function main(useWorker: boolean): Log[] {
+export function main(useWorker: boolean, splitLongTask: boolean): Log[] {
   const runtime = new Runtime();
   const logger = new Logger();
 
   runtime.spawn(function* () {
-    const cpuLock: RTMutex = yield* createMutex();
+    const mainThreadLock: RTMutex = yield* createMutex();
 
     yield* sleep(1);
     logger.log({
@@ -50,7 +50,7 @@ export function main(useWorker: boolean): Log[] {
     });
 
     runtime.spawn(function* () {
-      yield* sleep(400);
+      yield* sleep(500);
       let startTime = runtime.getTime();
       yield* sleep(1);
       logger.log({
@@ -61,9 +61,7 @@ export function main(useWorker: boolean): Log[] {
         endTime: runtime.getTime(),
       });
 
-      //yield* longTaskDonePromise.await();
-
-      yield* cpuLock.lock();
+      yield* mainThreadLock.lock();
       startTime = runtime.getTime();
       yield* sleep(SHORT_TASK_DURATION);
       logger.log({
@@ -84,12 +82,10 @@ export function main(useWorker: boolean): Log[] {
         startTime,
         endTime: runtime.getTime(),
       });
-      cpuLock.unlock();
+      mainThreadLock.unlock();
     });
 
-    //const longTaskDonePromise = new RTPromise(runtime);
-
-    yield* cpuLock.lock();
+    yield* mainThreadLock.lock();
     let startTime = runtime.getTime();
     yield* sleep(SHORT_TASK_DURATION);
     logger.log({
@@ -100,41 +96,35 @@ export function main(useWorker: boolean): Log[] {
       endTime: runtime.getTime(),
     });
 
-    function* longTask(thread: string) {
-      let startTime = runtime.getTime();
-      yield* sleep(LONG_TASK_DURATION);
-      logger.log({
-        actor: "",
-        object: thread,
-        event: "Long task",
-        startTime,
-        endTime: runtime.getTime(),
-      });
+    mainThreadLock.unlock();
 
-      //longTaskDonePromise.fulfill(undefined);
+    function* longTask() {
+      const workChunkSize = splitLongTask ? 100 : LONG_TASK_DURATION;
+      let timeSpent = 0;
+      while (timeSpent < LONG_TASK_DURATION) {
+        if (!useWorker) {
+          yield* mainThreadLock.lock();
+        }
+        timeSpent += workChunkSize;
+        let startTime = runtime.getTime();
+        yield* sleep(workChunkSize);
+        logger.log({
+          actor: "",
+          object: useWorker ? "Worker thread" : "Main thread",
+          event: "Long task" + (splitLongTask ? " (chunk)" : ""),
+          startTime,
+          endTime: runtime.getTime(),
+        });
+        if (!useWorker) {
+          mainThreadLock.unlock();
+        }
+        yield* sleep(5);
+      }
     }
 
-    if (useWorker) {
-      runtime.spawn(function* () {
-        yield* longTask("Worker thread");
-      });
-    } else {
-      yield* longTask("Main thread");
-    }
-
-    if (useWorker) {
-      startTime = runtime.getTime();
-      yield* sleep(LAYOUT_DURATION);
-      logger.log({
-        actor: "",
-        object: "Main thread",
-        event: "Layout",
-        highlight: true,
-        startTime,
-        endTime: runtime.getTime(),
-      });
-    }
-    cpuLock.unlock();
+    runtime.spawn(function* () {
+      yield* longTask();
+    });
   });
   runtime.runTasks();
   return logger.logs;
