@@ -746,12 +746,13 @@ Before adopting such a strategy, some concerns have to be considered:
 Offloading code to the server can negatively impact developer experience (DX), as it can require creating API routes, modifying client code to call them, and managing serialization of inputs and outputs. However, this is not always an issue:
 
 - If the offloaded code is executed during page loading, the server can run it without needing API routes. We will explore this further in the section on [server-side and client-side rendering](#server-side-and-client-side-rendering).
-- If the offloaded code generates HTML fragments that require little to no processing on the client side, as with frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/), then developers can load these fragments without writing client-side JavaScript.
+- If the offloaded code generates HTML fragments that require little to no processing on the client side, as is the case when using frameworks like [Hotwire](https://hotwired.dev/), [HTMX](https://htmx.org/) and [Unpoly](https://unpoly.com/), then developers can load these fragments without writing client-side JavaScript.
 
-Some frameworks also improve the DX of making API requests:
+Some frameworks tackle this DX issue by making it simpler to send requests to the server:
 
-- [tRPC](https://trpc.io/) offers a simple API for creating both the server and client sides of API routes, resulting in well-typed and well-structured code.
+- [tRPC](https://trpc.io/) offers a simple API for creating both the server and the client sides of API routes, resulting in well-typed and well-structured code.
 - [Next.js](https://nextjs.org/docs/app/api-reference/directives/use-server) and [SolidStart](https://docs.solidjs.com/solid-start/reference/server/use-server#use-server) provide server functions: developers can mark modules or individual functions as server-side only and call them from client code like regular asynchronous functions. The framework transparently splits the code into server-side and client-side parts, generates API routes, and transforms the client code to communicate with the server through these routes.
+  - SolidStart goes further by allowing servers to respond to clients with live objects (such as in-flight promises and ReadableStreams), while transparently taking care of serialization, streaming, and deserialization - thanks to the [Seroval](https://github.com/lxsmnsyc/seroval/blob/main/docs/compatibility.md#supported-types) library.
 
 ##### Server-side and client-side rendering
 
@@ -1265,7 +1266,7 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
     <img
         alt="Long task blocking the event loop"
         src="/blog/web-frontend-performance/waterfall-diagram/no-web-worker.svg"
-        width="auto"
+        width="1141"
         height="260"
     />
     <figcaption>
@@ -1277,7 +1278,7 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
     <img
         alt="Long task split into short ones to not block the event loop"
         src="/blog/web-frontend-performance/waterfall-diagram/no-web-worker-split-long-task.svg"
-        width="auto"
+        width="1171"
         height="400"
     />
     <figcaption>
@@ -1289,7 +1290,7 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
     <img
         alt="Long task running in a Web Worker"
         src="/blog/web-frontend-performance/waterfall-diagram/web-worker.svg"
-        width="auto"
+        width="991"
         height="300"
     />
     <figcaption>
@@ -1327,10 +1328,12 @@ This way, the client can start loading the page's sub-resources in parallel with
     <img
         alt="Not streaming HTML diagram"
         src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.svg"
-        width="auto"
+        width="1146"
         height="760" />
     <figcaption>
-        <a href="#figure-not-streaming-html">Not streaming HTML:</a> In this example, the server waits for the whole page to be generated before it sends it to the client. The user gets to start interacting with the page after a loading time of <a href="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.json">1 second</a>.
+        <a href="#figure-not-streaming-html">Not streaming HTML:</a> In this example, the server waits for the whole page, head and body, to be generated (t=310ms) before it sends it to the client. The client receives the head of the page at t=362ms, at which point it starts loading the files <code>style.css</code> and <code>script.js</code> and continues loading the body of the page.
+        When <code>style.css</code> is loaded (at t=473ms), the browser starts constructs the CSSOM. The browser also starts executing <code>script.js</code> onces it is loaded (t=672ms), waiting first for the CSSOM to be constructed (t=706ms).
+        As a result, the page is rendered and interactive at t=1006ms - <a target="_blanc" href="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
@@ -1338,42 +1341,47 @@ This way, the client can start loading the page's sub-resources in parallel with
     <img
         alt="Streaming HTML diagram"
         src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.svg"
-        width="auto"
+        width="925"
         height="780" />
     <figcaption>
-        <a href="#figure-streaming-html">Streaming HTML:</a> In this example, the server streams the page parts as soon as they are ready. It starts by streaming the page head allowing the client to request <code>style.css</code> and <code>script.js</code> earlier than in the <a href="#figure-not-streaming-html">previous example</a>. The user gets to start interacting with the page after a loading time of <a href="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.json">785ms</a>.
+        <a href="#figure-streaming-html">Streaming HTML:</a> In this example, the server streams the page parts, the head and the body, as soon as they are ready. It starts by streaming the page head to the client allowing it to request <code>style.css</code> and <code>script.js</code> at t=112ms (instead of t=362ms from the previous non streaming example).
+        As a result, the page is rendered and interactive at t=785ms (248ms earlier than the non streaming example) - <a target="_blanc" href="/blog/web-frontend-performance/waterfall-diagram/streaming-html.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
 ##### Out-Of-Order Streaming
 
-Certain frameworks can load page sections concurrently and can stream them to the client as they become available, in whichever order that is, ensuring to render them in the correct positions. I'll call this **out-of-order streaming**.
+Sometimes, webpages are composed of sections that can load concurrently and that may not finish loading in the right order to stream them directly to the client. For those situations, some frameworks implement a feature commonly called today **out-of-order streaming**: The framework loads page sections concurrently, streams them to the client as they become available, in whichever order that is, and ensure to render them in the correct position in the page.
 
-[In there 2014 article](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/) Ebay engineering described how they implemented this technique in [MarkoJS](https://markojs.com/#streaming).
-
-More popular JavaScript frameworks rediscovered out-of-order streaming in the last years.
-An interesting example among them is [SolidStart](https://start.solidjs.com/):
-
-- It supports out-of-order streaming in server-side rendering (SSR) and in client-side rendering (CSR) modes.
-- It allows servers to send live objects (such as in-flight promises and ReadableStreams) to the clients, while transparently taking care of serialization, streaming, and deserialization thanks to the [Seroval](https://github.com/lxsmnsyc/seroval/blob/main/docs/compatibility.md#supported-types) library.
+Since [MarkoJS](https://markojs.com/#streaming) implementing this [in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/), some more popular JavaScript frameworks rediscovered and implemented this the technique. An interesting example is [SolidStart](https://start.solidjs.com/) which can switch between server-side rendering (SSR) and in client-side rendering (CSR) by the switch of a configuration flag while supporting out-of-order streaming in both modes.
 
 <figure id="figure-no-ooo-streaming">
-    <img alt="No Out-Of-Order Streaming diagram" src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.svg" />
+    <img
+        alt="No Out-Of-Order Streaming diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.svg"
+        width="1376"
+        height="1020" />
     <figcaption>
-        <a href="#figure-no-ooo-streaming">No Out-Of-Order Streaming:</a> In this example, the server streams the head element of the page, loads the 3 sections of the page in parallel but waits for the first section to be ready before sending it and the two other sections to the client. The user gets an empty shell at 756ms, sees section 1 at 1436ms and the whole page at <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.json">1536ms</a>.
+        <a href="#figure-no-ooo-streaming">In-Order Streaming:</a> In this example, the server streams the head element of the page and loads the 3 sections of the page in parallel before streaming them to the client. The second and third sections finish loading early but they are not streamed to the client until after the first section to be ready.
+        At t=1036ms, the client receives section 1, rendering it at t=1136ms (before that, all the user sees is an empty shell).
+        The page is completely rendered and interactive only at t=1236ms - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-ooo-streaming">
-    <img alt="Out-Of-Order Streaming diagram" src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.svg" />
+    <img
+        alt="Out-Of-Order Streaming diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.svg"
+        width="1276"
+        height="1060" />
     <figcaption>
-        <a href="#figure-ooo-streaming">Out-Of-Order Streaming:</a> In this example, the server streams the head element of the page, loads the 3 sections of the page in parallel and sends them to the client as they are ready. The user sees section 2 at 756ms, section 3 at 1036ms and the whole page at <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.json">1436ms</a>.
+        <a href="#figure-ooo-streaming">Out-Of-Order Streaming:</a> In this example, the server streams the head element of the page, loads the 3 sections of the page in parallel and streams them to the client as soon as they are ready. The client receives section 2 at t=536ms and renders it at t=756ms (480ms earlier than with in-order streaming). It receives section 3 at t=936 and renders it at t=1036ms (200ms earlier than with in-order streaming). And finally, it receives section 1 at t=1036ms and renders it at t=1136ms (100ms earlier than with in-order streaming) - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
-##### Beyond HTTP responses streaming
+##### Beyond HTTP response streaming
 
-The Web platform provides APIs to stream data between the client and the server like:
+In addition to HTTP response streaming, the Web platform provides APIs to stream data between the client and the server:
 
 - [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) for textual server sent data,
 - [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) for bidirectional communication between servers and clients, and
@@ -1381,7 +1389,7 @@ The Web platform provides APIs to stream data between the client and the server 
 
 More recently, newer APIs arrived like:
 
-- [Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API) which allows reading standard HTTP response bodies and writing to request bodies in a streaming fashion, and
+- [Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API) which allows reading standard HTTP response bodies and writing to HTTP request bodies in a streaming fashion, and
 - [WebTransport](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport_API) which is the newer and more capable replacement of WebSockets.
 
 ---
