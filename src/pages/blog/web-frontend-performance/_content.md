@@ -1398,11 +1398,9 @@ More recently, newer APIs arrived like:
 
 ##### Preloading
 
-In order to optimize the loading of webpages, browsers assign different loading priorities to different types of resources: The loading HTML document takes precedence over stylesheets, fonts and script files which themselves take precedence over images.
+Browsers try to optimize the loading of webpages as much as possible: They load the page's sub-resources as they discover them in the server response. They even go as far as to use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
 
-Browsers even go the extra mile to discover and to fetch hight priority resources as soon as possible: While the main thread parses the HTML document in order, a background [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process identifies and initiates the loading of high priority sub-resources in the yet to be processed HTML.
-
-There are limits though to what browsers can do automatically for us. Say for example that we are loading a page which loads a CSS file which itself imports another CSS file. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
+There remains a limit though to what browsers can do automatically for us. For example: When loading a page which loads a CSS file `/page1.css` which itself imports another CSS file `/page1-section1.css`. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
 
 ```html
 <!-- page1.html -->
@@ -1413,36 +1411,46 @@ There are limits though to what browsers can do automatically for us. Say for ex
 
 ```css
 /* /page1.css */
-@import "/page-type-1.css";
+@import "/page1-section1.css";
 ```
 
-Thanks to the [preload tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload), we can tell the browser to prefetch indirectly used sub-resources.
+Thanks to the [preload tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload), we can tell the browser to preload sub-resources before they are eventually discovered and loaded.
+
 In the previous example, this would look like the following:
 
 ```html
 <!-- page1.html -->
 <head>
-  <link rel="preload" as="style" href="/page-type-1.css" />
+  <link rel="preload" as="style" href="/page1-section1.css" />
   <link rel="stylesheet" href="/page1.css" />
 </head>
 ```
 
 ###### Preloading web fonts
 
-By default, browsers load [web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) only when they determine that they are actually needed. This makes them a great candidate for preloading, as when they are loaded late, they cause layout shifts that disturb the user experience.
-Also, it is [good practice](https://web.dev/learn/performance/optimize-web-fonts#self-host_your_web_fonts) to host web fonts on your own server, rather than relying on a third-party server, to minimize network latency caused by connection overhead.
+By default, browsers load [web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) only when needed. That is, the browser doesn't load the web font files declared in the page's CSS until an element in the page uses `font-family` and `font-style` requiring them. Because of this, the browser may render parts of the page a first time using a system font and then rerender them again when the web fonts are loaded, causing layout shifts which can disturb users.
+
+Preloading web font files helps address this problem. Layout shifts can be avoided altogether if the web fonts are loaded early enough, or at least they may occur early during the loading of the page as not to disturb the user too much. It is also good practice to [self host](https://web.dev/learn/performance/optimize-web-fonts#self-host_your_web_fonts) web fonts. Ie. to host them on one's own server, rather than relying on a third-party server, to avoid the latency of establishing a secure connection to a different host.
 
 <figure id="figure-font-no-preload">
-    <img alt="No web fonts preloading diagram" src="/blog/web-frontend-performance/waterfall-diagram/font-no-preload.svg" />
+    <img
+        alt="No web fonts preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/font-no-preload.svg"
+        width="805"
+        height="960" />
     <figcaption>
-        <a href="#figure-font-no-preload">No web fonts preloading:</a> In this example, the browser determines that it needs the two web font files only after it constructs the CSSOM (at 388ms). It start fetching them at that point, renders the page a first time with a system font, and later rerenders the page a second time using the web fonts, finishing at <a href="/blog/web-frontend-performance/waterfall-diagram/font-no-preload.json">665ms</a>.
+        <a href="#figure-font-no-preload">No web fonts preloading:</a> In this example, the client determines that it needs the two web font files only after it constructs the CSSOM (at t=388ms). It start fetching them at that point, renders the page a first time with a system font, and later rerenders the page a second time using the web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-no-preload.json">t=665ms</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-font-preload">
-    <img alt="Web fonts preloading diagram" src="/blog/web-frontend-performance/waterfall-diagram/font-preload.svg" />
+    <img
+        alt="Web fonts preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/font-preload.svg"
+        width="696"
+        height="940" />
     <figcaption>
-        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page head. The browser discovers them and starts fetching them at 112ms. It later renders the page once only using the loaded web fonts, finishing at <a href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json">556ms</a>.
+        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a>.
     </figcaption>
 </figure>
 
