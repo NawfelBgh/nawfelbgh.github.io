@@ -69,6 +69,7 @@ class Client implements Actor {
     const cssOmDonePromise: RTPromise<undefined> = yield* createPromise();
     const jsExecutedPromise: RTPromise<undefined> = yield* createPromise();
     const cpuLock: RTMutex = yield* createMutex();
+    let isDataFetched = false;
 
     function* layout(isShell: boolean = false) {
       yield* cpuLock.lock();
@@ -151,10 +152,13 @@ class Client implements Actor {
                 });
               });
             }
-            yield* layout(true);
+            if (!isDataFetched) {
+              yield* layout(true);
+            }
           });
         } else if (object === "data.json") {
           runtime.spawn(function* () {
+            isDataFetched = true;
             yield* jsExecutedPromise.await();
             yield* cpuLock.lock();
             const startTime = runtime.getTime();

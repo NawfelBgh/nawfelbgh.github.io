@@ -1456,23 +1456,29 @@ Preloading web font files helps address this problem. Layout shifts can be avoid
 
 ###### Speeding up SPAs startup
 
-In single-page applications that rely on client-side code for data retrieval, data fetching takes place only after the code has been fully loaded and executed. This process can be optimized using a preload tag, which instructs the browser to start loading the page's data as soon as it retrieves the head tag of the page. This allows the data fetching to occur concurrently with the loading of the client-side code.
+In single-page applications that rely on client-side code for data retrieval, data fetching takes place only after the code is fully loaded and executed. To optimize this, we can use a preload tag to instruct the browser to start loading the page's data as soon as it retrieves the head of the page. This allows the data fetching to occur concurrently with the loading of the client-side code.
 
-This approach enables performance that closely approximates that of the streaming server-side solutions discussed in the [previous section](#gradual-content-delivery-with-streaming), where the server begins fetching data as soon as it receives a request for the page's URL.
-
-The added cost of this preloading-enhanced client-side solution is limited to the latency involved in loading the page's head and making a second request. However, this cost is significantly reduced when the client application is served via a CDN. Furthermore, when the page is loaded from the client cache, this latency disappears entirely, leading to no additional delay compared to streaming server-side solutions.
+Preloading page data can enable performance that closely approximates what can be achieved using the streaming solutions discussed in the [previous section](#gradual-content-delivery-with-streaming), in which the server can start fetching page data as soon as it receives the request for the page's URL. Compared to that approach, preloading page data on the client adds the latency of having to load the page's head and to make a second request, before the actual data fetching can start on the server. However, this latency is significantly reduced when the webapp is served via a CDN. Furthermore, when the page is loaded from the client cache, this latency disappears entirely, leading to no additional latency compared to streaming solutions.
 
 <figure id="figure-spa-no-preload">
-    <img alt="SPA without preloading diagram" src="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.svg" />
+    <img
+        alt="SPA without preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.svg"
+        width="1312"
+        height="940" />
     <figcaption>
-        <a href="#figure-spa-no-preload">SPA without preloading:</a> In this example, the client downloads and executes the JavaScript before realizing the need to load the page data. As a result, the data is rendered on the screen after <a href="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.json">1172ms</a>.
+        <a href="#figure-spa-no-preload">SPA without preloading:</a> In this example, the client downloads the single page app's code which starts fetching page data at t=556ms. The data is received at t=972 and finally rendered to the screen at <a href="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.json">t=1172ms</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-spa-preload">
-    <img alt="SPA with preloading diagram" src="/blog/web-frontend-performance/waterfall-diagram/spa-preload.svg" />
+    <img
+        alt="SPA with preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/spa-preload.svg"
+        width="896"
+        height="920" />
     <figcaption>
-        <a href="#figure-spa-preload">SPA with preloading:</a> the client begins preloading the page data as soon as the head tag is downloaded, ultimately rendering the data on the screen in <a href="/blog/web-frontend-performance/waterfall-diagram/spa-preload.json">856ms</a>. 
+        <a href="#figure-spa-preload">SPA with preloading:</a> In this example, as soon as the client receives the page's head (t=112ms) element it starts preloading the page's data. The data is received at t=529ms and is ultimately rendered to the screen at <a href="/blog/web-frontend-performance/waterfall-diagram/spa-preload.json">t=756ms</a> (65% the time taken without preloading). 
     </figcaption>
 </figure>
 
