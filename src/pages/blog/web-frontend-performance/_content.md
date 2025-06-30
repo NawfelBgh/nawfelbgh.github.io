@@ -1450,7 +1450,7 @@ Preloading web font files helps address this problem. Layout shifts can be avoid
         width="696"
         height="940" />
     <figcaption>
-        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a>.
+        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a> (109ms earlier than the example without preloading).
     </figcaption>
 </figure>
 
@@ -1467,7 +1467,7 @@ Preloading page data can enable performance that closely approximates what can b
         width="1312"
         height="940" />
     <figcaption>
-        <a href="#figure-spa-no-preload">SPA without preloading:</a> In this example, the client downloads the single page app's code which starts fetching page data at t=556ms. The data is received at t=972 and finally rendered to the screen at <a href="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.json">t=1172ms</a>.
+        <a href="#figure-spa-no-preload">SPA without preloading:</a> In this example, the client downloads the single page app's code which starts fetching page data at t=556ms. The data is received at t=972 and finally rendered to the screen at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/spa-no-preload.json">t=1172ms</a>.
     </figcaption>
 </figure>
 
@@ -1478,7 +1478,7 @@ Preloading page data can enable performance that closely approximates what can b
         width="896"
         height="920" />
     <figcaption>
-        <a href="#figure-spa-preload">SPA with preloading:</a> In this example, as soon as the client receives the page's head (t=112ms) element it starts preloading the page's data. The data is received at t=529ms and is ultimately rendered to the screen at <a href="/blog/web-frontend-performance/waterfall-diagram/spa-preload.json">t=756ms</a> (65% the time taken without preloading). 
+        <a target="_blank" href="#figure-spa-preload">SPA with preloading:</a> In this example, as soon as the client receives the page's head (t=112ms) element it starts preloading the page's data. The data is received at t=529ms and is ultimately rendered to the screen at <a href="/blog/web-frontend-performance/waterfall-diagram/spa-preload.json">t=756ms</a> (416ms earlier than the example without preloading).
     </figcaption>
 </figure>
 
