@@ -914,7 +914,7 @@ Finally, layout and reflow take longer as CSS rules become more complex and as t
 
 #### Client-side navigation
 
-In web applications that load a lot of JavaScript code, it is slow to re-execute the app's code on every page navigation. Client-side navigation, in contrast to traditional browser navigation, can help address this issue.
+In web applications that load a lot of JavaScript code, it is slow to re-execute the app's code on every page navigation. Client-side navigation can help address this issue.
 
 Let's first examine how browsers handle navigation by default. When a user clicks on a link:
 
@@ -1450,7 +1450,12 @@ Preloading web font files helps address this problem. Layout shifts can be avoid
         width="696"
         height="940" />
     <figcaption>
-        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a> (109ms earlier than the example without preloading).
+    <p>
+        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a> (109ms earlier than the example without preloading).
+    </p>
+    <p>
+        Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files.
+    </p>
     </figcaption>
 </figure>
 
@@ -1482,11 +1487,54 @@ Preloading page data can enable performance that closely approximates what can b
     </figcaption>
 </figure>
 
+###### Speeding up client-side navigation
+
+Preloading can also improve the speed of client-side navigation. When the user clicks a link, the client-side router had to load the next page's JavaScript code and its data, ideally in parallel.
+A further optimization is to prefetch next page's code and data when the user hovers over its link.
+
+<figure id="figure-client-side-navigation-no-preload">
+    <img
+        alt="Client-side navigation without preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-no-preload.svg"
+        width="1679"
+        height="620" />
+    <figcaption>
+        <a href="#figure-client-side-navigation-no-preload">Client-side navigation without preloading:</a> In this example, when the user clicks the link at t=500ms (500ms after they hover over it), the client-side router downloads the code for the next page. Once the code is loaded (t=976ms), it fetches the data for that page. The data is received at t=1339ms and is rendered to the user at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-no-preload.json">t=1539ms</a> (1 second after the click).
+    </figcaption>
+</figure>
+
+<figure id="figure-client-side-navigation-preload-data">
+    <img
+        alt="Waterfall diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-data.svg"
+        width="1330"
+        height="620" />
+    <figcaption>
+        <a href="#figure-client-side-navigation-preload-data">Client-side navigation with data preloading:</a> In this example, when the user clicks the link at t=500ms (500ms after they hover over it), the client-side router downloads the code for the next page while simultaneously fetching its data. The page is ultimately rendered to the user <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-data.json">t=1190ms</a> (690ms after the click).
+    </figcaption>
+</figure>
+
+<figure id="figure-client-side-navigation-preload-code-data">
+    <img
+        alt="Waterfall diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-code-data.svg"
+        width="1203"
+        height="620" />
+    <figcaption>
+    <p>
+        <a href="#figure-client-side-navigation-preload-code-data">Client-side navigation with code and data preloading:</a> In this example, when the user hovers over the link, the client-side router preloads the next page's code and data. When the link is eventually clicked (t=500ms), both code and data are available. As a result, the page is rendered to the user at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-code-data.json">t=700ms</a> (200ms after the click).
+    </p>
+    <p>
+        In fact, if we started rendering the preloaded next page offscreen before the click, it could have been shown to the user even faster.
+    </p>
+    </figcaption>
+</figure>
+
 ---
 
 ##### Deferring non-critical styles and scripts
 
-CSS and JavaScript resources can be [render-blocking](https://developer.mozilla.org/en-US/docs/Glossary/Render_blocking), which means that the browser has to wait for these files to load before rendering the page to the user. This is necessary to prevent the [Flash Of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content), where users briefly see unstyled elements before the styles are applied.
+CSS and JavaScript resources are sometimes [render-blocking](https://developer.mozilla.org/en-US/docs/Glossary/Render_blocking), meaning that the browser has to wait for them to load before rendering the page to the user. This is necessary to prevent the [Flash Of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content), where users briefly see unstyled elements before the styles are applied.
 
 Any CSS and JavaScript resources that are not needed for the initial rendering of the page, should ideally be loaded asynchronously in order to unclutter the [critical rendering path](https://developer.mozilla.org/en-US/docs/Web/Performance/Critical_rendering_path).
 This can be achieved using:
@@ -1495,19 +1543,32 @@ This can be achieved using:
 - media queries to [asynchronously load CSS files](https://css-tricks.com/the-simplest-way-to-load-css-asynchronously/),
 
 <figure id="figure-render-blocking-script">
-    <img alt="Using a single render-blocking script diagram" src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.svg" />
+    <img
+        alt="Using a single render-blocking script diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.svg"
+        width="925"
+        height="780" />
     <figcaption>
         <a href="#figure-render-blocking-script">Using a single render-blocking script:</a> In this example, the user requests an HTML page
         which loads render blocking CSS and JavaScript files. The browser processes these files constructing CSSOM and
-        executing JavaScript code before rendering the page, finishing at <a href="/blog/web-frontend-performance/waterfall-diagram/streaming-html.json">785ms</a>.
+        executing JavaScript code before rendering the page, finishing at <a href="/blog/web-frontend-performance/waterfall-diagram/streaming-html.json">t=785ms</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-async-script">
-    <img alt="Asynchronously loading non-critical JavaScript diagram" src="/blog/web-frontend-performance/waterfall-diagram/split-render-blocking-resources.svg" />
+    <img
+        alt="Asynchronously loading non-critical JavaScript diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/split-render-blocking-resources.svg"
+        width="1025"
+        height="1000" />
     <figcaption>
-            <a href="#figure-async-script">Asynchronously loading non-critical JavaScript:</a> In this example, the page's script is split into a render blocking one
-            and a second asynchronously loaded script. As soon as the render blocking CSS and JavaScript resources are processed, the browser renders the page <a href="/blog/web-frontend-performance/waterfall-diagram/split-render-blocking-resources.json">at 572ms</a> (More than 200ms earlier than in the <a href="#figure-render-blocking-script">previous example</a>). As for the async script, the browser loads it with low priority, executes it and rerenders the page again, finishing completely at 885ms.
+            <p>
+                <a href="#figure-async-script">Asynchronously loading non-critical JavaScript:</a> In this example, the page's script is split into a render blocking one
+                and a second asynchronously loaded script. As soon as the render blocking CSS and JavaScript resources are processed, the browser renders the page <a href="/blog/web-frontend-performance/waterfall-diagram/split-render-blocking-resources.json">at t=572ms</a> (213ms earlier than the <a href="#figure-render-blocking-script">previous example</a>). As for the async script, the browser loads it with low priority, executes it and rerenders the page again, finishing completely at t=885ms (100ms later than the previous example).
+            </p>
+            <p>
+                Notice that <code>style.css</code> loads in this example faster than the same file in the previous example. That's because the simulation takes into account that once the smaller script file from this example is done loading, <code>style.css</code> continues loading using the whole network bandwidth. 
+            </p>
     </figcaption>
 </figure>
 
@@ -1516,39 +1577,15 @@ This can be achieved using:
 ##### Lazy loading
 
 Loading content only when necessary, a technique known as [lazy loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading), can enhance performance by allowing high-priority resources to load without the interference of low-priority ones.
-This can be achieved in HTML by marking images and iframes with the attribute `loading="lazy"` to delay their loading until they appear on the screen.
+This can be achieved in HTML by marking images and iframes with the attribute `loading="lazy"` to delay their loading until they need to be rendered on the screen.
 
-Additionally, web frameworks offer means to lazily load code and data:
+Beyond what is natively possible on the web, web frameworks offer means to lazily load code and data:
 
 - Individual components can be marked as lazy which gets them extracted into a separate code bundle that is only loaded when the component is instantiated by the application.
 - Client-side routers (previously discussed [here](#client-side-navigation)) often delay the loading of the code of different routes until the user navigates to them.
-- Frameworks like [Astro](https://docs.astro.build/en/concepts/islands/#client-islands), [Nuxt](https://nuxt.com/modules/delay-hydration) and [Angular in developer preview mode](https://angular.dev/guide/incremental-hydration) support lazy hydration where certain server-rendered components are initialized (and their code is loaded) only on certain conditions such as when they appear on the screen or when the user interacts with them. The [Qwik](https://qwik.dev/) framework achieves something similar with its [resumability](https://qwik.dev/docs/concepts/resumable/)
+- Frameworks like [Astro](https://docs.astro.build/en/concepts/islands/#client-islands), [Nuxt](https://nuxt.com/modules/delay-hydration) and [Angular](https://angular.dev/guide/incremental-hydration) support lazy hydration where certain server-rendered components are initialized (and their code is loaded) only on certain conditions such as when they appear on the screen or when the user interacts with them. The [Qwik](https://qwik.dev/) framework achieves something similar with its [resumability](https://qwik.dev/docs/concepts/resumable/)
 
 Note that lazy loading has some drawbacks: It can result in users experiencing wait times when the lazily-loaded resources are eventually needed. To mitigate this, it's beneficial to pair lazy loading with preloading, especially when a user initiates an action that increases the likelihood of requiring those resources.
-
-Consider an example involving a client-side router: when a user clicks a link, it triggers client-side navigation requiring both the JavaScript code and data for the next page. The Router API can be designed to make it possible preload the data even before the next page's code is downloaded, allowing both resources to be fetched concurrently.
-A further optimization is to prefetch next page's code when the user hovers over the link, ensuring minimal wait time for the user when the actual click occurs.
-
-<figure id="figure-client-side-navigation-no-preload">
-    <img alt="Client-side navigation without preloading diagram" src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-no-preload.svg" />
-    <figcaption>
-        <a href="#figure-client-side-navigation-no-preload">Client-side navigation without preloading:</a> In this example, when the user clicks the link, the client-side router downloads the code for the next page. Once the code is loaded, it fetches the data for that page, making it visible to the user <a href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-no-preload.json">1 second</a> after the click.
-    </figcaption>
-</figure>
-
-<figure id="figure-client-side-navigation-preload-data">
-    <img alt="Waterfall diagram" src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-data.svg" />
-    <figcaption>
-        <a href="#figure-client-side-navigation-preload-data">Client-side navigation with data preloading:</a> In this example, when the user clicks the link, the client-side router downloads the code for the next page while simultaneously fetching its data. The page is then rendered to the user <a href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-data.json">690ms</a> after the click.
-    </figcaption>
-</figure>
-
-<figure id="figure-client-side-navigation-preload-code-data">
-    <img alt="Waterfall diagram" src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-code-data.svg" />
-    <figcaption>
-        <a href="#figure-client-side-navigation-preload-code-data">Client-side navigation with code and data preloading:</a>In this example, when the user hovers over the link, the client-side router begins preloading the code for the next page. Then, upon clicking the link, the router fetches the necessary data. As a result, the page is rendered to the user <a href="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-code-data.json">563ms</a> after the click.
-    </figcaption>
-</figure>
 
 ---
 

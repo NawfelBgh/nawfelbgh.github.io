@@ -38,11 +38,11 @@ class Client implements Actor {
     public logger: Logger,
     public server: Server,
     private preloadData: boolean,
-    private preloadCodeOnHover: boolean
+    private preloadOnHover: boolean
   ) {}
 
   *navigateToPage(): Task {
-    const { preloadData, preloadCodeOnHover } = this;
+    const { preloadData, preloadOnHover } = this;
     const controller = new AbortController();
     const connection = new Connection({
       client: this,
@@ -85,6 +85,7 @@ class Client implements Actor {
       messageQueue.send({ connection, object: "click" });
     });
 
+    const clickPromise: RTPromise<undefined> = yield* createPromise();
     const jsExecutedPromise: RTPromise<undefined> = yield* createPromise();
     const cpuLock: RTMutex = yield* createMutex();
 
@@ -108,30 +109,37 @@ class Client implements Actor {
       if (object === "done") {
         break;
       }
-      if (object === "hover" && preloadCodeOnHover) {
+      if (object === "hover" && preloadOnHover) {
         runtime.spawn(function* () {
           yield* connection.sendRequest({
             object: "script.js",
             segments: [{ size: REQUEST_SIZE }],
           });
         });
+        runtime.spawn(function* () {
+          yield* connection.sendRequest({
+            object: "data.json",
+            segments: [{ size: REQUEST_SIZE }],
+          });
+        });
       }
       if (object === "click") {
-        if (!preloadCodeOnHover) {
+        clickPromise.fulfill(undefined);
+        if (!preloadOnHover) {
           runtime.spawn(function* () {
             yield* connection.sendRequest({
               object: "script.js",
               segments: [{ size: REQUEST_SIZE }],
             });
           });
-        }
-        if (preloadData) {
-          runtime.spawn(function* () {
-            yield* connection.sendRequest({
-              object: "data.json",
-              segments: [{ size: REQUEST_SIZE }],
+          if (preloadData) {
+            runtime.spawn(function* () {
+              yield* connection.sendRequest({
+                object: "data.json",
+                segments: [{ size: REQUEST_SIZE }],
+              });
             });
-          });
+          }
         }
       }
       if (object === "script.js") {
@@ -159,6 +167,7 @@ class Client implements Actor {
         });
       } else if (object === "data.json") {
         runtime.spawn(function* () {
+          yield* clickPromise.await();
           yield* jsExecutedPromise.await();
           yield* cpuLock.lock();
           const startTime = runtime.getTime();
@@ -231,11 +240,11 @@ class Server implements Actor {
   }
 }
 
-export function main(preloadData: boolean, preloadCodeOnHover: boolean): Log[] {
+export function main(preloadData: boolean, preloadOnHover: boolean): Log[] {
   const runtime = new Runtime();
   const logger = new Logger();
   const server = new Server(logger);
-  const client = new Client(logger, server, preloadData, preloadCodeOnHover);
+  const client = new Client(logger, server, preloadData, preloadOnHover);
   runtime.spawn(function* () {
     yield* server.start();
   });
