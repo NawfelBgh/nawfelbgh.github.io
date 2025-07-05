@@ -599,10 +599,10 @@ With the advent of HTTP/2, many web articles declared the death of resource bund
 - HTTP/2 can multiplex the loading of several resources using a single HTTP connection, significantly reducing network overhead. This is an improvement over HTTP/1.1, where HTTP connections can only transmit a single resource at a time and where only a limited number of HTTP connections can be opened simultaneously.
 - HTTP/2 defines the [server push extension](https://en.wikipedia.org/wiki/HTTP/2_Server_Push) which allows servers to push resources to the client before the client requests them. When a client requests a page, servers can push the page's sub-resources before the client discovers that it needs them, thereby eliminating some latency without having to bundle resources together.
 
-[Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) explains in details why bundling is still relevant in HTTP/2 and HTTP/3. Some of the reasons are:
+[Smashing Magazine’s article series on HTTP/3](https://www.smashingmagazine.com/2021/08/http3-core-concepts-part1/) explains in details why bundling is still relevant in HTTP/2 and HTTP/3. Some of the reasons are that:
 
 - Even with multiplexing, requests still incur overhead.
-- HTTP Server Push support has been removed from [Chrome](https://developer.chrome.com/blog/removing-push) and [Firefox](https://www.mozilla.org/en-US/firefox/132.0/releasenotes/).
+- HTTP Server Push support has been removed from [Chrome](https://developer.chrome.com/blog/removing-push) and [Firefox](https://www.mozilla.org/en-US/firefox/132.0/releasenotes/) due to compatibility issues and to empirical evidence showing performance loss from Server Push. One factor contributing to the observed performance loss is that servers may over-push data because they cannot know which data clients already have in their cache.
 
 ---
 
@@ -870,16 +870,23 @@ Note that partial hydration gains can be nullified in small applications if the 
 
 ### Reducing CPU work in the client
 
-In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page — a process commonly referred to as layout — and finally paint the result on the screen.
+In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page - a process commonly referred to as layout - and finally paint the result on the screen.
 The browser has to repeat some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating page layout is known as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
 To avoid overwhelming users' devices with too much CPU work, the DOM should be kept small, CSS rules should be simple, and JavaScript code should avoid running for too long or inducing unnecessary layouts and paints.
 
-Browser DevTools can be used to determine where web pages spend their time: executing JavaScript code, calculating layout, doing garbage collection, etc.
+#### Optimizing layout and reflow
 
-If JavaScript execution is the performance bottleneck, profiling can help pinpoint the source of the problem and the fix ultimately it boils down to doing [algorithmic optimization](https://en.wikipedia.org/wiki/Algorithmic_efficiency).
+If the browser DevTools show that the app is spending too much time doing layout, that may be caused by one of the following problems:
 
-If the performance problem comes from the browser repeatedly recalculating the layout, the cause may be inefficient JavaScript code that triggers unnecessary layout recalculations — a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). This is showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)). When JavaScript code writes to the DOM, the browser has to recalculate the layout to update the UI for the user, but it doesn't do that immediately. It waits to catch multiple DOM updates and then recalculates the layout once, repainting the page in its new state. However, when JavaScript code reads certain properties from the DOM, it forces the browser to calculate the layout immediately. Therefore, reading and writing to the DOM in a loop can result in more layout recalculations than necessary.
+- Layout thrashing
+- Overreacting to user inputs
+- Animating the wrong kind of CSS properties
+- Complex CS and big DOM
+
+##### Layout thrashing
+
+When JavaScript code manipulates the DOM incorrectly, it can triggers unnecessary layout recalculations — a problem known as [layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). This is showcased in the figures [Layout thrashing](#layout-thrashing) and [No layout thrashing](#no-layout-thrashing)). When JavaScript code writes to the DOM, the browser has to recalculate the layout to update the UI for the user, but it doesn't do that immediately. It waits to catch multiple DOM updates and then recalculates the layout once, repainting the page in its new state to the user. However, when JavaScript code reads certain properties from the DOM, it forces the browser to calculate the layout immediately. Now, when JavaScript code reads and writes repeatedly to the DOM in a loop, the browser is forced to recalculate layout again and again, and that is what we call layout thrashing.
 
 <figure id="layout-thrashing">
     <img
@@ -906,15 +913,21 @@ If the performance problem comes from the browser repeatedly recalculating the l
 
 </figure>
 
-If no layout thrashing is occurring but the DOM is still being updated too frequently, it may be helpful to apply techniques such as [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) or [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle). These techniques help avoid overwhelming the browser with work when the user is actively filling in inputs that trigger actions on the page.
+##### Overreacting to user inputs
 
-Performance issues related to layout can arise from inefficient CSS, for instance, when using CSS animations or transitions on properties that trigger reflow. For more information on this, check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
+Certain UI widgets can trigger work while the user is interacting with them. A searchbox, for instance, may trigger search while the user is typing. With such widgets, it is important to ensure that we do not overload the client's CPU, the network and the server with too much work which is likely to be discarded as the user continues editing. This can be achieved using techniques like [debouncing](https://developer.mozilla.org/en-US/docs/Glossary/Debounce) (Waiting for user edits to stop for a specific time before triggering work) and [throttling](https://developer.mozilla.org/en-US/docs/Glossary/Throttle) (Limiting the rate at which user edits trigger work).
 
-Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which is widely available since september 2024. It allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
+##### Animating the wrong kind of CSS properties
+
+Excessive layout recalculation can be triggered by using CSS animations or transitions on properties that cause reflow. For more information on this, check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
+
+##### Complex CS and big DOM
+
+Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution to the problem of large DOM is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which is widely available since september 2024. It allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
 
 #### Client-side navigation
 
-In web applications that load a lot of JavaScript code, it is slow to re-execute the app's code on every page navigation. Client-side navigation can help address this issue.
+In web applications that load a lot of JavaScript code, it is inefficient to re-execute the app's code on every page navigation. Client-side navigation can help address this issue.
 
 Let's first examine how browsers handle navigation by default. When a user clicks on a link:
 
@@ -932,7 +945,7 @@ An alternative way to handle navigation is through client-side navigation (also 
   - Instruct the browser to update the URL in the address bar and the state of the back and forward buttons.
   - Install event handlers to intercept and handle clicks on the back and forward buttons.
 
-Client-side navigation requires the application to load additional code to simulate the default browser behavior and to manage routing on the client, rather than relying on the server for that like in traditional navigation. This can lead to increased client-side code size and added complexity, which may be excessive for certain websites and applications.
+Client-side navigation requires the application to load additional code to simulate the default browser behavior and to manage routing on the client, rather than relying on the server for that like in traditional navigation. This increases the client-side code size and adds complexity, which can be excessive for many websites and applications.
 
 However, client-side navigation is often a performance requirement in JavaScript-heavy [single-page applications](https://en.wikipedia.org/wiki/Single-page_application) (SPAs). It is also essential for applications that want to support URL-based navigation while maintaining the state of the page. For instance, in an audio streaming website, users expect the audio to continue playing seamlessly as they navigate between different pages.
 
@@ -1353,7 +1366,7 @@ This way, the client can start loading the page's sub-resources in parallel with
 
 Sometimes, webpages are composed of sections that can load concurrently and that may not finish loading in the right order to stream them directly to the client. For those situations, some frameworks implement a feature commonly called today **out-of-order streaming**: The framework loads page sections concurrently, streams them to the client as they become available, in whichever order that is, and ensure to render them in the correct position in the page.
 
-Since [MarkoJS](https://markojs.com/#streaming) implementing this [in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/), some more popular JavaScript frameworks rediscovered and implemented this the technique. An interesting example is [SolidStart](https://start.solidjs.com/) which can switch between server-side rendering (SSR) and in client-side rendering (CSR) by the switch of a configuration flag while supporting out-of-order streaming in both modes.
+Since [MarkoJS](https://markojs.com/#streaming) implementing out-of-order streaming [in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/), some more popular JavaScript frameworks rediscovered and implemented the technique. An interesting example is [SolidStart](https://start.solidjs.com/) which can supports out-of-order streaming in both server-side rendering (SSR) and client-side rendering (CSR) modes (modes that you can switch between by changing a configuration flag).
 
 <figure id="figure-no-ooo-streaming">
     <img
@@ -1397,6 +1410,8 @@ More recently, newer APIs arrived like:
 #### Loading resources at the right time
 
 ##### Preloading
+
+ADD EARLY HINTS !!!!!!! AND DIAGRAMS
 
 Browsers try to optimize the loading of webpages as much as possible: They load the page's sub-resources as they discover them in the server response. They even go as far as to use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
 
