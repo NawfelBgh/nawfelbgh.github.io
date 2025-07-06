@@ -6,6 +6,7 @@ import * as loadClientRenderedPage from "./_loadClientRenderedPage.ts";
 import * as loadServerRenderedPage from "./_loadServerRenderedPage.ts";
 import * as multiSectionsPage from "./_multiSectionsPage.ts";
 import * as webWorker from "./_webWorker.ts";
+import * as preloading from "./_preloading.ts";
 
 export const STATIC_PATHS = [
   { params: { diagramId: "streaming-html" } },
@@ -25,6 +26,10 @@ export const STATIC_PATHS = [
   { params: { diagramId: "web-worker" } },
   { params: { diagramId: "no-web-worker" } },
   { params: { diagramId: "no-web-worker-split-long-task" } },
+  { params: { diagramId: "preload-not" } },
+  { params: { diagramId: "preload-link-tag" } },
+  { params: { diagramId: "preload-link-header" } },
+  { params: { diagramId: "preload-early-hints" } },
 ];
 
 export function getModule(diagramId: string): {
@@ -101,6 +106,17 @@ export function getModule(diagramId: string): {
     return {
       module: webWorker,
       args: [diagramId === "web-worker", diagramId.includes("split-long-task")],
+    };
+  }
+
+  if (diagramId.startsWith("preload-")) {
+    return {
+      module: preloading,
+      args: [
+        diagramId.endsWith("early-hints"),
+        diagramId.endsWith("link-header"),
+        diagramId.endsWith("link-tag"),
+      ],
     };
   }
 

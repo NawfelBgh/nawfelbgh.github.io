@@ -1366,7 +1366,7 @@ This way, the client can start loading the page's sub-resources in parallel with
 
 Sometimes, webpages are composed of sections that can load concurrently and that may not finish loading in the right order to stream them directly to the client. For those situations, some frameworks implement a feature commonly called today **out-of-order streaming**: The framework loads page sections concurrently, streams them to the client as they become available, in whichever order that is, and ensure to render them in the correct position in the page.
 
-Since [MarkoJS](https://markojs.com/#streaming) implementing out-of-order streaming [in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/), some more popular JavaScript frameworks rediscovered and implemented the technique. An interesting example is [SolidStart](https://start.solidjs.com/) which can supports out-of-order streaming in both server-side rendering (SSR) and client-side rendering (CSR) modes (modes that you can switch between by changing a configuration flag).
+Since [MarkoJS](https://markojs.com/#streaming) pioneering out-of-order streaming [in 2014](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko/), some more popular JavaScript frameworks rediscovered and implemented the technique. An interesting example is [SolidStart](https://start.solidjs.com/) which supports out-of-order streaming in both server-side rendering (SSR) and client-side rendering (CSR) modes (modes that you can switch between by changing a configuration flag). In SSR mode, the server streams both HTML and data to the client: the framework inserts the HTML into the page and passes the data to client-side code. In CSR mode, the server streams only the data the client where client-side code renders it into HTML.
 
 <figure id="figure-no-ooo-streaming">
     <img
@@ -1411,14 +1411,13 @@ More recently, newer APIs arrived like:
 
 ##### Preloading
 
-ADD EARLY HINTS !!!!!!! AND DIAGRAMS
+In order to optimize the loading of webpages, browsers try to schedule the loading of resources assigning a [sensible priority](https://web.dev/articles/fetch-priority) to each sub-resource. As the browser parses the page, it discovers sub-resources and loads them or schedule them to be loaded. Browsers try to discover and load high priority resources as soon as possible - even before the page parser gets to see them. To do so, they use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
 
-Browsers try to optimize the loading of webpages as much as possible: They load the page's sub-resources as they discover them in the server response. They even go as far as to use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
-
-There remains a limit though to what browsers can do automatically for us. For example: When loading a page which loads a CSS file `/page1.css` which itself imports another CSS file `/page1-section1.css`. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
+There remains a limit though to what browsers can do automatically for us. After all, browsers cannot know if the page needs a sub-resource until they see it in the server response. For example: When loading a page which loads a CSS file `/page1.css` which itself imports another CSS file `/page1-section1.css`. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
 
 ```html
 <!-- page1.html -->
+<!doctype html>
 <head>
   <link rel="stylesheet" href="/page1.css" />
 </head>
@@ -1429,17 +1428,55 @@ There remains a limit though to what browsers can do automatically for us. For e
 @import "/page1-section1.css";
 ```
 
-Thanks to the [preload tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload), we can tell the browser to preload sub-resources before they are eventually discovered and loaded.
+With preloading, web pages can declare the intent to use sub-resources without inserting them immediately into the page. This way the browser can start loading the preloaded sub-resources early, so that when they are ultimately needed, they load fast.
 
-In the previous example, this would look like the following:
+Preloading can be done using [<link rel="preload"> tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload). Using preload link tags in the previous example would look like the following:
 
 ```html
 <!-- page1.html -->
+<!doctype html>
 <head>
   <link rel="preload" as="style" href="/page1-section1.css" />
   <link rel="stylesheet" href="/page1.css" />
 </head>
 ```
+
+Another tool for preloading is the [Link HTTP response header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Link), supported by all major browsers [since late 2023](https://caniuse.com/mdn-http_headers_link). Link headers with `rel="preconnect"` or `rel="preload"` have the same semantic as the equivalent HTML `<link>` element, but they have the advantage that servers can send them before they start generating the page's HTML, helping browsers discover page sub-resources earlier. If we use Link headers in the previous example page, we get a first HTTP response chunk containing the headers:
+
+```http
+200 OK
+Link: </page1.css>; rel="preload"; as="style", </page1-section1.css>; rel="preload"; as="style"
+```
+
+followed by a second response chunk with the rest of the page.
+
+Since servers have to determine the status code of the page and sent it before they can send HTTP headers, there can be a delay before the Link HTTP headers are sent. That's why a third tool for preloading was created: The HTTP [103 Early Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/103) informational response, available with preloading capability in all major browsers except Safari [since late 2023](https://caniuse.com/mdn-http_status_103_preload). Servers can send a 103 Early Hint response including preload Link headers and then send the actual response (including the status code) when they are ready. This allows browsers to discover and start fetching page sub-resources even earlier.
+
+Using early hints, the previous example would look like. the following:
+
+```http
+103 Early Hint
+Link: </page1.css>; rel="preload"; as="style", </page1-section1.css>; rel="preload"; as="style"
+
+200 OK
+Content-Type: text/html
+
+<!doctype html>
+...
+```
+
+<figure id="figure-preload-not">
+    <img
+        alt="No preloading diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/preload-not.svg"
+        width="1139"
+        height="820" />
+    <figcaption>
+        <a href="#figure-preload-not">No preloading:</a> In this example, the client requests the page. It takes the server 200ms to determine the status code which it send to the client at t=ms, it takes it another 200ms to generate the head sending it at t=ms, and it takes it yet another 200ms to generate the body sending it at t=ms. When the client receives the page's head (t=ms), it requests <code>style.css</code>. Upon receiving it (t=ms), the client requests <code>style-dependency.css</code>. Only after receiving the two style files and the body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-not.json">t=665ms</a>.
+    </figcaption>
+</figure>
+
+TODO: insert the other 3 diagrams
 
 ###### Preloading web fonts
 
