@@ -17,12 +17,11 @@ import {
 
 /* Unit: milliseconds */
 const NETWORK_LATENCY = 50; // x2 = RTT of 100ms
+const STATUS_CODE_LATENCY = 250;
+const HEAD_RESPONSE_LATENCY = 100;
 const SERVER_FAST_RESPONSE_LATENCY = 10;
-const SERVER_SLOW_RESPONSE_LATENCY = 200;
+const BODY_RESPONSE_LATENCY = 150;
 const CSSOM_DURATION = 100;
-const JS_EXEC_DURATION = 200;
-const BLOCKING_JS_EXEC_DURATION = 50;
-const NON_BLOCKING_JS_EXEC_DURATION = 150;
 const LAYOUT_DURATION = 100;
 /* Unit: bytes per millisecond, or KB per second */
 const BANDWIDTH = 750;
@@ -31,8 +30,6 @@ const HTTP_HEADERS_SIZE = 500;
 const HEAD_SIZE = 2_000;
 const BODY_SIZE = 50_000;
 const STYLE_SIZE = 50_000;
-const SCRIPT_SIZE = 100_000;
-const FONT_FILE_SIZE = 25_000;
 const REQUEST_SIZE = 500;
 
 type Preload = "Early Hints" | "Link Header" | "Link Tag" | "None";
@@ -203,7 +200,7 @@ class Server implements Actor {
             });
           }
           const beforeStatusCodeGeneration = runtime.getTime();
-          yield* sleep(SERVER_SLOW_RESPONSE_LATENCY);
+          yield* sleep(STATUS_CODE_LATENCY);
           const afterStatusCodeGeneration = runtime.getTime();
           logger.log({
             actor: name,
@@ -237,7 +234,7 @@ class Server implements Actor {
             });
           }
           const beforeHeadGeneration = runtime.getTime();
-          yield* sleep(SERVER_SLOW_RESPONSE_LATENCY);
+          yield* sleep(HEAD_RESPONSE_LATENCY);
           const afterHeadGeneration = runtime.getTime();
           logger.log({
             actor: name,
@@ -253,7 +250,7 @@ class Server implements Actor {
             });
           });
           const beforeBodyGeneration = runtime.getTime();
-          yield* sleep(SERVER_SLOW_RESPONSE_LATENCY);
+          yield* sleep(BODY_RESPONSE_LATENCY);
           const afterBodyGeneration = runtime.getTime();
           logger.log({
             actor: name,
@@ -281,7 +278,7 @@ class Server implements Actor {
           });
           yield* connection.sendResponse({
             object,
-            segments: [{ size: FONT_FILE_SIZE }],
+            segments: [{ size: STYLE_SIZE }],
           });
         });
       }

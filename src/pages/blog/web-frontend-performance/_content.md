@@ -1413,19 +1413,19 @@ More recently, newer APIs arrived like:
 
 In order to optimize the loading of webpages, browsers try to schedule the loading of resources assigning a [sensible priority](https://web.dev/articles/fetch-priority) to each sub-resource. As the browser parses the page, it discovers sub-resources and loads them or schedule them to be loaded. Browsers try to discover and load high priority resources as soon as possible - even before the page parser gets to see them. To do so, they use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
 
-There remains a limit though to what browsers can do automatically for us. After all, browsers cannot know if the page needs a sub-resource until they see it in the server response. For example: When loading a page which loads a CSS file `/page1.css` which itself imports another CSS file `/page1-section1.css`. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
+There remains a limit though to what browsers can do automatically for us. After all, browsers cannot know if the page needs a sub-resource until they see it in the server response. For example: When loading a page which loads a CSS file `/style.css` which itself imports another CSS file `/style-dependency.css`. The browser may be able to discover the link to the first CSS file early by scanning the HTML document, but it has to fetch this file and to parse it before it discovers and fetches the second one.
 
 ```html
 <!-- page1.html -->
 <!doctype html>
 <head>
-  <link rel="stylesheet" href="/page1.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 ```
 
 ```css
-/* /page1.css */
-@import "/page1-section1.css";
+/* /style.css */
+@import "/style-dependency.css";
 ```
 
 With preloading, web pages can declare the intent to use sub-resources without inserting them immediately into the page. This way the browser can start loading the preloaded sub-resources early, so that when they are ultimately needed, they load fast.
@@ -1436,8 +1436,8 @@ Preloading can be done using [<link rel="preload"> tags](https://developer.mozil
 <!-- page1.html -->
 <!doctype html>
 <head>
-  <link rel="preload" as="style" href="/page1-section1.css" />
-  <link rel="stylesheet" href="/page1.css" />
+  <link rel="preload" as="style" href="/style-dependency.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 ```
 
@@ -1445,7 +1445,7 @@ Another tool for preloading is the [Link HTTP response header](https://developer
 
 ```http
 200 OK
-Link: </page1.css>; rel="preload"; as="style", </page1-section1.css>; rel="preload"; as="style"
+Link: </style.css>; rel="preload"; as="style", </style-dependency.css>; rel="preload"; as="style"
 ```
 
 followed by a second response chunk with the rest of the page.
@@ -1456,7 +1456,7 @@ Using early hints, the previous example would look like. the following:
 
 ```http
 103 Early Hint
-Link: </page1.css>; rel="preload"; as="style", </page1-section1.css>; rel="preload"; as="style"
+Link: </style.css>; rel="preload"; as="style", </style-dependency.css>; rel="preload"; as="style"
 
 200 OK
 Content-Type: text/html
@@ -1465,18 +1465,58 @@ Content-Type: text/html
 ...
 ```
 
+The following 4 diagrams show the simulation of the loading of 4 versions of the same page `page.html` which loads a `style.css` stylesheet which itself requires another `style-dependency.css` stylesheet. The simulation uses the same parameters for the time it takes the server to determine the status code (250ms), to generate the page's head (100ms) and to generate the body (150ms). The 4 versions of the page differ in that:
+
+- The first version does no preloading and loads in 1033ms.
+- The second version preloads page styles using a `<link re="preload">` tag, and loads in 944ms.
+- The third version preloads page styles using `Link` headers, and loads in 828ms.
+- The forth version preloads page styles using an Early Hints response which delivers the preloading `Link` headers. And it loads in 796ms.
+
 <figure id="figure-preload-not">
     <img
         alt="No preloading diagram"
         src="/blog/web-frontend-performance/waterfall-diagram/preload-not.svg"
-        width="1139"
+        width="1173"
         height="820" />
     <figcaption>
-        <a href="#figure-preload-not">No preloading:</a> In this example, the client requests the page. It takes the server 200ms to determine the status code which it send to the client at t=ms, it takes it another 200ms to generate the head sending it at t=ms, and it takes it yet another 200ms to generate the body sending it at t=ms. When the client receives the page's head (t=ms), it requests <code>style.css</code>. Upon receiving it (t=ms), the client requests <code>style-dependency.css</code>. Only after receiving the two style files and the body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-not.json">t=665ms</a>.
+        <a href="#figure-preload-not">No preloading:</a> In this example, after the client requests the page, it receives the page's head element at t=452ms, at which point it requests the <code>style.css</code>. Upon receiving this file (t=657ms), the client requests <code>style-dependency.css</code>. Only after receiving the two style files and the page's body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-not.json">t=1033ms</a>.
     </figcaption>
 </figure>
 
-TODO: insert the other 3 diagrams
+<figure id="figure-preload-link-tag">
+    <img
+        alt="Preloading with link tags diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/preload-link-tag.svg"
+        width="1084"
+        height="820" />
+    <figcaption>
+        <a href="#figure-preload-link-tag">Preloading with link tags:</a> In this example, after the client requests the page, it receives the page's head element at t=452ms, at which point it requests both <code>style.css</code> and the preloaded <code>style-dependency.css</code> file. After receiving the two style files and the page's body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-link-tag.json">t=944ms</a>.
+    </figcaption>
+</figure>
+
+<figure id="figure-preload-link-header">
+    <img
+        alt="Preloading with link header diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/preload-link-header.svg"
+        width="968"
+        height="980" />
+    <figcaption>
+        <a href="#figure-preload-link-header">Preloading with link headers:</a> In this example, after the client requests the page, it receives the page's headers for preloading at t=351ms, at which point it requests both <code>style.css</code> and <code>style-dependency.css</code> file. After receiving the two style files and the page's body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-link-header.json">t=828ms</a>.
+    </figcaption>
+</figure>
+
+<figure id="figure-preload-early-hints">
+    <img
+        alt="Preloading with early hints diagram"
+        src="/blog/web-frontend-performance/waterfall-diagram/preload-early-hints.svg"
+        width="936"
+        height="980" />
+    <figcaption>
+        <a href="#figure-preload-early-hints">Preloading with early hints:</a> In this example, after the client requests the page, it receives a 103 Early Hints response containing headers for preloading at t=101ms, at which point it requests both <code>style.css</code> and <code>style-dependency.css</code> file. After receiving the two style files and the page's body, the client renders the page finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/preload-early-hints.json">t=796ms</a>.
+    </figcaption>
+</figure>
+
+Now, let's explore now some use cases of preloading. The examples which will follow show loading speed improvements from preloading even though they only use the widely supported `<link rel="preload">` tags.
 
 ###### Preloading web fonts
 
