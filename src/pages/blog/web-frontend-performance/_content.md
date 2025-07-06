@@ -62,7 +62,7 @@ Instead, I focus on presenting how many optimizations work and the positive and 
       - [Layout thrashing](#layout-thrashing)
       - [Overreacting to user inputs](#overreacting-to-user-inputs)
       - [Animating the wrong kind of CSS properties](#animating-the-wrong-kind-of-css-properties)
-      - [Addressing complex CSS and big DOM](#addressing-complex-css-and-big-dom)
+      - [Complex CSS and big DOM](#complex-css-and-big-dom)
     - [2.8.2. Client-side navigation](#282-client-side-navigation)
     - [2.8.3. Using WebAssembly](#283-using-webassembly)
       - [Control over Memory layout](#control-over-memory-layout)
@@ -899,7 +899,7 @@ If the browser DevTools show that the app is spending too much time doing layout
 - Layout thrashing
 - Overreacting to user inputs
 - Animating the wrong kind of CSS properties
-- Complex CS and big DOM
+- Complex CSS and big DOM
 
 ##### Layout thrashing
 
@@ -938,7 +938,7 @@ Certain UI widgets can trigger work while the user is interacting with them. A s
 
 Excessive layout recalculation can be triggered by using CSS animations or transitions on properties that cause reflow. For more information on this, check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
 
-##### Addressing complex CSS and big DOM
+##### Complex CSS and big DOM
 
 Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution to the problem of large DOM is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which is widely available since september 2024. It allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
 
@@ -1725,8 +1725,9 @@ To summarize the content of this article:
 - In chapter 3, we explored optimization techniques that reduce wasting of time by scheduling work smartly:
   - The client can respond fast to user events as long as long running client-side code doesn't block the main thread.
   - Pages can load faster with:
-    - Streaming, which allows the progressive delivery of content to the users and allow clients to discover and to fetch sub-resources early.
-    - Preloading, which informs clients of resources that they will need in the near future so that they fetch them early.
+    - Streaming, which allows the progressive delivery of content to the users and allow clients to discover and to fetch sub-resources early,
+    - Preloading, which informs clients of resources that they will need in the near future so that they fetch them early,
+    - Deferring non-critical resources,
     - Lazy-loading, which instructs the client to load some sub-resources later to accelerate the loading of higher priority resources.
 
 Due to the multiplicity of factors affecting performance, and due to individual websites and applications needs, there is not a one-size-fits-all solution or framework. In fact, websites and apps can perform well, even when using subpar technologies, as long as the whole architecture fits the need. That said, I would say that the best frameworks are those that enable developers to choose the performant options with minimum friction and while maintaining good code readability.
