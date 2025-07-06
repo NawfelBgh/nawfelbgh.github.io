@@ -25,56 +25,65 @@ Instead, I focus on presenting how many optimizations work and the positive and 
 
 - [Introduction](#introduction)
 - [Table of content](#table-of-content)
-- [The Web as a physical system](#the-web-as-a-physical-system)
-  - [Frontends contribution to the web's environmental footprint](#frontends-contribution-to-the-webs-environmental-footprint)
+- [1. The Web as a physical system](#1-the-web-as-a-physical-system)
+  - [Frontends contribution to the web’s environmental footprint](#frontends-contribution-to-the-webs-environmental-footprint)
   - [Improving performance by using more powerful hardware](#improving-performance-by-using-more-powerful-hardware)
-- [Optimizing performance by doing less work](#optimizing-performance-by-doing-less-work)
-  - [Caching](#caching)
+- [2. Optimizing performance by doing less work](#2-optimizing-performance-by-doing-less-work)
+  - [2.1. Performance through minimalism](#21-performance-through-minimalism)
+  - [2.2. Caching](#22-caching)
     - [HTTP caching](#http-caching)
-      - [Fresh and stale cached data](#fresh-and-stale-cached-data)
-      - [Revalidating stale data in the background](#revalidating-stale-data-in-the-background)
-      - [Client-requested cache revalidation](#client-requested-cache-revalidation)
-      - [Cache busting](#cache-busting)
-      - [Caching static portions of webpages](#caching-static-portions-of-webpages)
+    - [Fresh and stale cached data](#fresh-and-stale-cached-data)
+    - [Revalidating stale data in the background](#revalidating-stale-data-in-the-background)
+    - [Client-requested cache revalidation](#client-requested-cache-revalidation)
+    - [Cache busting](#cache-busting)
+    - [Caching the static portions of webpages](#caching-the-static-portions-of-webpages)
     - [Service Workers](#service-workers)
     - [Caching in interactive WebApps](#caching-in-interactive-webapps)
     - [Caching compiled code](#caching-compiled-code)
-  - [Reducing content size](#reducing-content-size)
-    - [Image optimization](#image-optimization)
-    - [Subsetting web font files](#subsetting-web-font-files)
+  - [2.3. Compression](#23-compression)
     - [HTTP responses compression](#http-responses-compression)
     - [HTTP headers compression](#http-headers-compression)
-  - [Content Delivery Networks](#content-delivery-networks)
-  - [Bundling resources](#bundling-resources)
-    - [Bundling in the HTTP/2 era](#bundling-in-the-http2-era)
-  - [Reducing client-side code size](#reducing-client-side-code-size)
-    - [Using optimizing bundlers](#using-optimizing-bundlers)
+  - [2.4. Content Delivery Networks](#24-content-delivery-networks)
+  - [2.5. Bundling resources](#25-bundling-resources)
+    - [Bundling in the HTTP/2+ era](#bundling-in-the-http2-era)
+  - [2.6. Reducing content size](#26-reducing-content-size)
+    - [Image optimization](#image-optimization)
+    - [Subsetting web font files](#subsetting-web-font-files)
+  - [2.7. Reducing client-side code size](#27-reducing-client-side-code-size)
+    - [2.7.1. Using optimizing bundlers](#271-using-optimizing-bundlers)
       - [Minification](#minification)
       - [Tree-shaking](#tree-shaking)
-    - [Using small libraries and third-party scripts](#using-small-libraries-and-third-party-scripts)
-    - [Keeping code in the server](#keeping-code-in-the-server)
-      - [Server side rendering](#server-side-rendering)
-  - [Reducing CPU work in the client](#reducing-cpu-work-in-the-client)
-- [Scheduling work to make users wait less](#scheduling-work-to-make-users-wait-less)
-  - [Do not block the UI thread](#do-not-block-the-ui-thread)
-  - [Optimizing resources loading](#optimizing-resources-loading)
+    - [2.7.2. Using small libraries and small third-party scripts](#272-using-small-libraries-and-small-third-party-scripts)
+    - [2.7.3. Keeping code in the server](#273-keeping-code-in-the-server)
+      - [Server-side and client-side rendering](#server-side-and-client-side-rendering)
+      - [Partial hydration](#partial-hydration)
+  - [2.8. Reducing CPU work in the client](#28-reducing-cpu-work-in-the-client)
+    - [2.8.1. Optimizing layout and reflow](#281-optimizing-layout-and-reflow)
+      - [Layout thrashing](#layout-thrashing)
+      - [Overreacting to user inputs](#overreacting-to-user-inputs)
+      - [Animating the wrong kind of CSS properties](#animating-the-wrong-kind-of-css-properties)
+      - [Addressing complex CSS and big DOM](#addressing-complex-css-and-big-dom)
+    - [2.8.2. Client-side navigation](#282-client-side-navigation)
+    - [2.8.3. Using WebAssembly](#283-using-webassembly)
+      - [Control over Memory layout](#control-over-memory-layout)
+      - [Dynamic vs Static Typing](#dynamic-vs-static-typing)
+      - [Human-readable vs Binary code](#human-readable-vs-binary-code)
+- [3. Scheduling work to make users wait less](#3-scheduling-work-to-make-users-wait-less)
+  - [3.1. Do not block the UI thread](#31-do-not-block-the-ui-thread)
+  - [3.2. Steaming](#32-steaming)
     - [Gradual content delivery with streaming](#gradual-content-delivery-with-streaming)
-      - [Unlocking Parallelism with Streaming](#unlocking-parallelism-with-streaming)
-      - [Out-Of-Order Streaming](#out-of-order-streaming)
-      - [Beyond HTTP responses streaming](#beyond-http-responses-streaming)
-    - [Loading resources at the right time](#loading-resources-at-the-right-time)
-      - [Preloading](#preloading)
-        - [Preloading web fonts](#preloading-web-fonts)
-        - [Speeding up SPAs startup](#speeding-up-spas-startup)
-      - [Deferring non-critical styles and scripts](#deferring-non-critical-styles-and-scripts)
-      - [Lazy loading](#lazy-loading)
-- [Throwing hardware at the problem](#throwing-hardware-at-the-problem)
-  - [Scaling the server](#scaling-the-server)
-    - [Scaling different services as needed](#scaling-different-services-as-needed)
-  - [On the environmental footprint of the Web](#on-the-environmental-footprint-of-the-web)
+    - [Unlocking Parallelism with Streaming](#unlocking-parallelism-with-streaming)
+    - [Out-Of-Order Streaming](#out-of-order-streaming)
+    - [Beyond HTTP response streaming](#beyond-http-response-streaming)
+  - [3.3. Preloading](#33-preloading)
+    - [Preloading web fonts](#preloading-web-fonts)
+    - [Speeding up SPAs startup](#speeding-up-spas-startup)
+    - [Speeding up client-side navigation](#speeding-up-client-side-navigation)
+  - [3.4. Deferring non-critical resources](#34-deferring-non-critical-resources)
+  - [3.5. Lazy loading](#35-lazy-loading)
 - [Conclusion](#conclusion)
 
-## The Web as a physical system
+## 1. The Web as a physical system
 
 The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web) is a major user of the [Internet](https://en.wikipedia.org/wiki/Internet): a gigantic distributed system of machines and network infrastructure.
 Like any other physical system, the Internet competes for resources with other human activities and with the natural world more broadly.
@@ -159,7 +168,7 @@ Having brought into attention the physical components that make up the web, let'
 
 ---
 
-## Optimizing performance by doing less work
+## 2. Optimizing performance by doing less work
 
 In this chapter, I present techniques that reduce the workload for server machines, user devices, and the network, by shifting work within the system as to:
 
@@ -167,7 +176,7 @@ In this chapter, I present techniques that reduce the workload for server machin
 - reduce the overall work required in the whole system,
 - and reduce the time needed to serve the frontend to the user.
 
-### Performance through minimalism
+### 2.1. Performance through minimalism
 
 Before diving into the technical side of things, it is worth mentioning minimalism as a non technical, or a less technical, solution to make frontends fast.
 
@@ -185,7 +194,9 @@ Minimalism is one way to approach this issue of web bloat. It is encouraged in [
 
 [Sustainable Web design](https://sustainablewebdesign.org/) goes beyond minimalism. It encompasses user experience design, carbon intensity and also the technical solutions addressed in the rest of this article.
 
-### Caching
+---
+
+### 2.2. Caching
 
 Caching is a powerful tool for optimizing performance. Instead of repeatedly performing the same task, such as sending identical data to the client over and over or regenerating the same page on the server multiple times, server responses can be stored in caches on both the client and server sides for reuse when requested again.
 
@@ -394,29 +405,7 @@ Browsers do not only cache server responses; they can also cache compiled JavaSc
 
 ---
 
-### Reducing content size
-
-Now, we will look at techniques that reduce the size of webpages and their sub-resources. This helps reduce network traffic and the amount of data that the client has to process.
-
-#### Image optimization
-
-Images make up [around 50%](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia) of the bandwidth of the average website , making them a good candidate for optimization. Image file sizes can be reduced by:
-
-- Resizing images to no more than the resolution at which they are ultimately rendered on users’ screens.
-- Using vector graphics ([SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)s) when possible.
-- Encoding images using [lossy compression](https://en.wikipedia.org/wiki/Lossy_compression) when it provides good enough quality (for example, by using the JPEG format instead of PNG).
-- Encoding images using modern, well-optimized file formats like [AVIF](https://en.wikipedia.org/wiki/AVIF) or [WEBP](https://en.wikipedia.org/wiki/WebP).
-
-The HTML `<img>`, `<picture>` and `<video>` elements allow webpages to [provide multiple sources for the same multimedia item](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) and let the browser pick the version of the appropriate format and size.
-This allows us to provide alternative versions of the same image: Different resolutions for different screen sizes, and images in both modern, well-optimized file formats for new browsers and in older formats for legacy browsers.
-
-As setting up a system that provides multiple sources for each image can be quite complex, many web frameworks and hosting services include image optimization tools to automate this task.
-
-#### Subsetting web font files
-
-Web pages can use text fonts installed on users' systems, and can also load custom [Web font](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) files. These files can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define each the glyphs of a subset of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
-
-When a web font is defined by multiple subset files, the browser ensures it downloads only the files containing glyphs that actually appear on the page. Check out the MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and the section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
+### 2.3. Compression
 
 #### HTTP responses compression
 
@@ -487,7 +476,7 @@ Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be s
 
 ---
 
-### Content Delivery Networks
+### 2.4. Content Delivery Networks
 
 It takes more time for data packets to travel between the client and the server the longer the distance is between the two. The time data takes to arrive from point A to B is called [network latency](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency). Technological advancement can reduce latency only to a certain point due to physical limits such as the speed of light: It takes a beam of light approximately [130ms](https://blog.cloudflare.com/http-2-for-web-developers) to travel around the circumference of the Earth.
 
@@ -521,7 +510,7 @@ Typical CDN features include taking care of [TLS termination](https://en.wikiped
 
 ---
 
-### Bundling resources
+### 2.5. Bundling resources
 
 Some network latency is introduced each time an HTML document or one of its resources loads other resources. This latency and network overhead can be avoided by embedding resources inline instead of referencing them by URL. Depending on the context, this is referred to as inlining, embedding, concatenation, or bundling. For example:
 
@@ -608,9 +597,35 @@ With the advent of HTTP/2, many web articles declared the death of resource bund
 
 ---
 
-### Reducing client-side code size
+### 2.6. Reducing content size
 
-#### Using optimizing bundlers
+By reducing the size of webpages' sub-resources, we reduce network bandwidth usage and the amount of data that the client has to process.
+
+#### Image optimization
+
+Images make up [around 50%](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia) of the bandwidth of the average website , making them a good candidate for optimization. Image file sizes can be reduced by:
+
+- Resizing images to no more than the resolution at which they are ultimately rendered on users’ screens.
+- Using vector graphics ([SVG](https://developer.mozilla.org/en-US/docs/Web/SVG)s) when possible.
+- Encoding images using [lossy compression](https://en.wikipedia.org/wiki/Lossy_compression) when it provides good enough quality (for example, by using the JPEG format instead of PNG).
+- Encoding images using modern, well-optimized file formats like [AVIF](https://en.wikipedia.org/wiki/AVIF) or [WEBP](https://en.wikipedia.org/wiki/WebP).
+
+The HTML `<img>`, `<picture>` and `<video>` elements allow webpages to [provide multiple sources for the same multimedia item](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/source) and let the browser pick the version of the appropriate format and size.
+This allows us to provide alternative versions of the same image: Different resolutions for different screen sizes, and images in both modern, well-optimized file formats for new browsers and in older formats for legacy browsers.
+
+As setting up a system that provides multiple sources for each image can be quite complex, many web frameworks and hosting services include image optimization tools to automate this task.
+
+#### Subsetting web font files
+
+Web pages can use text fonts installed on users' systems, and can also load custom [Web font](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) files. These files can be large, as they may include the glyphs of a very large set of Unicode characters to support many languages. To avoid loading glyphs that are never used on the web page, font files can be split into separate files that define each the glyphs of a subset of Unicode characters (for example, only Latin characters or only Arabic characters). This process is called subsetting.
+
+When a web font is defined by multiple subset files, the browser ensures it downloads only the files containing glyphs that actually appear on the page. Check out the MDN articles on [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) and the section on [loading only the glyphs you need](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS#loading_only_the_glyphs_you_need).
+
+---
+
+### 2.7. Reducing client-side code size
+
+#### 2.7.1. Using optimizing bundlers
 
 Developers do not typically ship their source code unchanged to clients. Instead, they use bundling tools or frameworks that include such tools to transform the website's source code and its dependencies (such as libraries and assets) into bundle files that are ultimately served to the clients.
 
@@ -671,7 +686,7 @@ function add(first, second) {
 console.log(add(0.1, 0.2));
 ```
 
-#### Using small libraries and small third-party scripts
+#### 2.7.2. Using small libraries and small third-party scripts
 
 When choosing libraries and third-party services, code size should be one of the selection criteria.
 
@@ -711,7 +726,7 @@ It is important to note that tree-shaking has its limits as libraries typically 
     </figcaption>
 </figure>
 
-#### Keeping code in the server
+#### 2.7.3. Keeping code in the server
 
 Sometimes, when some portions of code are very large, it makes sense to keep them in the server and to execute them on client requests to avoid burdening the client by downloading and executing them.
 
@@ -828,7 +843,7 @@ As such frameworks do both SSR and CSR, using them comes at a cost:
     </figcaption>
 </figure>
 
-###### Partial hydration
+##### Partial hydration
 
 To help reduce code size, some frameworks allow developers to control which parts of the application are rendered exclusively on the server (server-only components) and which parts can be rendered on both the server and the client. Server-only components code does not need to be sent to the client, reducing client-side code size. Additionally, server-only components do not need to be hydrated on page load, reducing initialization work. This feature is commonly referred to as partial or selective hydration.
 
@@ -870,14 +885,14 @@ Note that partial hydration gains can be nullified in small applications if the 
 
 ---
 
-### Reducing CPU work in the client
+### 2.8. Reducing CPU work in the client
 
 In order to display the page to the user, the browser has to construct the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction) (Document Object Model) and the [CSSOM](https://developer.mozilla.org/en-US/docs/Glossary/CSSOM) (CSS Object Model). It also has to calculate the positions and sizes of the elements on the page - a process commonly referred to as layout - and finally paint the result on the screen.
 The browser has to repeat some of this work each time the page is manipulated by the user or by JavaScript code. Recalculating page layout is known as [reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
 To avoid overwhelming users' devices with too much CPU work, the DOM should be kept small, CSS rules should be simple, and JavaScript code should avoid running for too long or inducing unnecessary layouts and paints.
 
-#### Optimizing layout and reflow
+#### 2.8.1. Optimizing layout and reflow
 
 If the browser DevTools show that the app is spending too much time doing layout, that may be caused by one of the following problems:
 
@@ -923,11 +938,11 @@ Certain UI widgets can trigger work while the user is interacting with them. A s
 
 Excessive layout recalculation can be triggered by using CSS animations or transitions on properties that cause reflow. For more information on this, check out [Choosing properties to animate](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/CSS#choosing_properties_to_animate) on MDN.
 
-##### Complex CS and big DOM
+##### Addressing complex CSS and big DOM
 
 Finally, layout and reflow take longer as CSS rules become more complex and as the DOM grows in size. To address CSS complexity, I refer you to the [MDN section on CSS performance](https://developer.mozilla.org/en-US/docs/Learn/Performance/CSS). Regarding the size of the DOM, it can be reduced by employing techniques such as [pagination](https://en.wikipedia.org/wiki/Pagination) or [virtualization](https://web.dev/articles/virtualize-long-lists-react-window) (also known as windowing). A newer solution to the problem of large DOM is [CSS containment](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Using_CSS_containment) which is widely available since september 2024. It allows developers to mark DOM sections that can be rendered independently from each other. This enables the browser to skip painting and calculating layout for offscreen sub-trees of the DOM.
 
-#### Client-side navigation
+#### 2.8.2. Client-side navigation
 
 In web applications that load a lot of JavaScript code, it is inefficient to re-execute the app's code on every page navigation. Client-side navigation can help address this issue.
 
@@ -975,7 +990,7 @@ However, client-side navigation is often a performance requirement in JavaScript
     </figcaption>
 </figure>
 
-#### Using WebAssembly
+#### 2.8.3. Using WebAssembly
 
 CPU load can also be reduced by using a faster programming language. On the web, only two client-side programming languages are supported: JavaScript and [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) (or Wasm for short): JavaScript code can load and instantiate Wasm modules, providing them with the functions they require as dependencies, and it can subsequently call the functions they export. While JavaScript can access web APIs directly, Wasm code can only access them by calling back to JavaScript. For more information about how all of this work, I highly recommend [Lin Clark](https://www.code-cartoons.com/)'s article series: [A cartoon intro to WebAssembly Articles](https://hacks.mozilla.org/category/code-cartoons/a-cartoon-intro-to-webassembly/).
 
@@ -1259,14 +1274,18 @@ Nowadays, browsers can even [parallelize](https://www.infoq.com/news/2018/01/fir
 
 ---
 
-## Scheduling work to make users wait less
+In chapter 2, so far, we looked at optimization techniques that work by reducing the amount of work that has to be done, or in other words, techniques that minimize resources wasting. In the next chapter, we look at optimization techniques that work by minimizing time wasting.
+
+---
+
+## 3. Scheduling work to make users wait less
 
 In this chapter, I present techniques that allow websites and applications to reduce the time users have to wait for apps responses, without reducing the the amount of work the sites/apps have to do, but by scheduling work smartly.
 
 To visualize the effect of different scheduling strategies, I generated waterfall charts with fixed parameters such as file sizes, execution times and network bandwidth and latency. I set network parameters as to simulate [regular 3G performance](https://developer.mozilla.org/en-US/docs/Web/Performance/Understanding_latency#network_throttling), and I divided the network bandwidth between simultaneously sent resources equally.
 Feel free to [download the code](https://github.com/NawfelBgh/nawfelbgh.github.io/tree/main/src/pages/blog/web-frontend-performance/waterfall-diagram) and to generate charts with different parameters.
 
-### Do not block the UI thread
+### 3.1. Do not block the UI thread
 
 The browser runs JavaScript code in an [event loop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop). When the user manipulates the page and when input/output operations progress, events are generated and JavaScript event handlers are run.
 The browser has to wait for any currently running JavaScript code to finish before it can respond to new events.
@@ -1317,7 +1336,7 @@ Therefore, JavaScript code should execute in brief bursts to keep the UI respons
 
 ---
 
-### Optimizing resource loading
+### 3.2. Steaming
 
 #### Gradual content delivery with streaming
 
@@ -1330,7 +1349,7 @@ It's desirable to deliver the parts that are ready to the user while the slower 
 
 It is possible to do exactly that thanks to the streaming capability of HTTP (since version 1.1 of the protocol) and thanks to the HTML format being streaming-friendly (Browsers can process and show HTML documents progressively as they are received),
 
-##### Unlocking Parallelism with Streaming
+#### Unlocking Parallelism with Streaming
 
 When the server receives a request for a page, it can:
 
@@ -1364,7 +1383,7 @@ This way, the client can start loading the page's sub-resources in parallel with
     </figcaption>
 </figure>
 
-##### Out-Of-Order Streaming
+#### Out-Of-Order Streaming
 
 Sometimes, webpages are composed of sections that can load concurrently and that may not finish loading in the right order to stream them directly to the client. For those situations, some frameworks implement a feature commonly called today **out-of-order streaming**: The framework loads page sections concurrently, streams them to the client as they become available, in whichever order that is, and ensure to render them in the correct position in the page.
 
@@ -1394,7 +1413,7 @@ Since [MarkoJS](https://markojs.com/#streaming) pioneering out-of-order streamin
     </figcaption>
 </figure>
 
-##### Beyond HTTP response streaming
+#### Beyond HTTP response streaming
 
 In addition to HTTP response streaming, the Web platform provides APIs to stream data between the client and the server:
 
@@ -1409,9 +1428,7 @@ More recently, newer APIs arrived like:
 
 ---
 
-#### Loading resources at the right time
-
-##### Preloading
+### 3.3. Preloading
 
 In order to optimize the loading of webpages, browsers try to schedule the loading of resources assigning a [sensible priority](https://web.dev/articles/fetch-priority) to each sub-resource. As the browser parses the page, it discovers sub-resources and loads them or schedule them to be loaded. Browsers try to discover and load high priority resources as soon as possible - even before the page parser gets to see them. To do so, they use a [preload scanner](https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work#preload_scanner) process which runs concurrently with the main thread and which identifies and initiates the loading off sub-resources in the yet to be processed HTML.
 
@@ -1522,7 +1539,7 @@ The following 4 diagrams show the simulation of the loading of 4 versions of the
 
 Now, let's explore now some use cases of preloading. The examples which will follow show loading speed improvements from preloading even though they only use the widely supported `<link rel="preload">` tags.
 
-###### Preloading web fonts
+#### Preloading web fonts
 
 By default, browsers load [web fonts](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts) only when needed. That is, the browser doesn't load the web font files declared in the page's CSS until an element in the page uses `font-family` and `font-style` requiring them. Because of this, the browser may render parts of the page a first time using a system font and then rerender them again when the web fonts are loaded, causing layout shifts which can disturb users.
 
@@ -1555,7 +1572,7 @@ Preloading web font files helps address this problem. Layout shifts can be avoid
     </figcaption>
 </figure>
 
-###### Speeding up SPAs startup
+#### Speeding up SPAs startup
 
 In single-page applications that rely on client-side code for data retrieval, data fetching takes place only after the code is fully loaded and executed. To optimize this, we can use a preload tag to instruct the browser to start loading the page's data as soon as it retrieves the head of the page. This allows the data fetching to occur concurrently with the loading of the client-side code.
 
@@ -1583,7 +1600,7 @@ Preloading page data can enable performance that closely approximates what can b
     </figcaption>
 </figure>
 
-###### Speeding up client-side navigation
+#### Speeding up client-side navigation
 
 Preloading can also improve the speed of client-side navigation. When the user clicks a link, the client-side router had to load the next page's JavaScript code and its data, ideally in parallel.
 A further optimization is to prefetch next page's code and data when the user hovers over its link.
@@ -1628,7 +1645,7 @@ A further optimization is to prefetch next page's code and data when the user ho
 
 ---
 
-##### Deferring non-critical styles and scripts
+### 3.4. Deferring non-critical resources
 
 CSS and JavaScript resources are sometimes [render-blocking](https://developer.mozilla.org/en-US/docs/Glossary/Render_blocking), meaning that the browser has to wait for them to load before rendering the page to the user. This is necessary to prevent the [Flash Of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content), where users briefly see unstyled elements before the styles are applied.
 
@@ -1636,7 +1653,7 @@ Any CSS and JavaScript resources that are not needed for the initial rendering o
 This can be achieved using:
 
 - the `async` and `defer` attributes on [script tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#async), and
-- media queries to [asynchronously load CSS files](https://css-tricks.com/the-simplest-way-to-load-css-asynchronously/),
+- media queries to [asynchronously load CSS files](https://css-tricks.com/the-simplest-way-to-load-css-asynchronously/).
 
 <figure id="figure-render-blocking-script">
     <img
@@ -1670,7 +1687,7 @@ This can be achieved using:
 
 ---
 
-##### Lazy loading
+### 3.5. Lazy loading
 
 Loading content only when necessary, a technique known as [lazy loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading), can enhance performance by allowing high-priority resources to load without the interference of low-priority ones.
 This can be achieved in HTML by marking images and iframes with the attribute `loading="lazy"` to delay their loading until they need to be rendered on the screen.
@@ -1695,11 +1712,16 @@ To summarize the content of this article:
   - Caching makes use of persistent memory to reduce CPU load in the servers and to decrease network bandwidth usage.
   - Compression uses CPU cycles in both ends of the network to decrease network bandwidth usage.
   - CDNs use a network of distributed servers to reduce the distance data has to travel to reach users.
-  - Reductions in client-side code size can be achieved by:
+  - Bundling sacrifices some caching opportunities to reduce latency by eliminating back-and-forth network requests.
+  - Images and webfont sizes can be reduced by choosing the right formats and by proper resizing.
+  - Client-side code size can be reduced by:
     - Using tooling, like bundling and minification, which make build systems more complex and more resource intensive,
     - Choosing dependencies mindfully,
     - Shifting work from the client to the server, sometimes incurring network overhead.
-  - Reductions in client-side CPU usage can be achieved by being mindful of how browsers function to not accidentally overload them with work.
+  - Client-side CPU usage can be reduced by:
+    - Being mindful as developers of how browsers function to not accidentally overload them with work,
+    - Using client-side routing in large applications, which adds complexity and increases client-side code size,
+    - Using WebAssembly for compute intensive tasks.
 - In chapter 3, we explored optimization techniques that reduce wasting of time by scheduling work smartly:
   - The client can respond fast to user events as long as long running client-side code doesn't block the main thread.
   - Pages can load faster with:
