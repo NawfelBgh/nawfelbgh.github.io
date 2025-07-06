@@ -19,7 +19,7 @@ The article is structured as follows:
 
 Although performance analysis should be informed by measurements, I do not delve into how
 to use DevTools to measure performance or what metrics to use. Please check other articles for that.
-Instead, I focus on the why behind many optimizations and the interaction between different ones.
+Instead, I focus on presenting how many optimizations work and the positive and negative interactions between different optimizations.
 
 ## Table of content
 
@@ -150,10 +150,12 @@ Relying on hardware upgrades to solve performance issues should be a considered 
        In order to support the growth of the infrastructure of the Web, more space is taken from nature. This is depicted here with more mines, solar panels and factories and with less presence of wild life.
        </p>
        <p>
-       The facial expression drawn on the 3 characters in this figure is the same as in the previous one, to point to <a href="https://en.wikipedia.org/wiki/Hedonic_treadmill">hedonic adaptation</a> (The shifting of the baseline human expectation) and to <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons paradox</a> (The nullification of gains from efficiency because of the raise in consumption).
+       The facial expression drawn on the faces of 3 characters in this figure is the same as in the previous one, to point to <a href="https://en.wikipedia.org/wiki/Hedonic_treadmill">hedonic adaptation</a> (The shifting of the baseline human expectation) and to <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons paradox</a> (The nullification of gains from efficiency because of the increase in consumption).
        </p>
     </figcaption>
 </figure>
+
+Having brought into attention the physical components that make up the web, let's explore some frontend optimizations techniques that reduce their workload.
 
 ---
 
@@ -173,9 +175,9 @@ Bloat is a very well known phenomenon in [software in general](https://en.wikipe
 
 On this subject, I recommend Maciej Cegłowski's hilarious talk: [The Website Obesity Crisis](https://idlewords.com/talks/bsite_obesity.htm):
 
-> [Maciej's] modest proposal: your website should not exceed in file size the major works of Russian literature. Anna Karenina, for example, is 1.8 MB
+> <a href="https://x.com/pinboard/status/653714626857730048" target="_blank">Maciej's modest proposal</a>: your website should not exceed in file size the major works of Russian literature. Anna Karenina, for example, is 1.8 MB
 
-Minimalism is one way to approach this issue of web bloat. It is encouraged in the [Sustainable Web design](https://stainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) spheres, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
+Minimalism is one way to approach this issue of web bloat. It is encouraged in [Sustainable Web design](https://stainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) spheres, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
 
 - Is this image or this script really useful
 - Does this image or script have to be this big
@@ -1465,6 +1467,8 @@ Content-Type: text/html
 ...
 ```
 
+Note that you don't have to choose between preload link tags and preload link headers (with or without Early Hints). You can use both at the same time to support older browsers and to preload more things if they are discovered late during page loading.
+
 The following 4 diagrams show the simulation of the loading of 4 versions of the same page `page.html` which loads a `style.css` stylesheet which itself requires another `style-dependency.css` stylesheet. The simulation uses the same parameters for the time it takes the server to determine the status code (250ms), to generate the page's head (100ms) and to generate the body (150ms). The 4 versions of the page differ in that:
 
 - The first version does no preloading and loads in 1033ms.
@@ -1683,12 +1687,24 @@ Note that lazy loading has some drawbacks: It can result in users experiencing w
 
 ## Conclusion
 
-- Trade-offs are necessary. Optimizing one aspect can negatively affect performance in another area. I tried to highlight this whenever possible throughout the document.
-- Websites and apps can still perform well, even with less-than-ideal technologies on the client or server side, as long as the architecture is well-designed.
-- Some optimizations come with trade-offs that can impact users, which means they should only be pursued at the product owner's request. Project owners need to understand what architectural elements contribute to high-performing websites and apps, ask developers to adopt these designs, and ensure they're implemented during quality control.
+To summarize the content of this article:
 
-I encourage you to explore other important web performance topics:
+- In chapter 1, we briefly touched on the fact that the Web runs on top of a physical infrastructure with environmental and financial impact, motivating the need to seek good performance mainly through software optimizations, instead of relying on hardware upgrades.
+- In chapter 2, we explored optimization techniques that reduce wasting resources by reallocating work smartly. Optimizing one aspect can negatively affect performance in other areas. But good trade-off do exist and they lead to an overall reduction of work in the system as a whole and to great performance improvements.
+  - Minimalism, although not a technical solution, can reduce workload on the whole system: clients, network and servers.
+  - Caching makes use of persistent memory to reduce CPU load in the servers and to decrease network bandwidth usage.
+  - Compression uses CPU cycles in both ends of the network to decrease network bandwidth usage.
+  - CDNs use a network of distributed servers to reduce the distance data has to travel to reach users.
+  - Reductions in client-side code size can be achieved by:
+    - Using tooling, like bundling and minification, which make build systems more complex and more resource intensive,
+    - Choosing dependencies mindfully,
+    - Shifting work from the client to the server, sometimes incurring network overhead.
+  - Reductions in client-side CPU usage can be achieved by being mindful of how browsers function to not accidentally overload them with work.
+- In chapter 3, we explored optimization techniques that reduce wasting of time by scheduling work smartly:
+  - The client can respond fast to user events as long as long running client-side code doesn't block the main thread.
+  - Pages can load faster with:
+    - Streaming, which allows the progressive delivery of content to the users and allow clients to discover and to fetch sub-resources early.
+    - Preloading, which informs clients of resources that they will need in the near future so that they fetch them early.
+    - Lazy-loading, which instructs the client to load some sub-resources later to accelerate the loading of higher priority resources.
 
-- Measuring performance using DevTools and metrics like Core Web Vitals.
-- Improving user experience to enhance perceived speed.
-- And more generally, scalability and algorithmic and database optimization.
+Due to the multiplicity of factors affecting performance, and due to individual websites and applications needs, there is not a one-size-fits-all solution or framework. In fact, websites and apps can perform well, even when using subpar technologies, as long as the whole architecture fits the need. That said, I would say that the best frameworks are those that enable developers to choose the performant options with minimum friction and while maintaining good code readability.
