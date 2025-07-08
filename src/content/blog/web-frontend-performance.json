@@ -1,11 +1,11 @@
 {
-    "title": "How to make fast web frontends",
-    "description": "I explore techniques to make frontend WebApps and webpages fast to load and to respond to user interactions",
-    "pubDate": "2024-09-??",
-    "i18n": {
-        "fr": {
-            "title": "Comment créer des frontends Web rapides",
-            "description": "J'explore des techniques pour rendre les applications Web et les pages Web rapides à charger et à répondre aux interactions des utilisateurs."
-        }
+  "title": "How to make fast web frontends",
+  "description": "I explore techniques to make fast frontend for WebApps and webpages",
+  "pubDate": "2025-07-14",
+  "i18n": {
+    "fr": {
+      "title": "Comment créer des frontends Web rapides",
+      "description": "J'explore des techniques pour créer des frontends rapides pour les applications et les sites web"
     }
+  }
 }
