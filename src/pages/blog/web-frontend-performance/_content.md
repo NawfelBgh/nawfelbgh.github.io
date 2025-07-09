@@ -807,6 +807,7 @@ As such frameworks do both SSR and CSR, using them comes at a cost:
         <p>
             <a href="#figure-pure-ssr">Pure SSR:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it, making the page interactive.
         </p>
+    </figcaption>
 </figure>
 
 <figure id="figure-pure-csr">
@@ -815,6 +816,7 @@ As such frameworks do both SSR and CSR, using them comes at a cost:
         <p>
             <a href="#figure-pure-csr">Pure CSR:</a> In this example, the server responds with an empty page. The client downloads the page's code, loads it, figures which data it needs to get from the backend, requests it, and only upon receiving it can it render the page to the user. At that point the page is immediately interactive.
         </p>
+    </figcaption>
 </figure>
 
 <figure id="figure-ssr-with-hydration">
@@ -823,6 +825,7 @@ As such frameworks do both SSR and CSR, using them comes at a cost:
         <p>
             <a href="#figure-ssr-with-hydration">SSR with hydration:</a> In this example, the server, gets page data, renders the page and responds to the client with rendered HTML and page data. Upon receiving the response, the client renders the page to the user. Later when the client receives the page's client-side code, it loads it and applies hydration code to make the page interactive.
         </p>
+    </figcaption>
 </figure>
 
 <figure id="figure-pure-ssr-vs-hydration-vs-pure-csr">
@@ -927,7 +930,6 @@ When JavaScript code manipulates the DOM incorrectly, it can triggers unnecessar
     <figcaption>
        <a href="#no-layout-thrashing">No Layout thrashing:</a> In this example, the click event handler performs all the necessary DOM reads first. Then, it does all the DOM writes, invalidating the current layout calculations. Once the event handler has finished executing, the browser recalculates the layout once to render the final state to the user. The entire process takes 200 milliseconds to complete. Contrast it with the 1.2 seconds from the previous example.
     </figcaption>
-
 </figure>
 
 ##### Overreacting to user inputs
@@ -1256,6 +1258,7 @@ Unlike JavaScript, **Wasm** is a statically typed language. Object properties ca
         </p>
         <p>
         No extra properties fields need to be reserved inside our objects because functions like <code>addNewProperty</code> are simply invalid.
+        </p>
     </figcaption>
 </figure>
 
@@ -1449,7 +1452,7 @@ There remains a limit though to what browsers can do automatically for us. After
 
 With preloading, web pages can declare the intent to use sub-resources without inserting them immediately into the page. This way the browser can start loading the preloaded sub-resources early, so that when they are ultimately needed, they load fast.
 
-Preloading can be done using [<link rel="preload"> tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload). Using preload link tags in the previous example would look like the following:
+Preloading can be done using [`<link rel="preload">` tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) (`<link rel=preload>`), supported by all major browsers [since January 2021](https://caniuse.com/link-rel-preload). Using preload link tags in the previous example would look like the following:
 
 ```html
 <!-- page1.html -->
@@ -1564,7 +1567,7 @@ Preloading web font files helps address this problem. Layout shifts can be avoid
         height="940" />
     <figcaption>
     <p>
-        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json"t=>556ms</a> (109ms earlier than the example without preloading).
+        <a href="#figure-font-preload">Web fonts preloading:</a> In this example, two web fonts are preloaded in the page's head element. As soon as the client receives the head element (t=112ms), it starts fetching the style file and the preloaded web font fonts. Once the page's body is loaded and once the CSSOM is created, the client renders the page, once only, using the already loaded web fonts, finishing at <a target="_blank" href="/blog/web-frontend-performance/waterfall-diagram/font-preload.json">t=556ms</a> (109ms earlier than the example without preloading).
     </p>
     <p>
         Notice that <code>style.css</code> takes longer to load in this example than in the previous one. That is because the simulation is taking into account that the client is simultaneously downloading this file and the web font files.
