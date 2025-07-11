@@ -1,7 +1,7 @@
 {
   "title": "How to make fast web frontends",
   "description": "In this article, I present techniques for optimizing the performance of the frontends of website and web application. I've divided these techniques into two broad categories: the first includes those that reduce the amount of work required to deliver content to the user, and the second includes those that reduce latency by optimizing task scheduling.",
-  "pubDate": "2025-07-14",
+  "pubDate": "2025-07-11",
   "i18n": {
     "fr": {
       "title": "Comment créer des frontends Web rapides",
