@@ -1,9 +1,9 @@
 ---
-import BaseHead from '../../components/BaseHead.astro';
-import PageLayout from '../../layouts/PageLayout.astro';
-import { ABOUT_DATA, getAlternates } from '../../utils/about';
+import BaseHead from "../../components/BaseHead.astro";
+import PageLayout from "../../layouts/PageLayout.astro";
+import { ABOUT_DATA, getAlternates } from "../../utils/about";
 
-const lang = 'fr';
+const lang = "fr";
 const title = ABOUT_DATA.fr.title;
 const description = ABOUT_DATA.fr.description;
 const alternates = getAlternates(lang);
@@ -11,49 +11,46 @@ const alternates = getAlternates(lang);
 
 <!doctype html>
 <html lang={lang}>
-    <head>
-        <BaseHead
-            title={title}
-            description={description}
-            alternates={alternates}
-        />
-    </head>
-    <PageLayout lang={lang} alternates={alternates}>
-        <style>
-            article {
-                max-width: min(840px, calc(100% - 2em));
-                margin: auto;
-                padding: 1em;
-            }
+  <head>
+    <BaseHead title={title} description={description} alternates={alternates} />
+  </head>
+  <PageLayout lang={lang} alternates={alternates}>
+    <style>
+      article {
+        max-width: min(840px, calc(100% - 2em));
+        margin: auto;
+        padding: 1em;
+      }
 
-            img {
-                display: block;
-                margin: 0 auto 1em;
-                height: auto;
-                width: min(100%, 600px);
-            }
+      img {
+        display: block;
+        margin: 0 auto 1em;
+        height: auto;
+        width: min(100%, 600px);
+      }
 
-            h1 {
-                text-align: center;
-            }
-        </style>
-        <article>
-            <img alt="" height="2" width="3" src="/photo.webp" />
-            <h1>{title}</h1>
-            <p>
-                Je suis un ingénieur logiciel spécialisé dans le développement
-                web et résidant dans la région parisienne.
-            </p>
-            <p>
-                Consultez mon Curriculum Vitae au format <a
-                    href="/static/cv/cv-fr.pdf">PDF</a
-                > et <a href="/fr/cv/">HTML</a>.
-            </p>
-            <p>
-                Vous pouvez <a href="maito:nawfel.bgh@gmail.com"
-                    >me contacter par e-mail</a
-                >.
-            </p>
-        </article>
-    </PageLayout>
+      h1 {
+        text-align: center;
+        margin-bottom: 1em;
+      }
+    </style>
+    <article>
+      <img alt="Photo" height="2" width="3" src="/photo.webp" />
+      <h1>{title}</h1>
+      <p>
+        Je suis un ingénieur logiciel spécialisé dans le développement web et
+        résidant dans la région parisienne.
+      </p>
+      <p>
+        Consultez mon Curriculum Vitae au format <a href="/static/cv/cv-fr.pdf"
+          >PDF</a
+        > et <a href="/fr/cv/">HTML</a>.
+      </p>
+      <p>
+        Vous pouvez <a href="maito:nawfel.bgh@gmail.com"
+          >me contacter par e-mail</a
+        >.
+      </p>
+    </article>
+  </PageLayout>
 </html>

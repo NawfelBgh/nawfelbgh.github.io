@@ -1,0 +1,59 @@
+- Introduction
+- Table des matières
+- <span>1.</span> Le Web en tant que système physique
+  - Contribution des frontends à l'empreinte environnementale du web
+  - Améliorer la performance en utilisant du matériel plus puissant
+- <span>2.</span> Optimiser la performance en réduisant la charge de travail
+  - 2.1. La performance par le minimalisme
+  - 2.2. Mise en cache
+    - Mise en cache HTTP
+    - Données mises en cache fraîches et obsolètes
+    - Revalidation des données obsolètes en arrière-plan
+    - Revalidation du cache demandée par le client
+    - Cache busting
+    - Mise en cache des parties statiques des pages web
+    - Service Workers
+    - Mise en cache dans les WebApps interactives
+    - Mise en cache du code compilé
+  - 2.3. Compression
+    - Compression des réponses HTTP
+    - Compression des en-têtes HTTP
+  - 2.4. Réseaux de distribution de contenu (CDN)
+  - 2.5. Regroupement des ressources
+    - Regroupement à l'ère HTTP/2+
+  - 2.6. Réduction de la taille du contenu
+    - Optimisation des images
+    - Subsetting des fichiers de polices web
+  - 2.7. Réduction de la taille du code côté client
+    - 2.7.1. Utilisation de bundlers optimisés
+      - Minification
+      - Tree-shaking
+    - 2.7.2. Utilisation de petites bibliothèques et de petits scripts tiers
+    - 2.7.3. Garder le code sur le serveur
+      - Rendu côté serveur et côté client
+      - Hydratation partielle
+  - 2.8. Réduction du travail du processeur côté client
+    - 2.8.1. Optimisation de la layout et du reflow
+      - Layout thrashing
+      - Réactions excessives aux entrées utilisateur
+      - Animer les mauvaises propriétés CSS
+      - CSS complexe et grand DOM
+    - 2.8.2. Navigation côté client
+    - 2.8.3. Utilisation de WebAssembly
+      - Contrôle sur la disposition de la mémoire
+      - Typage dynamique vs statique
+      - Code lisible vs code binaire
+- <span>3.</span> Ordonnancement du travail pour réduire le temps d'attente des utilisateurs
+  - 3.1. Ne pas bloquer le thread de l'UI
+  - 3.2. Streaming
+    - Livraison progressive de contenu avec le streaming
+    - Déverrouillage du parallélisme avec le streaming
+    - Streaming hors ordre
+    - Au-delà du streaming des réponses HTTP
+  - 3.3. Préchargement
+    - Préchargement des polices web
+    - Accélérer le démarrage des SPAs
+    - Accélérer la navigation côté client
+  - 3.4. Différer les ressources non critiques
+  - 3.5. Chargement lazy
+- Conclusion

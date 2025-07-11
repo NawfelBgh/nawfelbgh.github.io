@@ -1,49 +1,50 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { getProperty, getThumbnailUrl } from '../utils/blog';
-import PageLayout from './PageLayout.astro';
-import type { Alternate, Lang } from '../types';
+import type { CollectionEntry } from "astro:content";
+import { getProperty, getThumbnailUrl } from "../utils/blog";
+import PageLayout from "./PageLayout.astro";
+import type { Alternate, Lang } from "../types";
 
 interface Props {
-    lang: Lang;
-    alternates?: Alternate[];
-    post: CollectionEntry<'blog'>;
+  lang: Lang;
+  alternates?: Alternate[];
+  post: CollectionEntry<"blog">;
 }
 
 const { post, lang, alternates } = Astro.props;
 
-const title = getProperty(post, 'title', lang);
+const title = getProperty(post, "title", lang);
 const image = getThumbnailUrl(post);
 ---
 
 <style>
-    article {
-        max-width: min(840px, calc(100% - 2em));
-        margin: auto;
-        padding: 1em;
-    }
+  article {
+    max-width: min(840px, calc(100% - 2em));
+    margin: auto;
+    padding: 1em;
+  }
 
-    img {
-        display: block;
-        margin: 0 auto 1em;
-        height: auto;
-        width: min(100%, 600px);
-    }
+  img {
+    display: block;
+    margin: 0 auto 1em;
+    height: auto;
+    width: min(100%, 600px);
+  }
 
-    h1 {
-        text-align: center;
-    }
+  h1 {
+    text-align: center;
+  }
 
-    h1 + time {
-        display: block;
-        text-align: center;
-    }
+  h1 + time {
+    display: block;
+    text-align: center;
+    margin-bottom: 1em;
+  }
 </style>
 <PageLayout lang={lang} alternates={alternates}>
-    <article>
-        <img alt="" height="2" width="3" src={image} />
-        <h1>{title}</h1>
-        <time datetime={post.data.pubDate}>{post.data.pubDate}</time>
-        <slot />
-    </article>
+  <article>
+    <img alt="" height="2" width="3" src={image} />
+    <h1>{title}</h1>
+    <time datetime={post.data.pubDate}>{post.data.pubDate}</time>
+    <slot />
+  </article>
 </PageLayout>

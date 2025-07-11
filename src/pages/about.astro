@@ -1,9 +1,9 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import PageLayout from '../layouts/PageLayout.astro';
-import { ABOUT_DATA, getAlternates } from '../utils/about';
+import BaseHead from "../components/BaseHead.astro";
+import PageLayout from "../layouts/PageLayout.astro";
+import { ABOUT_DATA, getAlternates } from "../utils/about";
 
-const lang = 'en';
+const lang = "en";
 const title = ABOUT_DATA.en.title;
 const description = ABOUT_DATA.en.description;
 const alternates = getAlternates(lang);
@@ -11,49 +11,43 @@ const alternates = getAlternates(lang);
 
 <!doctype html>
 <html lang={lang}>
-    <head>
-        <BaseHead
-            title={title}
-            description={description}
-            alternates={alternates}
-        />
-    </head>
-    <PageLayout lang={lang} alternates={alternates}>
-        <style>
-            article {
-                max-width: min(840px, calc(100% - 2em));
-                margin: auto;
-                padding: 1em;
-            }
+  <head>
+    <BaseHead title={title} description={description} alternates={alternates} />
+  </head>
+  <PageLayout lang={lang} alternates={alternates}>
+    <style>
+      article {
+        max-width: min(840px, calc(100% - 2em));
+        margin: auto;
+        padding: 1em;
+      }
 
-            img {
-                display: block;
-                margin: 0 auto 1em;
-                height: auto;
-                width: min(100%, 600px);
-            }
+      img {
+        display: block;
+        margin: 0 auto 1em;
+        height: auto;
+        width: min(100%, 600px);
+      }
 
-            h1 {
-                text-align: center;
-            }
-        </style>
-        <article>
-            <img alt="" height="2" width="3" src="/photo.webp" />
-            <h1>{title}</h1>
-            <p>
-                I'm a software engineer specialized in web development and
-                residing in the Paris region.
-            </p>
-            <p>
-                Checkout my Curriculum Vitae in <a href="/static/cv/cv-en.pdf"
-                    >PDF</a
-                > and <a href="/cv/">HTML</a> format.
-            </p>
-            <p>
-                You can <a href="maito:nawfel.bgh@gmail.com"
-                    >contact me by email</a
-                >.
-            </p>
-        </article>
-    </PageLayout>
+      h1 {
+        text-align: center;
+        margin-bottom: 1em;
+      }
+    </style>
+    <article>
+      <img alt="Photo" height="2" width="3" src="/photo.webp" />
+      <h1>{title}</h1>
+      <p>
+        I'm a software engineer specialized in web development and residing in
+        the Paris region.
+      </p>
+      <p>
+        Checkout my Curriculum Vitae in <a href="/static/cv/cv-en.pdf">PDF</a> and
+        <a href="/cv/">HTML</a> format.
+      </p>
+      <p>
+        You can <a href="maito:nawfel.bgh@gmail.com">contact me by email</a>.
+      </p>
+    </article>
+  </PageLayout>
 </html>

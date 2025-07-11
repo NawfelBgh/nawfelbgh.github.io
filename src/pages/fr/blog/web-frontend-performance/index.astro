@@ -1,0 +1,44 @@
+---
+import BaseHead from "../../../../components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import SimpleBlogLayout from "../../../../layouts/SimpleBlogLayout.astro";
+import { getAlternates, getThumbnailUrl } from "../../../../utils/blog";
+import TableDesMatieres from "./_table-des-matieres.md";
+
+const lang = "fr";
+const post = await getEntry("blog", "web-frontend-performance");
+if (!post) throw new Error("Entry not found blog:web-frontend-performance");
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={post.data.title}
+      description={post.data.description}
+      image={image}
+      alternates={alternates}
+    />
+  </head>
+  <SimpleBlogLayout post={post} lang={lang} alternates={alternates}>
+    <p>
+      Dans cet article <a href={alternates[0].href}>en anglais</a>, je présente
+      des techniques pour optimiser la performance des frontends des sites et
+      des applications web. J'ai classé ces techniques en deux grandes
+      catégories : la première regroupe celles qui réduisent la quantité de
+      travail nécessaire pour délivrer le contenu à l'utilisateur, et la seconde
+      inclut celles qui diminuent le temps d'attente en optimisant
+      l'ordonnancement des tâches.
+    </p>
+    <p>
+      L'article contient 55 diagrammes pour illustrer les concepts expliqués.
+      J'ai également essayé de mettre en évidence les compromis liés à chaque
+      technique d'optimisation, soulignant qu'il n'existe pas de solution unique
+      applicable à tous types d'applications.
+    </p>
+    <h2>Table des matières</h2>
+    <TableDesMatieres />
+  </SimpleBlogLayout>
+</html>

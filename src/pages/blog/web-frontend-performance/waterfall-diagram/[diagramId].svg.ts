@@ -160,7 +160,8 @@ export const GET: APIRoute = ({ params }) => {
     }
   }
 
-  const svg = `<svg version="1.1" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  const rightPadding = diagramId === "multi-sections-page-streaming" ? 100 : 0;
+  const svg = `<svg version="1.1" width="${width + rightPadding}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <rect x="0" y="0" width="${width}" height="${height}" stroke="none" fill="white"/>
   ${gridLines.join("\n  ")}
   ${actorElements.join("\n  ")}
