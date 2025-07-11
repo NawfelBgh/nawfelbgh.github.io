@@ -42,12 +42,10 @@ const alternates = getAlternates(post, lang);
       article > :global(figure) {
         width: initial;
         max-width: calc(100% - 2em);
-        overflow-x: auto;
         border: solid 1px var(--border-color);
         margin-block: 1em;
         display: flex;
         flex-direction: column;
-        /*align-items: center;*/
 
         & :global(*) {
           margin-inline: auto;
@@ -55,6 +53,12 @@ const alternates = getAlternates(post, lang);
         & :global(figcaption) {
           padding: 1em;
           max-width: 840px;
+        }
+
+        & :global(img) {
+          width: auto;
+          max-width: 100%;
+          height: auto;
         }
       }
 
