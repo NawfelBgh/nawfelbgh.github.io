@@ -17,9 +17,7 @@ The article is structured as follows:
 - Next, I explore optimization strategies that work by reducing the workload required to deliver web content.
 - Finally, I discuss strategies for scheduling tasks efficiently to minimize user wait times.
 
-Although performance analysis should be informed by measurements, I do not delve into how
-to use DevTools to measure performance or what metrics to use. Please check other articles for that.
-Instead, I focus on presenting how many optimizations work and the positive and negative interactions between different optimizations.
+Although performance analysis should be based on measurements, I do not cover how to use DevTools to measure performance or which metrics to choose. You can find that information in other articles. Instead, I focus on explaining how various optimizations work and how different optimizations can help or interfere with each other.
 
 ## Table of content
 
