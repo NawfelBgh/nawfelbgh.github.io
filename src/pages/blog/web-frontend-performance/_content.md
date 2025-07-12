@@ -17,7 +17,7 @@ The article is structured as follows:
 - Next, I explore optimization strategies that work by reducing the workload required to deliver web content.
 - Finally, I discuss strategies for scheduling tasks efficiently to minimize user wait times.
 
-Although performance analysis should be based on measurements, I do not cover how to use DevTools to measure performance or which metrics to choose. You can find that information in other articles. Instead, I focus on explaining how various optimizations work and how different optimizations can help or interfere with each other.
+The focus in this article is to explain how various optimizations work and how different optimizations can help or interfere with each other.
 
 ## Table of content
 
@@ -82,6 +82,8 @@ Although performance analysis should be based on measurements, I do not cover ho
 - [Conclusion](#conclusion)
 
 ## 1. The Web as a physical system
+
+In this first chapter, I would like to highlight the environmental impact of the web as a motivation to focus on software performance optimizations. As mentioned in the introduction, there are many user-centric and business-centric reasons to improve web performance. However, I find that these enjoy [extensive coverage](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/why_web_performance) already. Additionally, emphasizing the physical systems behind the web helps demonstrate that software optimizations ultimately conserve physical resources.
 
 The [World Wide Web](https://en.wikipedia.org/wiki/World_Wide_Web) is a major user of the [Internet](https://en.wikipedia.org/wiki/Internet): a gigantic distributed system of machines and network infrastructure.
 Like any other physical system, the Internet competes for resources with other human activities and with the natural world more broadly.
