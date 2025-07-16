@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="1.1644288"
-     inkscape:cx="242.17882"
-     inkscape:cy="294.56501"
+     inkscape:zoom="0.94967581"
+     inkscape:cx="261.14175"
+     inkscape:cy="345.38102"
      inkscape:window-width="1568"
      inkscape:window-height="919"
      inkscape:window-x="0"
@@ -231,18 +231,18 @@
     <text
        xml:space="preserve"
        style="font-size:16px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle"
-       x="408.57721"
+       x="396.57721"
        y="554.78571"
        id="text3-2-2-2"><tspan
          sodipodi:role="line"
-         x="408.57721"
+         x="396.57721"
          y="554.78571"
          style="font-size:16px;text-align:start;text-anchor:start"
-         id="tspan1-3-1-1">Usage emissions</tspan></text>
+         id="tspan1-3-1-1">Operation emissions</tspan></text>
     <circle
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        id="path3-8"
-       cx="380.96649"
+       cx="368.96649"
        cy="549.88208"
        r="14" />
   </g>
