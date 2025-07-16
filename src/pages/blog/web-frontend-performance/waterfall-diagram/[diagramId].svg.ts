@@ -148,7 +148,7 @@ export const GET: APIRoute = ({ params }) => {
           (event.endTime - event.startTime) * pixelsPerMillisecond;
 
         actorElements.push(
-          `<rect x="${rectX}" y="${oY}" width="${rectWidth}" height="${lineHeight}" stroke="black" fill="${event.highlight ? "#e5eeff" : "white"}"/>`
+          `<rect x="${rectX}" y="${oY}" width="${rectWidth}" height="${lineHeight}" stroke="black" fill="${event.highlight ? "#BDD4FF" : "white"}"/>`
         );
         actorElements.push(
           `<line x1="${rectX}" y1="${oY + lineHeight}" x2="${rectX}" y2="${eY + fontSize}" stroke="rgba(0,0,0,0.25)"/>`

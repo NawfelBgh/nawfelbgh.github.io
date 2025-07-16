@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="0.94967581"
-     inkscape:cx="261.14175"
-     inkscape:cy="345.38102"
+     inkscape:zoom="0.63071675"
+     inkscape:cx="188.67423"
+     inkscape:cy="240.99566"
      inkscape:window-width="1568"
      inkscape:window-height="919"
      inkscape:window-x="0"
@@ -109,7 +109,7 @@
        cy="266.23026"
        r="165.64999" />
     <path
-       style="fill:#e5eeff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#bdd4ff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        id="path3-3"
        sodipodi:arc-type="arc"
        sodipodi:type="arc"
@@ -117,12 +117,12 @@
        sodipodi:cy="266.32874"
        sodipodi:rx="165.64999"
        sodipodi:ry="165.64999"
-       sodipodi:start="4.7124157"
-       sodipodi:end="1.3667364"
-       d="M 306.05164,100.67874 A 165.64999,165.64999 0 0 1 470.83596,249.45898 165.64999,165.64999 0 0 1 339.61563,428.54181"
+       sodipodi:start="4.7029658"
+       sodipodi:end="1.3756408"
+       d="M 304.48628,100.6861 A 165.64999,165.64999 0 0 1 470.83135,249.41404 165.64999,165.64999 0 0 1 338.16991,428.83428"
        sodipodi:open="true" />
     <path
-       style="fill:#e5eeff;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#bdd4ff;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        id="path3-4-9-9-9"
        sodipodi:arc-type="slice"
        sodipodi:type="arc"
@@ -134,7 +134,7 @@
        sodipodi:end="4.7136257"
        d="M 347.9944,476.25938 A 214.28,214.28 0 0 1 135.77651,396.92709 214.28,214.28 0 0 1 113.3789,171.47556 214.28,214.28 0 0 1 305.84017,51.940197 l -0.26501,214.279833 z" />
     <circle
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none"
+       style="fill:#ffffd7;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none"
        id="path10"
        cx="306.24493"
        cy="265.97089"
@@ -223,7 +223,7 @@
          style="font-size:16px;text-align:center;text-anchor:middle"
          id="tspan3-8">Network</tspan></text>
     <circle
-       style="fill:#e5eeff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#bdd4ff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        id="path3"
        cx="45.551292"
        cy="549.88208"
@@ -240,7 +240,7 @@
          style="font-size:16px;text-align:start;text-anchor:start"
          id="tspan1-3-1-1">Operation emissions</tspan></text>
     <circle
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffd7;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-dasharray:none;stroke-opacity:1"
        id="path3-8"
        cx="368.96649"
        cy="549.88208"
