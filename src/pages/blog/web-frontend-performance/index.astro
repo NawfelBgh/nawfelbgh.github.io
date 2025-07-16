@@ -62,6 +62,21 @@ const alternates = getAlternates(post, lang);
         }
       }
 
+      /* Define dark mode */
+      :global(body.dark-theme) {
+        & article :global(img) {
+          filter: invert(85%);
+        }
+      }
+      /* Define auto theme (Defaulting to dark theme if it's the user's preference) */
+      @media (prefers-color-scheme: dark) {
+        :global(body):not(.light-theme) {
+          & article :global(img) {
+            filter: invert(85%);
+          }
+        }
+      }
+
       article > :global(h1) {
         margin-top: 2rem;
       }
