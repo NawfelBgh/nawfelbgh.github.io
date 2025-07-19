@@ -159,7 +159,7 @@ Relying on hardware upgrades to solve performance issues should be a considered 
        In order to support the growth of the infrastructure of the Web, more space is taken from nature. This is depicted here with a larger mine, more solar panels and factories, and with the reduced presence of wild life.
        </p>
        <p>
-       The facial expression drawn on the faces of 3 characters in this figure is the same as in the previous one, to point to <a href="https://en.wikipedia.org/wiki/Hedonic_treadmill">hedonic adaptation</a> (The shifting of the baseline human expectation) and to <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons paradox</a> (The nullification of gains from efficiency because of the increase in consumption).
+       The facial expressions of the 3 characters in this figure mirror those from the previous one, highlighting that, even with system performance improvements, users may not always perceive the change. This is due to <a href="https://en.wikipedia.org/wiki/Hedonic_treadmill">hedonic adaptation</a> (The shifting of the baseline human expectation) and to <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons paradox</a> (The nullification of gains from efficiency because of the increase in consumption). This critique applies to performance improvements achieved through hardware upgrades or through software optimizations. However, hardware upgrades come at a higher environmental cost.
        </p>
     </figcaption>
 </figure>
@@ -220,7 +220,7 @@ Caching can be done both by clients and intermediary servers. Cache-Control head
     <img
         alt="Caching with shared cache"
         src="/blog/web-frontend-performance/caching-with-shared-cache.svg"
-        width="1000"
+        width="1080"
         height="700"
     />
     <figcaption>
@@ -445,14 +445,19 @@ Note that not all resources need to use HTTP compression: Some file formats, suc
 
 In addition to response body compression, the HTTP protocol introduced header compression via the [HPACK](https://www.rfc-editor.org/rfc/rfc7541.html) format in [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2) and later via the [QPACK](https://www.rfc-editor.org/rfc/rfc9204.html) format in [HTTP/3](https://en.wikipedia.org/wiki/HTTP/3). Header compression is implemented by browsers and the HTTP stack of web servers, requiring no effort from web developers. That said, knowing that it exists and how it works can inform some optimization decisions.
 
-Header compression uses:
+Headers compression uses:
 
 - A static dictionary containing a set of commonly used header fields,
 - Per-connection dynamic dictionaries that are kept in sync between the client and the server, storing previously sent header fields.
 
 Request and response header fields can be encoded either literally or, when possible, using indices that reference entries in the static or dynamic dictionaries.
 
-Thanks to dynamic dictionaries, repeatedly sent headers such as cookies can be sent only once during the lifetime of an HTTP connection, reducing network usage compared to HTTP/1.1, where they need to be sent with every request. This makes it possible to forgo the practice of hosting static content in cookie-less domains to avoid the cost of cookie retransmission.
+By using dynamic dictionaries, headers that are repeatedly sent such as cookies can be sent only once during the lifetime of an HTTP connection, reducing network usage compared to HTTP/1.1, where they need to be sent with every request.
+
+Thanks to headers compressing:
+
+- It is possible to forgo the practice of hosting static content in cookie-less domains - an optimization used in HTTP/1.1 to avoid the cost of cookie retransmission.
+- The overhead from patterns like authorization via [JSON Web Tokens (JWT)](https://en.wikipedia.org/wiki/JSON_Web_Token) is greatly reduced, removing barriers to using stateless and scalable server architectures.
 
 <figure id="figure-hpack">
     <img
@@ -1738,4 +1743,4 @@ To summarize this article:
     - Preloading, which informs the clients about resources needed soon so they fetch them early,
     - Deferring and lazy-loading, which loads some sub-resources later to speed up higher-priority content.
 
-Due to the multiplicity of factors affecting performance, and due to the unique needs of websites and applications, there is not a one-size-fits-all solution or framework. In fact, websites and apps can perform well even when using subpar technologies, as long as the overall architecture fits their needs. That said, I would say that the best frameworks are those that enable developers to choose the high-performance options with minimum friction and while keeping the code clear and maintainable.
+Due to the multiplicity of factors affecting performance, and due to the unique needs of websites and applications, there is not a one-size-fits-all solution or framework. In fact, websites and apps can perform well even when using subpar technologies, as long as the overall architecture fits their needs. That said, I would say that the best frameworks performance-wise are those that enable developers to choose the high-performance options with minimum friction and while keeping the code clear and maintainable.
