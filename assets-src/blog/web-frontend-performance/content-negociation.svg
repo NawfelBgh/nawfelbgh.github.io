@@ -107,14 +107,14 @@
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
-       x="752.59753"
+       x="749.86719"
        y="54.462971"
        id="text4"><tspan
          sodipodi:role="line"
          id="tspan4"
-         x="752.59753"
+         x="749.86719"
          y="54.462971"
-         style="stroke-width:1.5">Cache</tspan></text>
+         style="stroke-width:1.5">Shared cache</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-dasharray:none;stroke-dashoffset:0"
