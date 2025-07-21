@@ -1741,6 +1741,6 @@ To summarize this article:
   - Pages can load faster through:
     - Streaming, which delivers content progressively and helps fetch sub-resources early,
     - Preloading, which informs the clients about resources needed soon so they fetch them early,
-    - Deferring and lazy-loading, which loads some sub-resources later to speed up higher-priority content.
+    - Deferring and lazy-loading, which load some sub-resources later to speed up higher-priority content.
 
 Due to the multiplicity of factors affecting performance, and due to the unique needs of websites and applications, there is not a one-size-fits-all solution or framework. In fact, websites and apps can perform well even when using subpar technologies, as long as the overall architecture fits their needs. That said, I would say that the best frameworks performance-wise are those that enable developers to choose the high-performance options with minimum friction and while keeping the code clear and maintainable.
