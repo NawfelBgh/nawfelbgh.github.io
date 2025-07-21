@@ -1645,7 +1645,7 @@ A further optimization is to prefetch next page's code and data when the user ho
     <img
         alt="Waterfall diagram"
         src="/blog/web-frontend-performance/waterfall-diagram/client-side-navigation-preload-code-data.svg"
-        width="1203"
+        width="840"
         height="620" />
     <figcaption>
     <p>
