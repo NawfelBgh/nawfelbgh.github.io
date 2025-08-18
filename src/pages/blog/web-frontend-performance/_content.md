@@ -186,7 +186,7 @@ On this subject, I recommend Maciej Cegłowski's hilarious talk: [The Website Ob
 
 > <a href="https://x.com/pinboard/status/653714626857730048" target="_blank">Maciej's modest proposal</a>: your website should not exceed in file size the major works of Russian literature. Anna Karenina, for example, is 1.8 MB
 
-Minimalism is one way to approach this issue of web bloat. It is encouraged in [Sustainable Web design](https://stainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) spheres, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
+Minimalism is one way to approach this issue of web bloat. It is encouraged in [Sustainable Web design](https://sustainablewebdesign.org/) and the [eco-sufficiency](https://en.wikipedia.org/wiki/Eco-sufficiency) spheres, where people question the usefulness (to the site owner and to the users) of the content delivered by websites and applications. They ask questions like:
 
 - Is this image or this script really useful
 - Does this image or script have to be this big
