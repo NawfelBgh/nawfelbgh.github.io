@@ -58,6 +58,13 @@ const description = getProperty(post, "description", lang);
         }
       }
 
+      [data-presentation-wrapper="true"] :global(.slide) {
+        width: min(100%, calc(100vh * 16 / 9));
+        /* 16:9 Aspect Ratio */
+        padding-top: min(56.25%, 100vh);
+        margin-bottom: 0;
+      }
+
       :global(hr) {
         border: solid 0.5px var(--border-color);
         width: 50%;
@@ -76,7 +83,7 @@ const description = getProperty(post, "description", lang);
   <div
     data-presentation-wrapper="true"
     tabindex="0"
-    style="display: none; height: 100%; align-items: center;"
+    style="display: none; height: 100%; align-items: center; justify-content: center;"
   >
   </div>
   <script type="application/javascript">
