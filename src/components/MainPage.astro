@@ -107,7 +107,7 @@ const alternates = getAlternates(lang);
                 <img
                   width={3}
                   height={2}
-                  src={`/thumbnails/${post.id}.svg`}
+                  src={`/thumbnails/${post.data.thumbnail ?? post.id}.svg`}
                   alt=""
                   aria-hidden
                   loading={index < 4 ? "eager" : "lazy"}

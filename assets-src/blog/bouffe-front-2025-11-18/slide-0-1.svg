@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-0-1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.43457604"
+     inkscape:cx="846.80232"
+     inkscape:cy="448.71319"
+     inkscape:window-width="1792"
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="17.907597"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="17.907597"
+         y="35.807644">L'Article</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.7px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
+         x="17.907597"
+         y="53.446518"
+         id="tspan6">une compilation de techniques d’optimisation frontend</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="305.01871"
+       y="88.880447"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="font-size:12.7px;stroke-width:0.264583"
+         x="305.01871"
+         y="88.880447">- Chapitre 1 :</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="314.80966"
+       y="108.07871"
+       id="text2-4"><tspan
+         sodipodi:role="line"
+         id="tspan2-0"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="314.80966"
+         y="108.07871">- Motivation</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;stroke-width:0.264583"
+         x="314.80966"
+         y="129.24533"
+         id="tspan3" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="305.98608"
+       y="142.02776"
+       id="text2-6"><tspan
+         sodipodi:role="line"
+         id="tspan2-4"
+         style="font-size:12.7px;stroke-width:0.264583"
+         x="305.98608"
+         y="142.02776">- Chapitre 2 :</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="305.93646"
+       y="207.84779"
+       id="text2-6-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-5"
+         style="font-size:12.7px;stroke-width:0.264583"
+         x="305.93646"
+         y="207.84779">- Chapitre 3 :</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="314.80966"
+       y="161.28387"
+       id="text2-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-06"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="314.80966"
+         y="161.28387">- Techniques pour utiliser</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="314.80966"
+         y="175.395"
+         id="tspan4">  moins de ressources</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="314.80966"
+       y="226.99443"
+       id="text2-6-0-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-5-6"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="314.80966"
+         y="226.99443">- Techniques pour réduire</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="314.80966"
+         y="241.10556"
+         id="tspan5">  le temps d’attente</tspan></text>
+  </g>
+</svg>

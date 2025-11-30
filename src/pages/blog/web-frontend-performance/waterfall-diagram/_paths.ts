@@ -19,8 +19,8 @@ export const STATIC_PATHS = [
   { params: { diagramId: "client-side-navigation-preload-code-data" } },
   { params: { diagramId: "font-no-preload" } },
   { params: { diagramId: "font-preload" } },
-  { params: { diagramId: "multi-sections-page-no-streaming" } },
-  { params: { diagramId: "multi-sections-page-streaming" } },
+  { params: { diagramId: "multi-sections-page-in-order-streaming" } },
+  { params: { diagramId: "multi-sections-page-ooo-streaming" } },
   { params: { diagramId: "layout-thrashing" } },
   { params: { diagramId: "no-layout-thrashing" } },
   { params: { diagramId: "web-worker" } },
@@ -81,13 +81,13 @@ export function getModule(diagramId: string): {
 
   if (
     [
-      "multi-sections-page-no-streaming",
-      "multi-sections-page-streaming",
+      "multi-sections-page-in-order-streaming",
+      "multi-sections-page-ooo-streaming",
     ].includes(diagramId)
   ) {
     return {
       module: multiSectionsPage,
-      args: [diagramId === "multi-sections-page-streaming"],
+      args: [diagramId === "multi-sections-page-ooo-streaming"],
     };
   }
 

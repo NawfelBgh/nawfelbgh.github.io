@@ -16,12 +16,13 @@ export const GET: APIRoute = ({ params }) => {
   const logs: Log[] = module.main(...args);
   const rightPaddings : Record<string, number> = {
     "multi-sections-page-ooo-streaming": 75,
-    "not-streaming-html": 10,
+    "multi-sections-page-in-order-streaming": 100,
+    "not-streaming-html": 25,
   }
   const rightPadding = rightPaddings[diagramId as string] ?? 0;
 
   return new Response(
-    renderToSvg({logs, slideMode: false, rightPadding, showLatencyLines: true}), {
+    renderToSvg({logs, slideMode: true, rightPadding, showLatencyLines: false}), {
     headers: {
       "Content-Type": "image/svg+xml",
     },

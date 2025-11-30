@@ -1,0 +1,12 @@
+{
+    "title": "Bouffe Front presentation at SFEIR: How to make fast web frontends",
+    "description": "I presented my article \"How to make fast web frontends\", at the SFEIR event Bouffe Front, in french.",
+    "pubDate": "2025-11-18",
+    "thumbnail": "bouffe-front",
+    "i18n": {
+        "fr": {
+            "title": "Présentation Bouffe Front à SFEIR: Comment faire des frontends web performants",
+            "description": "J'ai présenté mon article \"Comment faire des frontends web performants\" à l'évènement Bouffe Front, à SFEIR"
+        }
+    }
+}

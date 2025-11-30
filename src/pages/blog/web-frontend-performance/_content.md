@@ -1393,7 +1393,7 @@ This way, the client can start loading the page's sub-resources in parallel with
         height="780" />
     <figcaption>
         <a href="#figure-streaming-html">Streaming HTML:</a> In this example, the server streams the page parts, the head and the body, as soon as they are ready. It starts by streaming the page head to the client allowing it to request <code>style.css</code> and <code>script.js</code> at t=112ms (instead of t=362ms from the previous non streaming example).
-        As a result, the page is rendered and interactive at t=785ms (248ms earlier than the non streaming example) - <a target="_blanc" href="/blog/web-frontend-performance/waterfall-diagram/streaming-html.json">Simulation numbers</a>.
+        As a result, the page is rendered and interactive at t=785ms (221ms earlier than the non streaming example) - <a target="_blanc" href="/blog/web-frontend-performance/waterfall-diagram/streaming-html.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
@@ -1406,24 +1406,24 @@ Since [MarkoJS](https://markojs.com/#streaming) pioneering out-of-order streamin
 <figure id="figure-no-ooo-streaming">
     <img
         alt="No Out-Of-Order Streaming diagram"
-        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.svg"
+        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-in-order-streaming.svg"
         width="1376"
         height="1020" />
     <figcaption>
         <a href="#figure-no-ooo-streaming">In-Order Streaming:</a> In this example, the server streams the head element of the page and loads the 3 sections of the page in parallel before streaming them to the client. The second and third sections finish loading early but they are not streamed to the client until after the first section to be ready.
         At t=1036ms, the client receives section 1, rendering it at t=1136ms (before that, all the user sees is an empty shell).
-        The page is completely rendered and interactive only at t=1236ms - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-no-streaming.json">Simulation numbers</a>.
+        The page is completely rendered and interactive only at t=1236ms - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-in-order-streaming.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
 <figure id="figure-ooo-streaming">
     <img
         alt="Out-Of-Order Streaming diagram"
-        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.svg"
+        src="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-ooo-streaming.svg"
         width="1376"
         height="1060" />
     <figcaption>
-        <a href="#figure-ooo-streaming">Out-Of-Order Streaming:</a> In this example, the server streams the head element of the page, loads the 3 sections of the page in parallel and streams them to the client as soon as they are ready. The client receives section 2 at t=536ms and renders it at t=756ms (480ms earlier than with in-order streaming). It receives section 3 at t=936 and renders it at t=1036ms (200ms earlier than with in-order streaming). And finally, it receives section 1 at t=1036ms and renders it at t=1136ms (100ms earlier than with in-order streaming) - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-streaming.json">Simulation numbers</a>.
+        <a href="#figure-ooo-streaming">Out-Of-Order Streaming:</a> In this example, the server streams the head element of the page, loads the 3 sections of the page in parallel and streams them to the client as soon as they are ready. The client receives section 2 at t=536ms and renders it at t=756ms (480ms earlier than with in-order streaming). It receives section 3 at t=936 and renders it at t=1036ms (200ms earlier than with in-order streaming). And finally, it receives section 1 at t=1036ms and renders it at t=1136ms (100ms earlier than with in-order streaming) - <a href="/blog/web-frontend-performance/waterfall-diagram/multi-sections-page-ooo-streaming.json">Simulation numbers</a>.
     </figcaption>
 </figure>
 
@@ -1459,6 +1459,11 @@ There remains a limit though to what browsers can do automatically for us. After
 ```css
 /* /style.css */
 @import "/style-dependency.css";
+```
+
+```css
+/* /style-dependency.css */
+/* ... */
 ```
 
 With preloading, web pages can declare the intent to use sub-resources without inserting them immediately into the page. This way the browser can start loading the preloaded sub-resources early, so that when they are ultimately needed, they load fast.

@@ -2,10 +2,10 @@ import type { APIRoute } from "astro";
 import { getModule, STATIC_PATHS } from "./_paths";
 
 export function getStaticPaths() {
-  return STATIC_PATHS;
+  return structuredClone(STATIC_PATHS);
 }
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params }) => {
   const { diagramId } = params;
 
   const { module, args } = getModule(diagramId!);

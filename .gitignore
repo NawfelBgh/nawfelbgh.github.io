@@ -25,4 +25,5 @@ pnpm-debug.log*
 
 # compressed svgs
 public/blog/web-frontend-performance/*
+public/blog/bouffe-front-2025-11-18/*.svg
 public/thumbnails/*

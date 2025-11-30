@@ -2,6 +2,9 @@ import type { CollectionEntry } from 'astro:content';
 import type { Alternate, Lang } from '../types';
 
 export function getThumbnailUrl(post: CollectionEntry<'blog'>): string {
+    if (post.data.thumbnail) {
+        return `/thumbnails/${post.data.thumbnail}.svg`;
+    }
     return `/thumbnails/${post.id}.svg`;
 }
 

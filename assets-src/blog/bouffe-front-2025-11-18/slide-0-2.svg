@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.43457604"
+     inkscape:cx="1191.9663"
+     inkscape:cy="404.99242"
+     inkscape:window-width="1792"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="17.907597"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="17.907597"
+         y="35.807644">Aujourd’hui, on va voir :</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="15.824009"
+       y="68.789024"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="15.824009"
+         y="68.789024">1. Le Web comme système physique</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="87.987297"
+       id="text2-4"><tspan
+         sodipodi:role="line"
+         id="tspan2-0"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="87.987297">- Frontends et empreinte environnementale du Web</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;stroke-width:0.264583"
+         x="25.614973"
+         y="109.15392"
+         id="tspan3" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="16.791393"
+       y="120.34885"
+       id="text2-6"><tspan
+         sodipodi:role="line"
+         id="tspan2-4"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="16.791393"
+         y="120.34885">2. Comment réduire l’utilisation de ressources</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="16.741779"
+       y="229.55997"
+       id="text2-6-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-5"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="16.741779"
+         y="229.55997">3. Comment réduire le temps d’attente de l’utilisateur</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="139.60497"
+       id="text2-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-06"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="139.60497">- Le minimalisme</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="158.86108"
+       id="text2-41"><tspan
+         sodipodi:role="line"
+         id="tspan2-8"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="158.86108">- La mise en cache</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="178.77867"
+       id="text2-9"><tspan
+         sodipodi:role="line"
+         id="tspan2-9"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="178.77867">- Réduire la taille du code coté client</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="198.69624"
+       id="text2-7"><tspan
+         sodipodi:role="line"
+         id="tspan2-3"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="198.69624">- à la carte :<tspan
+   style="fill:#777777;fill-opacity:1"
+   id="tspan4"> Cache++, Compression, Bundling, Layout Thrashing, WebAssembly</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="248.7066"
+       id="text2-6-0-0"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-5-6"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="248.7066">- Simulations et timing des traitements cotés client, serveur et réseau</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="25.614973"
+       y="266.85541"
+       id="text2-6-0-4"><tspan
+         sodipodi:role="line"
+         id="tspan2-4-5-3"
+         style="font-size:11.2889px;stroke-width:0.264583"
+         x="25.614973"
+         y="266.85541">- à la carte :<tspan
+   style="fill:#777777;fill-opacity:1"
+   id="tspan5"> Preloading web fonts, Speeding up client-side navigation</tspan></tspan></text>
+  </g>
+</svg>

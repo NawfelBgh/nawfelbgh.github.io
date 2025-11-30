@@ -1,0 +1,164 @@
+---
+import BaseHead from "../../../../components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import SimpleBlogLayout from "../../../../layouts/SimpleBlogLayout.astro";
+import {
+  getAlternates,
+  getProperty,
+  getThumbnailUrl,
+} from "../../../../utils/blog";
+import Content from "./_content.md";
+import PageLayout from "../../../../layouts/PageLayout.astro";
+
+const lang = "fr";
+const post = await getEntry("blog", "bouffe-front-2025-11-18");
+if (!post) throw new Error("Entry not found blog:bouffe-front-2025-11-18");
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+const title = getProperty(post, "title", lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={post.data.title}
+      description={post.data.description}
+      image={image}
+      alternates={alternates}
+    />
+    <style>
+      article {
+        max-width: min(840px, calc(100% - 2rem));
+        margin: auto;
+        padding: 1em;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      h1 + time {
+        display: block;
+        text-align: center;
+        margin-bottom: 1em;
+      }
+
+      :global(.slide) {
+        background-color: white;
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        overflow: hidden;
+        border: solid 1px var(--border-color);
+        margin-bottom: 1em;
+
+        & > :global(*) {
+          position: absolute;
+        }
+      }
+
+      :global(hr) {
+        border: solid 0.5px var(--border-color);
+        width: 50%;
+        margin-block: 1em;
+      }
+    </style>
+  </head>
+  <PageLayout lang={lang} alternates={alternates}>
+    <article>
+      <h1>{title}</h1>
+      <time datetime={post.data.pubDate}>{post.data.pubDate}</time>
+      <Content />
+    </article>
+  </PageLayout>
+
+  <div
+    data-presentation-wrapper="true"
+    tabindex="0"
+    style="display: none; height: 100%; align-items: center;"
+  >
+  </div>
+  <script type="application/javascript">
+    (() => {
+      const presentationElementSelector = "[data-presentation-wrapper=true]";
+      const presentationElement = document.querySelector(
+        presentationElementSelector
+      );
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      let currentSlideIndex = 0;
+
+      function nextSlide() {
+        const index = currentSlideIndex + 1;
+        const slide = slides[index];
+        if (slide) {
+          currentSlideIndex = index;
+          presentationElement.innerHTML = slide.outerHTML;
+        }
+      }
+
+      function previousSlide() {
+        const index = currentSlideIndex - 1;
+        const slide = slides[index];
+        if (slide) {
+          currentSlideIndex = index;
+          presentationElement.innerHTML = slide.outerHTML;
+        }
+      }
+
+      presentationElement.addEventListener("wheel", (event) => {
+        if (event.deltaY >= 0) {
+          nextSlide();
+        } else {
+          previousSlide();
+        }
+      });
+      presentationElement.addEventListener("keydown", (event) => {
+        switch (event.key) {
+          case "ArrowDown":
+            nextSlide();
+            break;
+          case "ArrowUp":
+            previousSlide();
+            break;
+          case "ArrowLeft":
+            previousSlide();
+            break;
+          case "ArrowRight":
+            nextSlide();
+            break;
+        }
+      });
+
+      function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          presentationElement.style.display = "flex";
+          presentationElement.requestFullscreen();
+          presentationElement.focus();
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      document.body.addEventListener("dblclick", (event) => {
+        const slideElement = event.target?.closest?.(".slide");
+        if (slideElement) {
+          if (!slideElement.closest(presentationElementSelector)) {
+            currentSlideIndex = slides.indexOf(slideElement);
+            presentationElement.innerHTML = slideElement.outerHTML;
+          }
+          toggleFullScreen();
+        }
+      });
+
+      presentationElement.addEventListener("fullscreenchange", (event) => {
+        if (!document.fullscreenElement) {
+          presentationElement.style.display = "none";
+          slides[currentSlideIndex].scrollIntoView();
+        }
+      });
+    })();
+  </script>
+
+
+</html>
