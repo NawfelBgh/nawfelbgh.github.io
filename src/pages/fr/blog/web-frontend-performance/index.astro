@@ -2,7 +2,11 @@
 import BaseHead from "../../../../components/BaseHead.astro";
 import { getEntry } from "astro:content";
 import SimpleBlogLayout from "../../../../layouts/SimpleBlogLayout.astro";
-import { getAlternates, getThumbnailUrl } from "../../../../utils/blog";
+import {
+  getAlternates,
+  getProperty,
+  getThumbnailUrl,
+} from "../../../../utils/blog";
 import TableDesMatieres from "./_table-des-matieres.md";
 
 const lang = "fr";
@@ -10,14 +14,16 @@ const post = await getEntry("blog", "web-frontend-performance");
 if (!post) throw new Error("Entry not found blog:web-frontend-performance");
 const image = getThumbnailUrl(post);
 const alternates = getAlternates(post, lang);
+const title = getProperty(post, "title", lang);
+const description = getProperty(post, "description", lang);
 ---
 
 <!doctype html>
 <html lang={lang}>
   <head>
     <BaseHead
-      title={post.data.title}
-      description={post.data.description}
+      title={title}
+      description={description}
       image={image}
       alternates={alternates}
     />
