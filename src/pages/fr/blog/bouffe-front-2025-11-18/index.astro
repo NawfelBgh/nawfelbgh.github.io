@@ -150,13 +150,13 @@ const description = getProperty(post, "description", lang);
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
           if (deltaX < 0) {
             nextSlide();
-          } else {
+          } else if (deltaX > 0) {
             previousSlide();
           }
         } else {
           if (deltaY < 0) {
             nextSlide();
-          } else {
+          } else if (deltaY > 0) {
             previousSlide();
           }
         }
@@ -184,10 +184,20 @@ const description = getProperty(post, "description", lang);
         }
       }
 
+      let doubleClickLock = 0;
       document.body.addEventListener("dblclick", (event) => {
+        if (doubleClickLock) {
+          return;
+        }
+        doubleClickLock = 1;
+        setTimeout(() => {
+          doubleClickLock = 0;
+        }, 1000);
         const slideElement = event.target?.closest?.(".slide");
         if (slideElement) {
           if (!slideElement.closest(presentationElementSelector)) {
+            // The double clicked slide is not inside the presentationElement
+            // So, set it as the current slide
             currentSlideIndex = slides.indexOf(slideElement);
             presentationElement.innerHTML = slideElement.outerHTML;
           }
