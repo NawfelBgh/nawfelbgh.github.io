@@ -559,7 +559,7 @@ Après un délai de latence réseau, le client reçoit le contenu du head de la 
         <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.slide.latency.svg" style="width: 100%" />
     </div>
     <div style="top: 70%; left: 0; width: 140%; height: 28%; position: absolute; overflow: hidden;">
-        <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.slide.latency.svg" style="width: 100%; position: absolute; top: -560%;" />
+        <img src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.slide.latency.svg" style="width: 100%; position: absolute; top: -560%;" />
     </div>
 </div>
 
@@ -574,7 +574,7 @@ Le client envoie une requête pour télécharger la page. Le serveur génère le
         <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.slide.latency.svg" style="width: 100%" />
     </div>
     <div style="top: 70%; left: 0; width: 120%; height: 28%; position: absolute; overflow: hidden;">
-        <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.slide.latency.svg" style="width: 100%; position: absolute; top: -610%;" />
+        <img src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.slide.latency.svg" style="width: 100%; position: absolute; top: -610%;" />
     </div>
 </div>
 
