@@ -115,7 +115,15 @@ const description = getProperty(post, "description", lang);
       }
 
       // Handle mouse wheel
+      let wheelLock = 0;
       presentationElement.addEventListener("wheel", (event) => {
+        if (wheelLock) {
+          return;
+        }
+        wheelLock = 1;
+        setTimeout(() => {
+          wheelLock = 0;
+        }, 250);
         if (event.deltaY >= 0) {
           nextSlide();
         } else {
