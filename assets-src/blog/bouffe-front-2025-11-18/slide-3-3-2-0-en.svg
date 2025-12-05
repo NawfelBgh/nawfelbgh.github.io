@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-3-3-2-0.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.43457604"
+     inkscape:cx="934.24387"
+     inkscape:cy="786.9739"
+     inkscape:window-width="1792"
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <rect
+       x="-124.25904"
+       y="625.89737"
+       width="2282.6845"
+       height="681.12361"
+       id="rect23" />
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="23.199268"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="23.199268"
+         y="35.807644"
+         id="tspan4">3.3 Preloading with a Link header</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.65;font-family:sans-serif;stroke-width:0.264583"
+       x="49.82299"
+       y="67.201523"
+       id="text2"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="67.201523"
+         id="tspan35">200 OK</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="85.944191"
+         id="tspan22">Link: <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan30">&lt;/style.css&gt;</tspan>; <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#e50001;fill-opacity:1"
+   id="tspan26">rel</tspan>=<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan31">&quot;preload&quot;</tspan>; <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#e50001;fill-opacity:1"
+   id="tspan27">as</tspan>=<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan32">&quot;style&quot;</tspan>,</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="104.68686"
+         id="tspan23">      <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan36">&lt;/style-dependency.css&gt;</tspan>; <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#e50001;fill-opacity:1"
+   id="tspan28">rel</tspan>=<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan34">&quot;preload&quot;</tspan>; <tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#e50001;fill-opacity:1"
+   id="tspan29">as</tspan>=<tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Monospace;-inkscape-font-specification:'Monospace Bold';fill:#0a00ff;fill-opacity:1"
+   id="tspan33">&quot;style&quot;</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="123.42953"
+         id="tspan20">Content-Type: text/html</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#008001;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="142.1722"
+         id="tspan21" /><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#008001;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="160.91486"
+         id="tspan25">&lt;!-- page1.html --&gt;</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="179.65753"
+         id="tspan10">&lt;!doctype <tspan
+   style="fill:#e50001;fill-opacity:1"
+   id="tspan41">html</tspan>&gt;</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="198.40019"
+         id="tspan1">&lt;head&gt;</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="217.14287"
+         id="tspan12">  &lt;link <tspan
+   style="fill:#e50001;fill-opacity:1"
+   id="tspan42">rel</tspan>=<tspan
+   style="fill:#0a00ff;fill-opacity:1"
+   id="tspan38">&quot;stylesheet&quot;</tspan> <tspan
+   style="fill:#e50001;fill-opacity:1"
+   id="tspan43">href</tspan>=<tspan
+   style="fill:#0a00ff;fill-opacity:1"
+   id="tspan39">&quot;/style.css&quot;</tspan> /&gt;</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;line-height:1.65;font-family:Monospace;-inkscape-font-specification:Monospace;fill:#800000;fill-opacity:1;stroke-width:0.264583"
+         x="49.82299"
+         y="235.88553"
+         id="tspan19">&lt;/head&gt;</tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect44"
+       width="431.05231"
+       height="204.5672"
+       x="42.009327"
+       y="51.141796"
+       ry="1.7999958e-14" />
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text23"
+       style="font-size:42.6667px;line-height:1.25;font-family:sans-serif;text-align:center;white-space:pre;shape-inside:url(#rect23);display:inline" />
+  </g>
+</svg>

@@ -6,7 +6,7 @@ import Content from "./_content.md";
 import PageLayout from "@src/layouts/PageLayout.astro";
 import "@src/styles/slides.css";
 
-const lang = "fr";
+const lang = "en";
 const post = await getEntry("blog", "bouffe-front-2025-11-18");
 if (!post) throw new Error("Entry not found blog:bouffe-front-2025-11-18");
 const image = getThumbnailUrl(post);

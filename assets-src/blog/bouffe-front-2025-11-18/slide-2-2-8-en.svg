@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-2-2-8.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.43457604"
+     inkscape:cx="906.63075"
+     inkscape:cy="552.26238"
+     inkscape:window-width="1792"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="17.907597"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="17.907597"
+         y="35.807644">Caching</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.65;font-family:sans-serif;stroke-width:0.264583"
+       x="15.824009"
+       y="68.789024"
+       id="text2"><tspan
+         sodipodi:role="line"
+         id="tspan2"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="68.789024">1. HTTP caching ✔️</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="90.218117"
+         id="tspan3">2. Fresh and stale cached data</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="111.17312"
+         id="tspan4">3. Revalidating stale data in the background</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="132.12811"
+         id="tspan5">4. Client-requested cache revalidation</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="153.08311"
+         id="tspan6">5. Cache busting</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="15.824009"
+         y="174.03812"
+         id="tspan7">6. Caching the static portions of webpages ✔️</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;fill:#777777;fill-opacity:1;stroke-width:0.264583"
+         x="15.824009"
+         y="195.46721"
+         id="tspan8">7. Service Workers</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;fill:#777777;fill-opacity:1;stroke-width:0.264583"
+         x="15.824009"
+         y="216.42221"
+         id="tspan9">8. Caching in interactive WebApps</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;fill:#777777;fill-opacity:1;stroke-width:0.264583"
+         x="15.824009"
+         y="237.37721"
+         id="tspan10">9. Caching compiled code</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="378.08398"
+       y="46.879978"
+       id="text11"><tspan
+         sodipodi:role="line"
+         id="tspan11"
+         style="stroke-width:0.264583"
+         x="378.08398"
+         y="46.879978">ETag: ??</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="431.6611"
+       y="97.412949"
+       id="text12"><tspan
+         sodipodi:role="line"
+         id="tspan12"
+         style="stroke-width:0.264583"
+         x="431.6611"
+         y="97.412949">If-None-Match: ??</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="442.62009"
+       y="140.03111"
+       id="text13"><tspan
+         sodipodi:role="line"
+         id="tspan13"
+         style="stroke-width:0.264583"
+         x="442.62009"
+         y="140.03111">304 Not Modified</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="412.1785"
+       y="192.99939"
+       id="text14"><tspan
+         sodipodi:role="line"
+         id="tspan14"
+         style="stroke-width:0.264583"
+         x="412.1785"
+         y="192.99939">max-age=?</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="382.95465"
+       y="241.09705"
+       id="text15"><tspan
+         sodipodi:role="line"
+         id="tspan15"
+         style="stroke-width:0.264583"
+         x="382.95465"
+         y="241.09705">stale-while-revalidate=?</tspan></text>
+  </g>
+</svg>

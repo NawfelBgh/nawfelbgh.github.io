@@ -1,0 +1,20 @@
+.slide {
+  background-color: white;
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  overflow: hidden;
+  border: solid 1px var(--border-color);
+  margin-bottom: 1em;
+
+  & > * {
+    position: absolute;
+  }
+}
+
+[data-presentation-wrapper="true"] .slide {
+  width: min(100%, calc(100vh * 16 / 9));
+  /* 16:9 Aspect Ratio */
+  padding-top: min(56.25%, 100vh);
+  margin-bottom: 0;
+}

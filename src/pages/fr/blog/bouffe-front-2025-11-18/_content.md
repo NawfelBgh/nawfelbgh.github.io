@@ -1,4 +1,3 @@
-
 <div class="slide">
     <img src="/blog/bouffe-front-2025-11-18/slide-0-0.svg" style="top:0; left:0; width:100%;" />
 </div>
@@ -9,11 +8,9 @@ Bonjour à toutes et à tous. Aujourd'hui, je vais vous présenter quelques diag
 
 L'article est structuré en trois chapitres :
 
-Le premier chapitre vise à sensibiliser au fait que le web repose sur une infrastructure physique.
-
-Le deuxième chapitre aborde les optimisations permettant de réduire l'utilisation des ressources physiques par les pages web.
-
-Et le troisième chapitre traite des optimisations qui améliorent la performance en réduisant le temps d'attente des utilisateurs.
+- Le premier chapitre vise à sensibiliser au fait que le web repose sur une infrastructure physique.
+- Le deuxième chapitre aborde les optimisations permettant de réduire l'utilisation des ressources physiques par les pages web.
+- Et le troisième chapitre traite des optimisations qui améliorent la performance en réduisant le temps d'attente des utilisateurs.
 
 <div class="slide">
     <img src="/blog/bouffe-front-2025-11-18/slide-0-1.svg" style="top:0; left:0; width:100%;" />
@@ -24,9 +21,8 @@ Et le troisième chapitre traite des optimisations qui améliorent la performanc
 
 De la même manière, cette présentation se divise en trois parties :
 
-La première partie traite de l'empreinte environnementale du web.
-
-Dans les deuxième et troisième parties, je vous présenterai des diagrammes expliquant certaines optimisations.
+- La première partie traite de l'empreinte environnementale du web.
+- Dans les deuxième et troisième parties, je vous présenterai des diagrammes expliquant certaines optimisations.
 
 J'ai marqué certains sujets comme "à la carte". Ce sont des sujets pour lesquels j'ai des diagrammes, mais qui ne sont pas inclus dans cette présentation. Nous pourrons les regarder ensemble après, si vous le souhaitez.
 
@@ -81,6 +77,8 @@ Il faut une industrie pour produire et alimenter le web, et cette industrie est 
     <img loading="lazy" src="/blog/web-frontend-performance/physical-web.svg" style="top: 0; left: 8%; height: 100%;" />
 </div>
 
+---
+
 Dans cette deuxième version du diagramme, je montre ce qui peut se produire lorsque l'on compte sur davantage de matériel, et sur du matériel plus puissant, pour améliorer la performance du web. On obtient un web qui mobilise une industrie plus importante, et donc laisse moins d'espace à la nature.
 
 <div class="slide">
@@ -98,7 +96,6 @@ C'est d'ailleurs grâce à un quiz organisé par ce groupe que j'ai appris que l
 </div>
 
 ---
-
 
 ## Partie 2 : Comment optimiser la performance web en utilisant moins de ressources
 
@@ -127,6 +124,8 @@ Ce diagramme, tiré du site HTTP Archives, montre que la taille médiane d'une p
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-2-1-0/page-weight.webp" style="top: 25%; left: 25%; width: 70%;" />
 </div>
 
+---
+
 Pour un autre point de comparaison, j'aime citer ce tweet de Pinboard : "La taille de votre page web ne devrait pas dépasser celle d'un roman russe." Il y cite un roman pesant 1,8 Mo.
 
 J'ai tiré cette citation de la présentation "The Website Obesity Crisis" de 2015, qui est à la fois intéressante et drôle.
@@ -145,7 +144,7 @@ Passons maintenant aux approches techniques pour l'optimisation des performances
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-2-0/wheelbarrow.webp" style="top: 30%; left: 20%; width: 60%;" />
 </div>
 
-----
+---
 
 ### La mise en cache
 
@@ -209,6 +208,8 @@ C'est ce qui est illustré dans cet exemple avec les trois acteurs : le client e
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-2-2-5.svg" style="top: 0; left: 0; width: 100%;" />
 </div>
 
+---
+
 Le client effectue une requête GET pour récupérer la page. Puis, il effectue une deuxième requête pour récupérer la section dynamique.
 
 La partie statique de la page est retournée directement depuis le cache partagé. Quant à la requête pour récupérer la section dynamique, elle atteint le serveur, qui renvoie un header HTTP Cache-Control: no-store pour indiquer au cache de ne pas l'enregistrer.
@@ -217,6 +218,8 @@ La partie statique de la page est retournée directement depuis le cache partag�
     <img loading="lazy" src="/blog/web-frontend-performance/cache-static-parts.svg" style="top: 0; left: 0; width: 100%;" />
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-2-2-6.svg" style="top: 0; left: 0; width: 100%;" />
 </div>
+
+---
 
 Lorsque le même client charge à nouveau notre page, la partie statique est récupérée cette fois directement du cache local, et la section dynamique est récupérée depuis le serveur.
 
@@ -234,7 +237,6 @@ Dans l'article, vous trouverez plus d'explications et de diagrammes détaillant 
 </div>
 
 ---
-
 
 Avant de terminer la partie sur le cache, j'aimerais évoquer les CDN (ou Content Delivery Networks), qui permettent d'améliorer les performances lorsque les clients d'un site sont répartis dans le monde entier.
 
@@ -416,14 +418,14 @@ Nous allons examiner ce qui doit être envoyé en termes de :
 
 J'utilise comme exemple une page avec deux templates HTML. Le template 1 est instancié une fois, et le template 2 est instancié trois fois, avec à chaque fois des données différentes.
 
+Avec le SSR, nous envoyons les templates et les données sous forme de HTML. On peut voir que le template 2 est répété trois fois dans le HTML.
+
+Nous envoyons également le code nécessaire pour rendre les templates 1 et 2 interactifs.
+
 <div class="slide">
     <img loading="lazy" src="/blog/web-frontend-performance/pure-ssr-vs-hydration-vs-pure-csr.svg" style="top: 2%; left: 20%; height: 100%;" />
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-2-3-3-5.svg" style="top: 0; left: 0; width: 100%;" />
 </div>
-
-Avec le SSR, nous envoyons les templates et les données sous forme de HTML. On peut voir que le template 2 est répété trois fois dans le HTML.
-
-Nous envoyons également le code nécessaire pour rendre les templates 1 et 2 interactifs.
 
 ---
 
@@ -456,7 +458,6 @@ Je parle dans l'article de l'hydratation partielle, qui tente de remédier à ce
 ---
 
 ## Partie 3 : Faire de l'ordonnancement intéligent
-
 
 Passons maintenant à la partie 3 de la présentation : comment optimiser la performance, non pas nécessairement en réduisant l'utilisation des ressources, mais en réduisant le temps d'attente des utilisateurs grâce à un ordonnancement intelligent.
 
@@ -541,14 +542,13 @@ L'objectif est que le navigateur puisse calculer la mise en page (la tâche en b
     <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/not-streaming-html.slide.svg" style="top: 0; left: 10%; height: 100%;" />
 </div>
 
-
 ---
 
 Zoom sur cette partie du diagramme pour expliquer le principe.
 
 J'affiche dans ce diagramme les tâches côté client et côté serveur. Pour le fichier page.html, j'affiche deux lignes : une pour le chargement de la page côté client, et une autre pour la génération de la page côté serveur.
 
-Le client envoie une requête pour télécharger la page. Avant que la requête n'atteigne le serveur, il faut d'abord attendre que le premier octet de la requête voyage physiquement entre le client et le serveur (il s'agit de la latence réseau, indiquée par la flèche rouge). Puis, il faut attendre le temps de transmission du contenu de la requête HTTP (indiqué par la flèche verte).
+Le client envoie une requête pour télécharger la page. Avant que la requête n'atteigne le serveur, il faut d'abord attendre que le premier octet de la requête voyage physiquement entre le client et le serveur (il s'agit de la latence réseau). Puis, il faut attendre le temps de transmission du contenu de la requête HTTP.
 
 Une fois que le serveur a reçu la requête, il génère le head et le body de la page. Ensuite, il les envoie au client.
 
@@ -603,7 +603,7 @@ Regardons maintenant ce qui se passe lorsque l'on utilise le streaming.
 
 Le client envoie une requête pour la page HTML. Le serveur génère le head, puis en parallèle, il commence à générer le body et envoie le head au client. Dès que le client a téléchargé le head, il envoie les requêtes pour télécharger le style et le script. Le serveur répond à ces requêtes et continue de générer le body. Une fois le body généré et transmis au client, et une fois que le client a fini d'interpréter le style et le script, il calcule la layout et affiche la page à l'instant T = 785 ms, soit plus de 200 millisecondes plus tôt qu'avec la version sans streaming.
 
-Le streaming a permis au client de télécharger les fichiers style et script dès que le head de la page a été généré côté serveur. Il les télécharge en parallèle avec la génération du body côté serveur.
+Le streaming a permis au client de télécharger les fichiers style et script peu de temps après la génération du head de la page côté serveur. Il les télécharge en parallèle avec la génération du body côté serveur.
 
 <div class="slide">
     <img loading="lazy" src="/blog/web-frontend-performance/waterfall-diagram/streaming-html.slide.svg" style="top: 0; left: 20%; height: 100%;" />
@@ -647,7 +647,7 @@ Le client fait la requête pour page.html. Le serveur génère le head. En paral
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-3-2-3.svg" style="top: 0; left: 0; width: 100%;" />
 </div>
 
-----
+---
 
 ### Le Preloading
 
@@ -679,6 +679,7 @@ Une fois `style.css` téléchargé, le client voit l'instruction import et lance
 Une fois les deux fichiers téléchargés et interprétés, le client calcule la mise en page et affiche la page à l'écran.
 
 On observe donc deux dépendances :
+
 - Le `style.css` ne peut être téléchargé qu'après la génération et la réception du head côté client.
 - Le fichier `style-dependency.css` ne peut être téléchargé qu'après la réception du fichier `style.css` côté client.
 
@@ -774,6 +775,7 @@ Je vous renvoie à l'article pour d'autres diagrammes, exemples et cas de figure
 ## Conclusion
 
 Pour conclure :
+
 - Dans la première partie de la présentation, nous avons vu comment le Web est un système physique.
 - Dans la deuxième partie, nous avons abordé des optimisations permettant de réduire l'utilisation des ressources.
 - Dans la troisième partie, nous avons examiné des optimisations visant à éliminer les temps d'attente inutiles.
@@ -786,7 +788,6 @@ Pour conclure :
 
 Il reste encore beaucoup de matière à explorer dans l'article, qui cite 117 liens externes et contient 55 diagrammes au total.
 
-
 <div class="slide">
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-4-1.svg" style="top:0; left:0; width:100%;" />
 </div>
@@ -798,4 +799,3 @@ Je vous remercie de votre attention.
 <div class="slide">
     <img loading="lazy" src="/blog/bouffe-front-2025-11-18/slide-4-2.svg" style="top:0; left:0; width:100%;" />
 </div>
-

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-3-0-1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.43457604"
+     inkscape:cx="937.69551"
+     inkscape:cy="607.48862"
+     inkscape:window-width="1792"
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="23.199268"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="23.199268"
+         y="35.807644">3. Reducing user wait time with smart scheduling</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.65;font-family:sans-serif;stroke-width:0.264583"
+       x="23.364634"
+       y="83.076538"
+       id="text2"><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="83.076538"
+         id="tspan11">1. Do not block the UI thread</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="104.03154"
+         id="tspan26">2. Streaming</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="124.98653"
+         id="tspan27">    - Unlocking Parallelism with Streaming</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="145.94154"
+         id="tspan28">    - Out-Of-Order Streaming</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="166.89653"
+         id="tspan29">3. Preloading</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="187.85153"
+         id="tspan30">    - Preloading Options</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="208.80653"
+         id="tspan36">    - Speeding up SPAs startup</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="229.76154"
+         id="tspan38">4. Deferring non-critical resources</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:12.7px;line-height:1.65;stroke-width:0.264583"
+         x="23.364634"
+         y="250.71654"
+         id="tspan35">5. Lazy loading</tspan></text>
+  </g>
+</svg>
