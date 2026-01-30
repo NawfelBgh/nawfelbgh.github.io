@@ -7,6 +7,9 @@ main {
 }
 
 @media print {
+  body > header {
+    display: none;
+  }
   .print-actions {
     display: none;
   }
@@ -33,7 +36,7 @@ main {
 
 .page {
   --year-colomn-width: 10mm;
-  --event-margin-top: 2mm;
+  --event-margin-top: 3mm;
   --event-line-height: 5mm;
   --event-bullet-thickness: 2.5mm;
 
@@ -106,6 +109,7 @@ main {
   grid-template-rows:
     [years] auto
     [arrow] auto
+    [year-2026-1 year-2026-last] auto
     [year-2023-1 year-2023-last] auto
     [year-2023-end year-2022-1 year-2022-last] auto
     [year-2022-end year-2021-1 year-2021-last] auto
@@ -122,13 +126,12 @@ main {
   grid-template-columns:
     [year-2013] var(--year-colomn-width)
     [year-2014] var(--year-colomn-width)
-    [year-2015] var(--year-colomn-width)
     [year-2016] var(--year-colomn-width)
     [year-2017] var(--year-colomn-width)
     [year-2018] var(--year-colomn-width)
-    [year-2019-2021] var(--year-colomn-width)
     [year-2022] var(--year-colomn-width)
     [year-2023] var(--year-colomn-width)
+    [year-2026] var(--year-colomn-width)
     [empty] 1fr
     [skills] var(--skills-column-width)
     [columns-end];
@@ -206,11 +209,11 @@ main {
 }
 
 .year.y-2014 {
-  grid-area: years / year-2014 / arrow / year-2015;
+  grid-area: years / year-2014 / arrow / year-2016;
 }
 
 .year-line.y-2014 {
-  grid-area: arrow / year-2014 / year-2014-last / year-2015;
+  grid-area: arrow / year-2014 / year-2014-last / year-2016;
 }
 
 .year.y-2016 {
@@ -230,11 +233,11 @@ main {
 }
 
 .year.y-2018 {
-  grid-area: years / year-2018 / arrow / year-2019-2021;
+  grid-area: years / year-2018 / arrow / year-2022;
 }
 
 .year-line.y-2018 {
-  grid-area: arrow / year-2018 / year-2018-last / year-2019-2021;
+  grid-area: arrow / year-2018 / year-2018-last / year-2022;
 }
 
 .year.y-2022 {
@@ -246,11 +249,19 @@ main {
 }
 
 .year.y-2023 {
-  grid-area: years / year-2023 / arrow / empty;
+  grid-area: years / year-2023 / arrow / year-2026;
 }
 
 .year-line.y-2023 {
-  grid-area: arrow / year-2023 / year-2023-last / empty;
+  grid-area: arrow / year-2023 / year-2023-last / year-2026;
+}
+
+.year.y-2026 {
+  grid-area: years / year-2026 / arrow / empty;
+}
+
+.year-line.y-2026 {
+  grid-area: arrow / year-2026 / year-2026-last / empty;
 }
 
 /* events */
@@ -356,6 +367,32 @@ ul.skills li {
   border: solid 0.33mm #000;
   border-radius: 1mm;
   font-size: 3.5mm;
+}
+
+ul.clients {
+  margin: 0;
+  padding: 0;
+  margin-top: 1mm;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0mm 1mm ;
+  align-content: flex-start;
+}
+
+ul.clients li {
+  display: inline-block;
+  font-size: 3.5mm;
+}
+
+ul.clients li:not(:last-child)::after {
+  content: "-";
+  display: inline-block;
+  margin-left: 1mm;
+}
+
+/* 2026 events */
+.event.y-2026-1 {
+  grid-area: year-2026-1 / year-2026 / year-2023-1 / skills;
 }
 
 /* 2023 events */

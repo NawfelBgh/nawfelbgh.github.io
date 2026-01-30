@@ -1,304 +1,280 @@
 ---
-import BaseHead from '../../../components/BaseHead.astro';
-import PageLayout from '../../../layouts/PageLayout.astro';
-import type { Alternate } from '../../../types';
-import '../../../styles/cv/cv-style.css';
+import BaseHead from "../../../components/BaseHead.astro";
+import PageLayout from "../../../layouts/PageLayout.astro";
+import type { Alternate } from "../../../types";
+import "../../../styles/cv/cv-style.css";
 
-const lang = 'fr';
-const title = 'Curriculum Vitae';
-const description = 'Curriculum Vitae de Nawfel Bengherbia';
+const lang = "fr";
+const title = "Curriculum Vitae";
+const description = "Curriculum Vitae de Nawfel Bengherbia";
 const alternates: Alternate[] = [
-    { hreflang: 'en', href: '/cv/', title: 'Curriculum Vitae' },
+  { hreflang: "en", href: "/cv/", title: "Curriculum Vitae" },
 ];
 ---
 
 <!doctype html>
 <html lang={lang}>
-    <head>
-        <BaseHead
-            title={title}
-            description={description}
-            alternates={alternates}
-        />
-        <link
-            rel="preload"
-            as="font"
-            href="/static/fonts/eb-garamond-v27-latin-regular.woff2"
-        />
-    </head>
-    <PageLayout lang={lang} alternates={alternates}>
-        <div class="print-actions">
-            <a href="/static/cv/cv-fr.pdf">Télécharger au format PDF</a>
-        </div>
-        <div class="page-container">
-            <div class="page">
-                <header>
-                    <picture class="photo">
-                        <img
-                            src="/static/cv/photo.jpg"
-                            alt="photo"
-                            width="300"
-                            height="347"
-                        />
-                    </picture>
-                    <div class="informations">
-                        <div class="name">Nawfel BENGHERBIA</div>
-                        <div class="email">
-                            <a href="mailto:nawfel.bgh@gmail.com"
-                                >nawfel.bgh@gmail.com</a
-                            >
-                        </div>
-                        <div class="website">
-                            <a href="https://nawfelbgh.github.io/"
-                                >nawfelbgh.github.io</a
-                            >
-                        </div>
-                        <div class="title">Ingénieur en informatique</div>
-                    </div>
-                    <a class="qrcode" href="https://nawfelbgh.github.io/">
-                        <picture>
-                            <img src="/static/cv/qrcode.svg" alt="qrcode" />
-                        </picture>
-                    </a>
-                </header>
-                <div class="grid">
-                    <!-- arrow -->
-                    <div class="arrow">
-                        <div class="arrow-body"></div>
-                        <div class="arrow-head"></div>
-                    </div>
-                    <!-- years & lines -->
-                    <div class="year-line y-2013"></div>
-                    <div class="year y-2013">2013</div>
-
-                    <div class="year-line y-2014"></div>
-                    <div class="year y-2014">2014</div>
-
-                    <div class="year-line y-2016"></div>
-                    <div class="year y-2016">2016</div>
-
-                    <div class="year-line y-2017"></div>
-                    <div class="year y-2017">2017</div>
-
-                    <div class="year-line y-2018"></div>
-                    <div class="year y-2018">2018</div>
-
-                    <div class="year-line y-2022"></div>
-                    <div class="year y-2022">2022</div>
-
-                    <div class="year-line y-2023"></div>
-                    <div class="year y-2023">2023</div>
-
-                    <!-- events -->
-                    <!-- 2023 events -->
-                    <div class="event y-2023-1">
-                        <div>Certification Developeur Appli. Node.js</div>
-                        <div>
-                            <a
-                                target="_blank"
-                                href="https://nawfelbgh.github.io/static/jsnad.pdf"
-                                >nawfelbgh.github.io/static/jsnad.pdf</a
-                            >
-                        </div>
-                    </div>
-
-                    <!-- 2022 events -->
-                    <div class="event y-2022-1">
-                        <div>Ingénieur en informatique, SFEIR, Paris</div>
-                        <div>(2022-01 à maintenant)</div>
-                        <ul>
-                            <li>LEASYS : Gestion de souscriptions</li>
-                            <li>BNP Paribas Cardif : Catalogue d'APIs</li>
-                            <li>Delfingen : Gestion données commerciales</li>
-                            <li>Sanofi Accelrare : pré-diagnostic médical</li>
-                            <li>RAISE : Plateforme GenAI de SFEIR</li>
-                            <li>
-                                PoCs &amp; Interventions ponctuelles pour SNCF,
-                                LVMH et Total Energies
-                            </li>
-                        </ul>
-                    </div>
-
-                    <ul class="skills y-2022-1">
-                        <li>NextJs</li>
-                        <li>NodeJs</li>
-                        <li>Angular</li>
-                        <li>Cloud</li>
-                        <li>K8s</li>
-                        <li>Scrum</li>
-                    </ul>
-
-                    <!-- 2018 events -->
-                    <div class="event y-2018-1 diploma">
-                        <div>
-                            Master - Programmation et Logiciels Sûrs
-                            <span class="badge">Major de promo</span>
-                        </div>
-                        <div>Institut Galilée - Université Paris 13</div>
-                    </div>
-
-                    <div class="event y-2018-2">
-                        <div>Ingénieur en informatique, Artelys, Paris</div>
-                        <div>(2018-04 à 2021-12)</div>
-                        <ul>
-                            <li>
-                                RATP : Plannification des tâches de maintenance
-                            </li>
-                            <li>SNCF : Simulation du réseau ferroviaire</li>
-                            <li>Rubis Terminal : Optimisation du stockage</li>
-                            <li>
-                                Artelys : Plateforme Crystal Web &amp; Site web
-                            </li>
-                            <li>Artelys : TimeSheets</li>
-                        </ul>
-                    </div>
-
-                    <ul class="skills y-2018-2">
-                        <li>ReactJs</li>
-                        <li>Java</li>
-                        <li>Docker</li>
-                        <li>SQL</li>
-                        <li>Wordpress</li>
-                        <li>PHP</li>
-                        <li>Encarder des juniors</li>
-                    </ul>
-
-                    <div class="event y-2018-4 research">
-                        <div>
-                            Publication de mon travail de thèse d'ingénieur de
-                            2016
-                        </div>
-                        <div>
-                            <a
-                                target="_blank"
-                                href="https://doi.org/10.1016/j.procs.2018.07.262"
-                                >doi.org/10.1016/j.procs.2018.07.262</a
-                            >
-                        </div>
-                    </div>
-
-                    <div class="event y-2018-5">
-                        <div>
-                            Certification Google : Fondamentaux du marketing
-                            digital
-                        </div>
-                        <div>
-                            <a
-                                target="_blank"
-                                href="https://nawfelbgh.github.io/static/digimarketing.pdf"
-                                >nawfelbgh.github.io/static/digimarketing.pdf</a
-                            >
-                        </div>
-                    </div>
-
-                    <!-- 2017 events -->
-                    <div class="event y-2017-1 research">
-                        <div>Doctorant en reconnaissance d'images</div>
-                        <div>Laboratoire CERIST, Alger</div>
-                    </div>
-
-                    <ul class="skills y-2017-1">
-                        <li>Python</li>
-                        <li>Apprentissage profond</li>
-                        <li>Traitement d'images</li>
-                    </ul>
-
-                    <div class="event y-2017-2 research">
-                        <div>
-                            Participation à un papier scientifique sur la
-                            reconnaissance d'images
-                        </div>
-                        <div>
-                            <a
-                                target="_blank"
-                                href="https://doi.org/10.1007/978-3-319-93647-5_13"
-                                >doi.org/10.1007/978-3-319-93647-5_13</a
-                            >
-                        </div>
-                    </div>
-
-                    <div class="event y-2017-3">
-                        Test de niveau d'anglais IELTS <span class="badge"
-                            >C1</span
-                        >
-                    </div>
-
-                    <ul class="skills y-2017-3">
-                        <li>Anglais</li>
-                    </ul>
-
-                    <!-- 2016 events -->
-                    <div class="event y-2016-1 diploma">
-                        <div>
-                            Master &amp; Ingénieur en Systèmes Informatiques
-                        </div>
-                        <div>
-                            École nationale Supérieure d’informatique, Alger
-                        </div>
-                    </div>
-
-                    <div class="event y-2016-2 research">
-                        <div>
-                            Stagiaire en optimisation combinatoire &amp; théorie
-                            des jeux
-                        </div>
-                        <div>Laboratoire LMCS, Alger</div>
-                    </div>
-
-                    <ul class="skills y-2016-2">
-                        <li>C++</li>
-                        <li>Qt</li>
-                        <li>Optimisation</li>
-                        <li>Rédaction scientifique</li>
-                    </ul>
-
-                    <div class="event y-2016-3">
-                        Test de connaissances en français TCF <span
-                            class="badge">C1</span
-                        >
-                    </div>
-
-                    <ul class="skills y-2016-3">
-                        <li>Français</li>
-                    </ul>
-
-                    <!-- 2014 events -->
-                    <div class="event y-2014-1">
-                        <div>
-                            Prototype d’application de visio conférence pour
-                            intranet
-                        </div>
-                        <div>SONELGAZ, Médéa, Algérie</div>
-                    </div>
-
-                    <ul class="skills y-2014-1">
-                        <li>NodeJs</li>
-                        <li>WebRTC</li>
-                    </ul>
-
-                    <!-- 2013 events -->
-                    <div class="event y-2013-1">
-                        <div>Simulateur pour les structures de données</div>
-                        <div>
-                            <a
-                                target="_blank"
-                                href="https://struct-animate.github.io/"
-                                >struct-animate.github.io</a
-                            >
-                        </div>
-                        <div>
-                            École nationale Supérieure d’informatique, Alger
-                        </div>
-                    </div>
-
-                    <ul class="skills y-2013-1">
-                        <li>JavaScript</li>
-                        <li>Continuations</li>
-                        <li>HTML5</li>
-                        <li>jQuery UI</li>
-                    </ul>
-                </div>
+  <head>
+    <BaseHead title={title} description={description} alternates={alternates} />
+    <link
+      rel="preload"
+      as="font"
+      href="/static/fonts/eb-garamond-v27-latin-regular.woff2"
+    />
+  </head>
+  <PageLayout lang={lang} alternates={alternates}>
+    <div class="print-actions">
+      <a href="/static/cv/cv-fr.pdf">Télécharger au format PDF</a>
+    </div>
+    <div class="page-container">
+      <div class="page">
+        <header>
+          <picture class="photo">
+            <img
+              src="/static/cv/photo.jpg"
+              alt="photo"
+              width="300"
+              height="347"
+            />
+          </picture>
+          <div class="informations">
+            <div class="name">Nawfel BENGHERBIA</div>
+            <div class="email">
+              <a href="mailto:nawfel.bgh@gmail.com">nawfel.bgh@gmail.com</a>
             </div>
+            <div class="website">
+              <a href="https://nawfelbgh.github.io/">nawfelbgh.github.io</a>
+            </div>
+            <div class="title">Ingénieur en informatique</div>
+          </div>
+          <a class="qrcode" href="https://nawfelbgh.github.io/">
+            <picture>
+              <img src="/static/cv/qrcode.svg" alt="qrcode" />
+            </picture>
+          </a>
+        </header>
+        <div class="grid">
+          <!-- arrow -->
+          <div class="arrow">
+            <div class="arrow-body"></div>
+            <div class="arrow-head"></div>
+          </div>
+          <!-- years & lines -->
+          <div class="year-line y-2013"></div>
+          <div class="year y-2013">2013</div>
+
+          <div class="year-line y-2014"></div>
+          <div class="year y-2014">2014</div>
+
+          <div class="year-line y-2016"></div>
+          <div class="year y-2016">2016</div>
+
+          <div class="year-line y-2017"></div>
+          <div class="year y-2017">2017</div>
+
+          <div class="year-line y-2018"></div>
+          <div class="year y-2018">2018</div>
+
+          <div class="year-line y-2022"></div>
+          <div class="year y-2022">2022</div>
+
+          <div class="year-line y-2023"></div>
+          <div class="year y-2023">2023</div>
+
+          <div class="year-line y-2026"></div>
+          <div class="year y-2026">2026</div>
+
+          <!-- events -->
+          <!-- 2026 events -->
+          <div class="event y-2026-1">
+            <div>Certification Accessibilité</div>
+            <div>
+              <a target="_blank" href="https://verify.w3schools.com/1QOBK5LYJ3"
+                >verify.w3schools.com/1QOBK5LYJ3</a
+              >
+            </div>
+          </div>
+
+          <!-- 2023 events -->
+          <div class="event y-2023-1">
+            <div>Certification Developeur Appli. Node.js</div>
+            <div>
+              <a
+                target="_blank"
+                href="https://nawfelbgh.github.io/static/jsnad.pdf"
+                >nawfelbgh.github.io/static/jsnad.pdf</a
+              >
+            </div>
+          </div>
+
+          <!-- 2022 events -->
+          <div class="event y-2022-1">
+            <div>Ingénieur en informatique, SFEIR, Paris</div>
+            <div>(2022-01 à maintenant)</div>
+            <ul class="clients">
+              <li>IFF</li>
+              <li>Sanofi</li>
+              <li>SNCF</li>
+              <li>LVMH</li>
+              <li>Total Energies</li>
+              <li>Delfingen</li>
+              <li>BNP Paribas Cardif</li>
+              <li>LEASYS</li>
+            </ul>
+          </div>
+
+          <ul class="skills y-2022-1">
+            <li>NextJs</li>
+            <li>NodeJs</li>
+            <li>Angular</li>
+            <li>Cloud</li>
+            <li>K8s</li>
+            <li>Scrum</li>
+          </ul>
+
+          <!-- 2018 events -->
+          <div class="event y-2018-1 diploma">
+            <div>
+              Master - Programmation et Logiciels Sûrs
+              <span class="badge">Major de promo</span>
+            </div>
+            <div>Institut Galilée - Université Paris 13</div>
+          </div>
+
+          <div class="event y-2018-2">
+            <div>Ingénieur en informatique, Artelys, Paris</div>
+            <div>(2018-04 à 2021-12)</div>
+            <ul class="clients">
+              <li>RATP</li>
+              <li>SNCF</li>
+              <li>Rubis Terminal</li>
+            </ul>
+          </div>
+
+          <ul class="skills y-2018-2">
+            <li>ReactJs</li>
+            <li>Java</li>
+            <li>Docker</li>
+            <li>SQL</li>
+            <li>Wordpress</li>
+            <li>PHP</li>
+            <li>Encarder des juniors</li>
+          </ul>
+
+          <div class="event y-2018-4 research">
+            <div>Publication de mon travail de thèse d'ingénieur de 2016</div>
+            <div>
+              <a
+                target="_blank"
+                href="https://doi.org/10.1016/j.procs.2018.07.262"
+                >doi.org/10.1016/j.procs.2018.07.262</a
+              >
+            </div>
+          </div>
+
+          <div class="event y-2018-5">
+            <div>Certification Google : Fondamentaux du marketing digital</div>
+            <div>
+              <a
+                target="_blank"
+                href="https://nawfelbgh.github.io/static/digimarketing.pdf"
+                >nawfelbgh.github.io/static/digimarketing.pdf</a
+              >
+            </div>
+          </div>
+
+          <!-- 2017 events -->
+          <div class="event y-2017-1 research">
+            <div>Doctorant en reconnaissance d'images</div>
+            <div>Laboratoire CERIST, Alger</div>
+          </div>
+
+          <ul class="skills y-2017-1">
+            <li>Python</li>
+            <li>Apprentissage profond</li>
+            <li>Traitement d'images</li>
+          </ul>
+
+          <div class="event y-2017-2 research">
+            <div>
+              Participation à un papier scientifique sur la reconnaissance
+              d'images
+            </div>
+            <div>
+              <a
+                target="_blank"
+                href="https://doi.org/10.1007/978-3-319-93647-5_13"
+                >doi.org/10.1007/978-3-319-93647-5_13</a
+              >
+            </div>
+          </div>
+
+          <div class="event y-2017-3">
+            Test de niveau d'anglais IELTS <span class="badge">C1</span>
+          </div>
+
+          <ul class="skills y-2017-3">
+            <li>Anglais</li>
+          </ul>
+
+          <!-- 2016 events -->
+          <div class="event y-2016-1 diploma">
+            <div>Master &amp; Ingénieur en Systèmes Informatiques</div>
+            <div>École nationale Supérieure d’informatique, Alger</div>
+          </div>
+
+          <div class="event y-2016-2 research">
+            <div>
+              Stagiaire en optimisation combinatoire &amp; théorie des jeux
+            </div>
+            <div>Laboratoire LMCS, Alger</div>
+          </div>
+
+          <ul class="skills y-2016-2">
+            <li>C++</li>
+            <li>Qt</li>
+            <li>Optimisation</li>
+            <li>Rédaction scientifique</li>
+          </ul>
+
+          <div class="event y-2016-3">
+            Test de connaissances en français TCF <span class="badge">C1</span>
+          </div>
+
+          <ul class="skills y-2016-3">
+            <li>Français</li>
+          </ul>
+
+          <!-- 2014 events -->
+          <div class="event y-2014-1">
+            <div>Prototype d’application de visio conférence pour intranet</div>
+            <div>SONELGAZ, Médéa, Algérie</div>
+          </div>
+
+          <ul class="skills y-2014-1">
+            <li>NodeJs</li>
+            <li>WebRTC</li>
+          </ul>
+
+          <!-- 2013 events -->
+          <div class="event y-2013-1">
+            <div>Simulateur pour les structures de données</div>
+            <div>
+              <a target="_blank" href="https://struct-animate.github.io/"
+                >struct-animate.github.io</a
+              >
+            </div>
+            <div>École nationale Supérieure d’informatique, Alger</div>
+          </div>
+
+          <ul class="skills y-2013-1">
+            <li>JavaScript</li>
+            <li>Continuations</li>
+            <li>HTML5</li>
+            <li>jQuery UI</li>
+          </ul>
         </div>
-    </PageLayout>
+      </div>
+    </div>
+  </PageLayout>
 </html>
