@@ -128,6 +128,7 @@ export interface SimulationConfig {
   dynamicHtmlChunkSize: number;
   scriptSize: number;
   dynamicDataSize: number;
+  preload?: boolean;
 }
 
 export class Client implements IClient {
@@ -470,7 +471,12 @@ export class FrontendServer implements IServer, IClient {
       url: FULL_PAGE_URL,
       size: this.config.headSize,
       part: "head",
-      subResources: [SCRIPT_WITH_DATA_LOADING_URL],
+      subResources: [
+        SCRIPT_WITH_DATA_LOADING_URL,
+        ...(this.config.preload ?
+          [DYNAMIC_PAGE_DATA_JSON_URL] :
+          [])
+      ],
     };
   }
 
@@ -501,7 +507,7 @@ export class FrontendServer implements IServer, IClient {
 
   private getScriptWithDataLoadingChunk(): AnonymizedResponseChunk {
     return {
-      url: SCRIPT_URL,
+      url: SCRIPT_WITH_DATA_LOADING_URL,
       size: this.config.scriptSize,
       done: true,
       cacheHeader: true,
