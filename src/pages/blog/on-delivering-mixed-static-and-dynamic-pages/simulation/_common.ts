@@ -204,6 +204,8 @@ export class Client implements IClient {
       if (!this.inProgressCacheEntries.has(response.url)) {
         this.inProgressCacheEntries.set(response.url, []);
       }
+    }
+    if (this.inProgressCacheEntries.has(response.url)) {
       const entries = this.inProgressCacheEntries.get(response.url)!;
       entries.push(response);
 
@@ -468,7 +470,7 @@ export class FrontendServer implements IServer, IClient {
 
   private getStaticPageHeadChunk(): AnonymizedResponseChunk {
     return {
-      url: FULL_PAGE_URL,
+      url: STATIC_PAGE_URL,
       size: this.config.headSize,
       part: "head",
       subResources: [
@@ -477,14 +479,16 @@ export class FrontendServer implements IServer, IClient {
           [DYNAMIC_PAGE_DATA_JSON_URL] :
           [])
       ],
+      cacheHeader: true,
     };
   }
 
-  private getStaticHtmlChunk(): AnonymizedResponseChunk {
+  private getStaticHtmlChunk(url: string): AnonymizedResponseChunk {
     return {
-      url: FULL_PAGE_URL,
+      url,
       size: this.config.staticHtmlChunkSize,
       part: "static html part",
+      done: url === STATIC_PAGE_URL,
     };
   }
 
@@ -529,7 +533,7 @@ export class FrontendServer implements IServer, IClient {
         if (response.url === DB_STATIC_PART_QUERY) {
           this.renderingQueue.add({
             ...clientRequest,
-            responseChunk: this.getStaticHtmlChunk(),
+            responseChunk: this.getStaticHtmlChunk(clientRequest.url),
           });
           this.processRenderingQueue();
         } else if (response.url === DB_DYNAMIC_PART_QUERY) {
@@ -544,7 +548,7 @@ export class FrontendServer implements IServer, IClient {
       case STATIC_PAGE_URL: {
         this.renderingQueue.add({
           ...clientRequest,
-          responseChunk: this.getStaticHtmlChunk(),
+          responseChunk: this.getStaticHtmlChunk(clientRequest.url),
         });
         this.processRenderingQueue();
         break;
@@ -639,6 +643,7 @@ export class FrontendServer implements IServer, IClient {
       });
     }
     if (sendStaticQuery) {
+      // TODO shall we implement caching in the server side too
       if (!this.staticPagePartCache) {
         this.backendNetwork.sendRequest({
           size: this.config.requestSize,
@@ -650,7 +655,7 @@ export class FrontendServer implements IServer, IClient {
         });
       } else {
         request.network.sendResponse({
-          ...this.getStaticHtmlChunk(),
+          ...this.getStaticHtmlChunk(request.url),
           requestId: request.id,
           client: request.client,
           server: this,
@@ -705,6 +710,13 @@ export class Edge implements IServer, IClient {
 
   onRequest(request: NetworkRequest) {
     if (this.cache.has(request.url)) {
+      this.logger.push({
+        type: "Cache Hit",
+        object: request.url,
+        start: this.clock.time,
+        end: this.clock.time,
+        actor: this.name
+      });
       const response = this.cache.get(request.url)!;
       for (const chunk of response) {
         request.network.sendResponse({
@@ -716,6 +728,13 @@ export class Edge implements IServer, IClient {
       }
       return;
     }
+    this.logger.push({
+      type: "Cache Miss",
+      object: request.url,
+      start: this.clock.time,
+      end: this.clock.time,
+      actor: this.name
+    });
     this.originNetwork.sendRequest({
       id: makeRequestId(),
       client: this,
@@ -740,10 +759,7 @@ export class Edge implements IServer, IClient {
     // Add to chunks
     if (this.inProgressCacheEntries.has(response.url)) {
       const chunks = this.inProgressCacheEntries.get(response.url)!;
-      if (
-        (chunks[0].context as NetworkRequest).id === originalRequest.id &&
-        response !== chunks[0]
-      ) {
+      if (chunks[0].requestId === response.requestId && response !== chunks[0]) {
         chunks.push(response);
       }
       if (response.done) {
@@ -880,7 +896,7 @@ export class Network {
 
   processResponses() {
     let downLinkBandwidthLeft = this.downLinkBandwidth;
-    while (downLinkBandwidthLeft && this.inFlightResponses.size) {
+    while (downLinkBandwidthLeft > 0 && this.inFlightResponses.size) {
       let bandwidthPart = downLinkBandwidthLeft / this.inFlightResponses.size;
       const deliveredChunks: Omit<NetworkResponseChunk, "network">[] = [];
       for (const [, chunks] of this.inFlightResponses) {

@@ -6,8 +6,8 @@ import {
   Network,
   type SimulationConfig,
   type Logger,
+  STATIC_PAGE_URL,
 } from "./_common";
-import { FULL_PAGE_URL } from "./_common";
 
 export default function main(): Logger {
   const config: SimulationConfig = {
@@ -53,11 +53,11 @@ export default function main(): Logger {
     serverToDbNetwork.processRequests();
     serverToDbNetwork.processResponses();
     // Navigate a first time to warm the client's cache
-    client.navigate(FULL_PAGE_URL, () => {
-      // Navigate a second time with the cache
+    client.navigate(STATIC_PAGE_URL, () => {
       logger.length = 0;
       clock.reset();
-      client.navigate(FULL_PAGE_URL, () => {
+      // Navigate a second time with the cache
+      client.navigate(STATIC_PAGE_URL, () => {
         clock.stop();
       });
     });

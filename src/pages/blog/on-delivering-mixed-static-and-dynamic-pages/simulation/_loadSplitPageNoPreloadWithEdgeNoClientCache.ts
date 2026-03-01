@@ -6,8 +6,9 @@ import {
   Network,
   type SimulationConfig,
   type Logger,
+  STATIC_PAGE_URL,
+  Edge,
 } from "./_common";
-import { FULL_PAGE_URL } from "./_common";
 
 export default function main(): Logger {
   const config: SimulationConfig = {
@@ -38,26 +39,26 @@ export default function main(): Logger {
     config
   );
 
-  const clientToServerNetwork = new Network(logger, clock, 200, 2500, 2500);
-  const client = new Client(
-    logger,
-    clock,
-    clientToServerNetwork,
-    server,
-    config
-  );
+  const edgeToServerNetwork = new Network(logger, clock, 150, 10_000, 10_000);
+  const edge = new Edge(logger, clock, edgeToServerNetwork, server, config);
+
+  const clientToEdgeNetwork = new Network(logger, clock, 50, 2500, 2500);
+  const client = new Client(logger, clock, clientToEdgeNetwork, edge, config);
 
   clock.start(() => {
-    clientToServerNetwork.processRequests();
-    clientToServerNetwork.processResponses();
+    clientToEdgeNetwork.processRequests();
+    clientToEdgeNetwork.processResponses();
+    edgeToServerNetwork.processRequests();
+    edgeToServerNetwork.processResponses();
     serverToDbNetwork.processRequests();
     serverToDbNetwork.processResponses();
-    // Navigate a first time to warm the client's cache
-    client.navigate(FULL_PAGE_URL, () => {
-      // Navigate a second time with the cache
+    // Navigate a first time to warm the edge's cache
+    client.navigate(STATIC_PAGE_URL, () => {
       logger.length = 0;
       clock.reset();
-      client.navigate(FULL_PAGE_URL, () => {
+      client.clearCache();
+      // Navigate a second time with the cache
+      client.navigate(STATIC_PAGE_URL, () => {
         clock.stop();
       });
     });
