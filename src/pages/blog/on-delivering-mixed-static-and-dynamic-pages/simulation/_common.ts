@@ -192,7 +192,7 @@ export class Client implements IClient {
     this.loadingDynamicPart = false;
     this.loadedDynamicPart = false;
     this.onFinish = onFinish;
-    
+
     this.sendRequest(url);
   }
 
@@ -346,6 +346,10 @@ export class Client implements IClient {
     } else {
       this.finalizeProcessingStep();
     }
+  }
+
+  clearCache() {
+    this.cache.clear();
   }
 }
 
@@ -688,9 +692,9 @@ export class Edge implements IServer, IClient {
     private originNetwork: Network,
     private origin: IServer,
     private config: SimulationConfig,
-    private cache = new Map<string, AnonymizedResponseChunk[]>()
   ) {}
 
+  private cache = new Map<string, AnonymizedResponseChunk[]>();
   private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
 
   onRequest(request: NetworkRequest) {
@@ -735,13 +739,13 @@ export class Edge implements IServer, IClient {
         response !== chunks[0]
       ) {
         chunks.push(response);
-        if (response.done) {
-          this.cache.set(
-            response.url,
-            chunks.map(({ client, server, network, ...c }) => c)
-          );
-          this.inProgressCacheEntries.delete(response.url);
-        }
+      }
+      if (response.done) {
+        this.cache.set(
+          response.url,
+          chunks.map(({ client, server, network, ...c }) => c)
+        );
+        this.inProgressCacheEntries.delete(response.url);
       }
     }
 
