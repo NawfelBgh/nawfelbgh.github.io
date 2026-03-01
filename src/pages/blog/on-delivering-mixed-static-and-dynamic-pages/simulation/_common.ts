@@ -112,16 +112,17 @@ export interface SimulationConfig {
   dynamicDataSize: number;
 }
 
-// TODO implement client caching
 export class Client implements IClient {
   private processingQueue: Queue<AnonymizedResponseChunk> = new Queue();
   private busy = false;
   private renderedStaticPart = false;
   private renderedDynamicPart = false;
   private ranScript = false;
-  private preloadDynamicPart = false;
+  private loadingDynamicPart = false;
   private loadedDynamicPart = false;
   private onFinish?: () => void;
+  private cache = new Map<string, AnonymizedResponseChunk[]>();
+  private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
 
   constructor(
     private logger: Logger,
@@ -131,32 +132,65 @@ export class Client implements IClient {
     private config: SimulationConfig
   ) {}
 
-  navigate(url: string, onFinish: () => void) {
+  private sendRequest(url: string) {
+    if (this.cache.has(url)) {
+      this.replayFromCache(url);
+      return;
+    }
     this.network.sendRequest({
-      client: this,
-      server: this.server,
-      size: this.config.requestSize,
       url,
       id: makeRequestId(),
+      size: this.config.requestSize,
+      client: this,
+      server: this.server,
     });
+  }
+
+  private processSubResources(subResources: string[] | undefined) {
+    if (subResources?.length) {
+      for (const subResource of subResources) {
+        this.sendRequest(subResource);
+        if (subResource === DYNAMIC_PAGE_DATA_JSON_URL) {
+          this.loadingDynamicPart = true;
+        }
+      }
+    }
+  }
+
+  private replayFromCache(url: string) {
+    const cachedChunks = this.cache.get(url)!;
+    for (const chunk of cachedChunks) {
+      this.processSubResources(chunk.subResources);
+      this.processingQueue.add(chunk);
+    }
+    this.processQueue();
+  }
+
+  navigate(url: string, onFinish: () => void) {
+    this.sendRequest(url);
     this.onFinish = onFinish;
   }
 
   onResponse(response: NetworkResponseChunk) {
-    if (response.subResources?.length) {
-      for (const subResource of response.subResources) {
-        this.network.sendRequest({
-          url: subResource,
-          id: makeRequestId(),
-          size: this.config.requestSize,
-          client: this,
-          server: this.server,
-        });
-        if (subResource === DYNAMIC_PAGE_DATA_JSON_URL) {
-          this.preloadDynamicPart = true;
-        }
+    this.processSubResources(response.subResources);
+
+    if (response.cacheHeader) {
+      if (!this.inProgressCacheEntries.has(response.url)) {
+        this.inProgressCacheEntries.set(response.url, []);
+      }
+      const entries = this.inProgressCacheEntries.get(response.url)!;
+      entries.push(response);
+
+      if (response.done) {
+        const anonymizedChunks = entries.map(
+          ({ client, server, network, ...chunk }) =>
+            chunk as AnonymizedResponseChunk
+        );
+        this.cache.set(response.url, anonymizedChunks);
+        this.inProgressCacheEntries.delete(response.url);
       }
     }
+
     this.processingQueue.add(response);
     this.processQueue();
   }
@@ -228,7 +262,7 @@ export class Client implements IClient {
             actor: "Client",
           });
           this.renderedDynamicPart = true;
-        } else if (!this.preloadDynamicPart) {
+        } else if (!this.loadingDynamicPart) {
           this.network.sendRequest({
             client: this,
             server: this.server,
