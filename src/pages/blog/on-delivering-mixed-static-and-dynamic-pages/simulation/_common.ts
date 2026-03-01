@@ -31,7 +31,6 @@ export class Clock {
   }
 }
 
-
 export interface Event {
   type: string;
   message: string;
@@ -55,7 +54,6 @@ export function makeRequestId() {
   return requestId++;
 }
 
-
 export interface NetworkResponseChunk {
   requestId: number;
   cacheHeader?: boolean;
@@ -70,7 +68,10 @@ export interface NetworkResponseChunk {
   context?: unknown;
 }
 
-export type AnonymizedResponseChunk = Omit<NetworkResponseChunk, 'network' | 'client' | 'server' | 'requestId'>;
+export type AnonymizedResponseChunk = Omit<
+  NetworkResponseChunk,
+  "network" | "client" | "server" | "requestId"
+>;
 
 export type Logger = Array<Event>;
 
@@ -96,16 +97,24 @@ export interface IServer {
   onRequest(request: NetworkRequest): void;
 }
 
-const QUERY_DURATION = 50;
-const QUERY_RESPONSE_SIZE = 50_000;
-const RENDER_TO_HTML_DURATION = 50;
-const RENDER_FROM_HTML_DURATION = 50;
-const RENDER_FROM_JSON_DURATION = 100;
-const EXECUTE_JS_DURATION = 200;
+export interface SimulationConfig {
+  queryDuration: number;
+  queryResponseSize: number;
+  renderToHtmlDuration: number;
+  renderFromHtmlDuration: number;
+  renderFromJsonDuration: number;
+  executeJsDuration: number;
+  requestSize: number;
+  headSize: number;
+  staticHtmlChunkSize: number;
+  dynamicHtmlChunkSize: number;
+  scriptSize: number;
+  dynamicDataSize: number;
+}
 
 // TODO implement client caching
 export class Client implements IClient {
-  private processingQueue : Queue<AnonymizedResponseChunk> = new Queue();
+  private processingQueue: Queue<AnonymizedResponseChunk> = new Queue();
   private busy = false;
   private renderedStaticPart = false;
   private renderedDynamicPart = false;
@@ -118,14 +127,15 @@ export class Client implements IClient {
     private logger: Logger,
     private clock: Clock,
     private network: Network,
-    private server: IServer
+    private server: IServer,
+    private config: SimulationConfig
   ) {}
 
   navigate(url: string, onFinish: () => void) {
     this.network.sendRequest({
       client: this,
       server: this.server,
-      size: REQUEST_SIZE,
+      size: this.config.requestSize,
       url,
       id: makeRequestId(),
     });
@@ -138,7 +148,7 @@ export class Client implements IClient {
         this.network.sendRequest({
           url: subResource,
           id: makeRequestId(),
-          size: REQUEST_SIZE,
+          size: this.config.requestSize,
           client: this,
           server: this.server,
         });
@@ -160,27 +170,33 @@ export class Client implements IClient {
       return;
     }
     this.busy = true;
-    const processingTime =
-      ([STATIC_HTML_CHUNK.name, DYNAMIC_HTML_CHUNK.name].includes(responseChunk.name)) ?
-        RENDER_FROM_HTML_DURATION :
-        (SCRIPT_URL === responseChunk.url || SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url && !this.loadedDynamicPart) ?
-          EXECUTE_JS_DURATION :
-          (SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url && this.loadedDynamicPart) ?
-            EXECUTE_JS_DURATION + RENDER_FROM_JSON_DURATION :
-            (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL && this.ranScript) ?
-              RENDER_FROM_JSON_DURATION :
-              0;
+    const processingTime = ["static html part", "dynamic html part"].includes(
+      responseChunk.name
+    )
+      ? this.config.renderFromHtmlDuration
+      : SCRIPT_URL === responseChunk.url ||
+          (SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url &&
+            !this.loadedDynamicPart)
+        ? this.config.executeJsDuration
+        : SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url &&
+            this.loadedDynamicPart
+          ? this.config.executeJsDuration + this.config.renderFromJsonDuration
+          : responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL && this.ranScript
+            ? this.config.renderFromJsonDuration
+            : 0;
     const start = this.clock.time;
     this.clock.schedule(processingTime, () => {
-      if ([STATIC_HTML_CHUNK.name, DYNAMIC_HTML_CHUNK.name].includes(responseChunk.name)) {
+      if (
+        ["static html part", "dynamic html part"].includes(responseChunk.name)
+      ) {
         this.logger.push({
           type: "Layout",
-          message: 'Render ' + responseChunk.name,
+          message: "Render " + responseChunk.name,
           start,
           end: this.clock.time,
-          actor: "Client"
+          actor: "Client",
         });
-        if (responseChunk.name == STATIC_HTML_CHUNK.name) {
+        if (responseChunk.name == "static html part") {
           this.renderedStaticPart = true;
         } else {
           this.renderedDynamicPart = true;
@@ -189,34 +205,34 @@ export class Client implements IClient {
         this.ranScript = true;
         this.logger.push({
           type: "Execute JS",
-          message: 'Execute ' + responseChunk.url,
+          message: "Execute " + responseChunk.url,
           start,
           end: this.clock.time,
-          actor: "Client"
+          actor: "Client",
         });
       } else if (responseChunk.url === SCRIPT_WITH_DATA_LOADING_URL) {
         this.ranScript = true;
         this.logger.push({
           type: "Execute JS",
-          message: 'Execute ' + responseChunk.url,
+          message: "Execute " + responseChunk.url,
           start: start,
-          end: start + EXECUTE_JS_DURATION,
-          actor: "Client"
+          end: start + this.config.executeJsDuration,
+          actor: "Client",
         });
         if (this.loadedDynamicPart) {
           this.logger.push({
             type: "Layout",
-            message: 'Render ' + responseChunk.url,
-            start: start + EXECUTE_JS_DURATION,
+            message: "Render " + responseChunk.url,
+            start: start + this.config.executeJsDuration,
             end: this.clock.time,
-            actor: "Client"
+            actor: "Client",
           });
           this.renderedDynamicPart = true;
         } else if (!this.preloadDynamicPart) {
           this.network.sendRequest({
             client: this,
             server: this.server,
-            size: REQUEST_SIZE,
+            size: this.config.requestSize,
             url: DYNAMIC_PAGE_DATA_JSON_URL,
             id: makeRequestId(),
           });
@@ -225,13 +241,17 @@ export class Client implements IClient {
         this.loadedDynamicPart = true;
       }
 
-      if (this.ranScript && this.renderedDynamicPart && this.renderedStaticPart) {
+      if (
+        this.ranScript &&
+        this.renderedDynamicPart &&
+        this.renderedStaticPart
+      ) {
         this.logger.push({
           type: "Done",
-          message: 'Done navigating',
+          message: "Done navigating",
           start: this.clock.time,
           end: this.clock.time,
-          actor: "Client"
+          actor: "Client",
         });
         this.onFinish?.();
       }
@@ -240,65 +260,14 @@ export class Client implements IClient {
       this.processQueue();
     });
   }
-
 }
 
-const REQUEST_SIZE = 250;
-
-const FULL_PAGE_URL = 'page (full)';
-const STATIC_PAGE_URL = 'page (static)';
-const DYNAMIC_PAGE_PART_URL = 'page part (dynamic)';
-const SCRIPT_URL = 'script.js';
-const SCRIPT_WITH_DATA_LOADING_URL = 'script-with-data-loading.js';
-const DYNAMIC_PAGE_DATA_JSON_URL = 'page-dynamic-data.json';
-const HEAD_SIZE = 1000;
-const STATIC_HTML_CHUNK_SIZE = 50_000;
-const DYNAMIC_HTML_CHUNK_SIZE = 50_000;
-const SCRIPT_SIZE = 50_000;
-const DYNAMIC_DATA_SIZE = 50_000;
-
-const FULL_PAGE_HEAD_CHUNK: AnonymizedResponseChunk = {
-  url: FULL_PAGE_URL,
-  size: HEAD_SIZE,
-  name: 'head',
-  subResources: [SCRIPT_URL],
-};
-const STATIC_PAGE_HEAD_CHUNK: AnonymizedResponseChunk = {
-  url: FULL_PAGE_URL,
-  size: HEAD_SIZE,
-  name: 'head',
-  subResources: [SCRIPT_WITH_DATA_LOADING_URL],
-};
-const STATIC_HTML_CHUNK : AnonymizedResponseChunk = {
-  url: FULL_PAGE_URL,
-  size: STATIC_HTML_CHUNK_SIZE,
-  name: 'static html part',
-};
-const DYNAMIC_HTML_CHUNK : AnonymizedResponseChunk = {
-  url: FULL_PAGE_URL,
-  size: DYNAMIC_HTML_CHUNK_SIZE,
-  name: 'dynamic html part',
-};
-const SCRIPT_CHUNK : AnonymizedResponseChunk = {
-  url: SCRIPT_URL,
-  size: SCRIPT_SIZE,
-  name: '',
-  done: true,
-  cacheHeader: true,
-};
-const SCRIPT_WITH_DATA_LOADING_CHUNK : AnonymizedResponseChunk = {
-  url: SCRIPT_URL,
-  size: SCRIPT_SIZE,
-  name: '',
-  done: true,
-  cacheHeader: true,
-};
-const DYNAMIC_PAGE_DATA_CHUNK : AnonymizedResponseChunk = {
-  url: DYNAMIC_PAGE_DATA_JSON_URL,
-  size: DYNAMIC_DATA_SIZE,
-  name: '',
-  done: true,
-};
+const FULL_PAGE_URL = "page (full)";
+const STATIC_PAGE_URL = "page (static)";
+const DYNAMIC_PAGE_PART_URL = "page part (dynamic)";
+const SCRIPT_URL = "script.js";
+const SCRIPT_WITH_DATA_LOADING_URL = "script-with-data-loading.js";
+const DYNAMIC_PAGE_DATA_JSON_URL = "page-dynamic-data.json";
 
 class Queue<T> {
   private stack: T[] = [];
@@ -335,7 +304,11 @@ const DB_DYNAMIC_PART_QUERY = "db-dynamic-part-query";
 export class Database implements IServer {
   requestQueue: Queue<NetworkRequest> = new Queue();
 
-  constructor(private logger: Logger, private clock: Clock) {}
+  constructor(
+    private logger: Logger,
+    private clock: Clock,
+    private config: SimulationConfig
+  ) {}
 
   onRequest(request: NetworkRequest) {
     this.requestQueue.add(request);
@@ -349,12 +322,12 @@ export class Database implements IServer {
     if (!request) {
       return;
     }
-    this.clock.schedule(QUERY_DURATION, () => {
+    this.clock.schedule(this.config.queryDuration, () => {
       request.network.sendResponse({
         requestId: request.id,
         client: request.client,
         server: this,
-        size: QUERY_RESPONSE_SIZE,
+        size: this.config.queryResponseSize,
         url: request.url,
         name: "db response",
         context: request.context,
@@ -368,7 +341,9 @@ export class Database implements IServer {
 }
 
 export class FrontendServer implements IServer, IClient {
-  private renderingQueue : Queue<NetworkRequest & {responseChunk: AnonymizedResponseChunk}> = new Queue();
+  private renderingQueue: Queue<
+    NetworkRequest & { responseChunk: AnonymizedResponseChunk }
+  > = new Queue();
   private rendering = false;
   private staticPagePartCache?: AnonymizedResponseChunk;
 
@@ -376,35 +351,111 @@ export class FrontendServer implements IServer, IClient {
     private logger: Logger,
     private clock: Clock,
     private backendNetwork: Network,
-    private database: Database
+    private database: Database,
+    private config: SimulationConfig
   ) {}
+
+  private getFullPageHeadChunk(): AnonymizedResponseChunk {
+    return {
+      url: FULL_PAGE_URL,
+      size: this.config.headSize,
+      name: "head",
+      subResources: [SCRIPT_URL],
+    };
+  }
+
+  private getStaticPageHeadChunk(): AnonymizedResponseChunk {
+    return {
+      url: FULL_PAGE_URL,
+      size: this.config.headSize,
+      name: "head",
+      subResources: [SCRIPT_WITH_DATA_LOADING_URL],
+    };
+  }
+
+  private getStaticHtmlChunk(): AnonymizedResponseChunk {
+    return {
+      url: FULL_PAGE_URL,
+      size: this.config.staticHtmlChunkSize,
+      name: "static html part",
+    };
+  }
+
+  private getDynamicHtmlChunk(): AnonymizedResponseChunk {
+    return {
+      url: FULL_PAGE_URL,
+      size: this.config.dynamicHtmlChunkSize,
+      name: "dynamic html part",
+    };
+  }
+
+  private getScriptChunk(): AnonymizedResponseChunk {
+    return {
+      url: SCRIPT_URL,
+      size: this.config.scriptSize,
+      name: "",
+      done: true,
+      cacheHeader: true,
+    };
+  }
+
+  private getScriptWithDataLoadingChunk(): AnonymizedResponseChunk {
+    return {
+      url: SCRIPT_URL,
+      size: this.config.scriptSize,
+      name: "",
+      done: true,
+      cacheHeader: true,
+    };
+  }
+
+  private getDynamicPageDataChunk(): AnonymizedResponseChunk {
+    return {
+      url: DYNAMIC_PAGE_DATA_JSON_URL,
+      size: this.config.dynamicDataSize,
+      name: "",
+      done: true,
+    };
+  }
 
   onResponse(response: NetworkResponseChunk): void {
     const clientRequest = response.context as NetworkRequest;
     switch (clientRequest.url) {
       case FULL_PAGE_URL: {
         if (response.url === DB_STATIC_PART_QUERY) {
-          this.renderingQueue.add({...clientRequest, responseChunk: STATIC_HTML_CHUNK});
+          this.renderingQueue.add({
+            ...clientRequest,
+            responseChunk: this.getStaticHtmlChunk(),
+          });
           this.processRenderingQueue();
         } else if (response.url === DB_DYNAMIC_PART_QUERY) {
-          this.renderingQueue.add({...clientRequest, responseChunk: DYNAMIC_HTML_CHUNK});
+          this.renderingQueue.add({
+            ...clientRequest,
+            responseChunk: this.getDynamicHtmlChunk(),
+          });
           this.processRenderingQueue();
         }
         break;
       }
       case STATIC_PAGE_URL: {
-        this.renderingQueue.add({...clientRequest, responseChunk: STATIC_HTML_CHUNK});
+        this.renderingQueue.add({
+          ...clientRequest,
+          responseChunk: this.getStaticHtmlChunk(),
+        });
         this.processRenderingQueue();
         break;
       }
       case DYNAMIC_PAGE_PART_URL: {
-        this.renderingQueue.add({...clientRequest, responseChunk: DYNAMIC_HTML_CHUNK});
+        this.renderingQueue.add({
+          ...clientRequest,
+          responseChunk: this.getDynamicHtmlChunk(),
+        });
         this.processRenderingQueue();
         break;
       }
       case DYNAMIC_PAGE_DATA_JSON_URL: {
         clientRequest.network.sendResponse({
-          ...DYNAMIC_PAGE_DATA_CHUNK,
+          ...this.getDynamicPageDataChunk(),
           requestId: clientRequest.id,
           client: clientRequest.client,
           server: this,
@@ -424,14 +475,19 @@ export class FrontendServer implements IServer, IClient {
       return;
     }
     this.rendering = true;
-    this.clock.schedule(RENDER_TO_HTML_DURATION, () => {
+    this.clock.schedule(this.config.renderToHtmlDuration, () => {
       request.network.sendResponse({
         ...request.responseChunk,
         requestId: request.id,
         client: request.client,
         server: this,
         context: request.context,
-        done: request.responseChunk?.done ?? !(request.url === FULL_PAGE_URL && request.responseChunk === STATIC_HTML_CHUNK),
+        done:
+          request.responseChunk?.done ??
+          !(
+            request.url === FULL_PAGE_URL &&
+            request.responseChunk.name === "static html part"
+          ),
       });
       this.renderingQueue.pop();
       this.processRenderingQueue();
@@ -439,12 +495,18 @@ export class FrontendServer implements IServer, IClient {
   }
 
   onRequest(request: NetworkRequest) {
-    const sendStaticQuery = [FULL_PAGE_URL, STATIC_PAGE_URL].includes(request.url);
-    const sendDynamicQuery = [FULL_PAGE_URL, DYNAMIC_PAGE_PART_URL, DYNAMIC_PAGE_DATA_JSON_URL].includes(request.url);
-    
+    const sendStaticQuery = [FULL_PAGE_URL, STATIC_PAGE_URL].includes(
+      request.url
+    );
+    const sendDynamicQuery = [
+      FULL_PAGE_URL,
+      DYNAMIC_PAGE_PART_URL,
+      DYNAMIC_PAGE_DATA_JSON_URL,
+    ].includes(request.url);
+
     if (request.url === FULL_PAGE_URL) {
       request.network.sendResponse({
-        ...FULL_PAGE_HEAD_CHUNK,
+        ...this.getFullPageHeadChunk(),
         requestId: request.id,
         client: request.client,
         server: this,
@@ -452,7 +514,7 @@ export class FrontendServer implements IServer, IClient {
       });
     } else if (request.url === STATIC_PAGE_URL) {
       request.network.sendResponse({
-        ...STATIC_PAGE_HEAD_CHUNK,
+        ...this.getStaticPageHeadChunk(),
         requestId: request.id,
         client: request.client,
         server: this,
@@ -463,7 +525,7 @@ export class FrontendServer implements IServer, IClient {
     if (sendStaticQuery) {
       if (!this.staticPagePartCache) {
         this.backendNetwork.sendRequest({
-          size: REQUEST_SIZE,
+          size: this.config.requestSize,
           url: DB_STATIC_PART_QUERY,
           client: this,
           server: this.database,
@@ -472,7 +534,7 @@ export class FrontendServer implements IServer, IClient {
         });
       } else {
         request.network.sendResponse({
-          ...STATIC_HTML_CHUNK,
+          ...this.getStaticHtmlChunk(),
           requestId: request.id,
           client: request.client,
           server: this,
@@ -483,7 +545,7 @@ export class FrontendServer implements IServer, IClient {
     }
     if (sendDynamicQuery) {
       this.backendNetwork.sendRequest({
-        size: REQUEST_SIZE,
+        size: this.config.requestSize,
         url: DB_DYNAMIC_PART_QUERY,
         client: this,
         server: this.database,
@@ -494,7 +556,7 @@ export class FrontendServer implements IServer, IClient {
 
     if (request.url === SCRIPT_URL) {
       request.network.sendResponse({
-        ...SCRIPT_CHUNK,
+        ...this.getScriptChunk(),
         requestId: request.id,
         client: request.client,
         server: this,
@@ -502,7 +564,7 @@ export class FrontendServer implements IServer, IClient {
       });
     } else if (request.url === SCRIPT_WITH_DATA_LOADING_URL) {
       request.network.sendResponse({
-        ...SCRIPT_WITH_DATA_LOADING_CHUNK,
+        ...this.getScriptWithDataLoadingChunk(),
         requestId: request.id,
         client: request.client,
         server: this,
@@ -518,6 +580,7 @@ export class Edge implements IServer, IClient {
     private clock: Clock,
     private originNetwork: Network,
     private origin: IServer,
+    private config: SimulationConfig,
     private cache = new Map<string, AnonymizedResponseChunk[]>()
   ) {}
 
@@ -541,14 +604,17 @@ export class Edge implements IServer, IClient {
       client: this,
       server: this.origin,
       url: request.url,
-      size: 2000,
-      context: request
+      size: this.config.headSize,
+      context: request,
     });
   }
 
   onResponse(response: NetworkResponseChunk) {
     if (response.cacheHeader) {
-      if (!this.inProgressCacheEntries.has(response.url) && !this.cache.get(response.url)) {
+      if (
+        !this.inProgressCacheEntries.has(response.url) &&
+        !this.cache.get(response.url)
+      ) {
         this.inProgressCacheEntries.set(response.url, [response]);
       }
     }
@@ -557,10 +623,16 @@ export class Edge implements IServer, IClient {
     // Add to chunks
     if (this.inProgressCacheEntries.has(response.url)) {
       const chunks = this.inProgressCacheEntries.get(response.url)!;
-      if ((chunks[0].context as NetworkRequest).id === originalRequest.id && response !== chunks[0]) {
+      if (
+        (chunks[0].context as NetworkRequest).id === originalRequest.id &&
+        response !== chunks[0]
+      ) {
         chunks.push(response);
         if (response.done) {
-          this.cache.set(response.url, chunks.map(({ client, server, network, ...c }) => c));
+          this.cache.set(
+            response.url,
+            chunks.map(({ client, server, network, ...c }) => c)
+          );
           this.inProgressCacheEntries.delete(response.url);
         }
       }
@@ -577,37 +649,39 @@ export class Edge implements IServer, IClient {
 }
 
 export class Network {
-
   inFlightRequests: {
-    request: Omit<NetworkRequest, 'network'>,
-    bytesLeft: number,
-    start: number,
+    request: Omit<NetworkRequest, "network">;
+    bytesLeft: number;
+    start: number;
   }[] = [];
-  inFlightResponses: Map<number, {
-    chunk: Omit<NetworkResponseChunk, 'network'>,
-    bytesLeft: number,
-    start: number,
-  }[]> = new Map();
-  
+  inFlightResponses: Map<
+    number,
+    {
+      chunk: Omit<NetworkResponseChunk, "network">;
+      bytesLeft: number;
+      start: number;
+    }[]
+  > = new Map();
+
   upLinkBandwidthLeft = 0;
   downLinkBandwidthLeft = 0;
-  
+
   constructor(
     private logger: Logger,
     private clock: Clock,
     private latency: number,
-    private upLinkBandwidth: number,// Bytes per millisecond (KB/s)
-    private downLinkBandwidth: number,// Bytes per millisecond (KB/s)
+    private upLinkBandwidth: number, // Bytes per millisecond (KB/s)
+    private downLinkBandwidth: number // Bytes per millisecond (KB/s)
   ) {}
 
-  sendRequest(request: Omit<NetworkRequest, 'network'>) {
+  sendRequest(request: Omit<NetworkRequest, "network">) {
     this.clock.schedule(this.latency, () => {
       this.logger.push({
         type: "Request latency",
         message: request.url,
         start: this.clock.time - this.latency,
         end: this.clock.time,
-        actor: "Network"
+        actor: "Network",
       });
       this.inFlightRequests.push({
         request,
@@ -617,22 +691,23 @@ export class Network {
     });
   }
 
-  sendResponse(response: Omit<NetworkResponseChunk, 'network'>) {
+  sendResponse(response: Omit<NetworkResponseChunk, "network">) {
     this.clock.schedule(this.latency, () => {
       this.logger.push({
         type: "Response latency",
         message: response.url,
         start: this.clock.time - this.latency,
         end: this.clock.time,
-        actor: "Network"
+        actor: "Network",
       });
       const existing = this.inFlightResponses.get(response.requestId);
       this.inFlightResponses.set(response.requestId, [
-        ...existing ?? [], {
+        ...(existing ?? []),
+        {
           chunk: response,
           start: this.clock.time,
           bytesLeft: response.size,
-        }
+        },
       ]);
     });
   }
@@ -640,8 +715,9 @@ export class Network {
   processRequests() {
     this.upLinkBandwidthLeft = this.upLinkBandwidth;
     while (this.upLinkBandwidthLeft && this.inFlightRequests.length) {
-      let bandwidthPart = this.upLinkBandwidthLeft / this.inFlightRequests.length;
-      const deliveredRequests: Omit<NetworkRequest, 'network'>[] = [];
+      let bandwidthPart =
+        this.upLinkBandwidthLeft / this.inFlightRequests.length;
+      const deliveredRequests: Omit<NetworkRequest, "network">[] = [];
       for (const request of this.inFlightRequests) {
         const bandwidthUsed = Math.min(request.bytesLeft, bandwidthPart);
         request.bytesLeft -= bandwidthUsed;
@@ -652,7 +728,7 @@ export class Network {
             message: request.request.url,
             start: request.start,
             end: this.clock.time,
-            actor: "Network"
+            actor: "Network",
           });
           deliveredRequests.push(request.request);
         }
@@ -663,7 +739,9 @@ export class Network {
           network: this,
         });
       }
-      this.inFlightRequests = this.inFlightRequests.filter(({request}) => !deliveredRequests.includes(request));
+      this.inFlightRequests = this.inFlightRequests.filter(
+        ({ request }) => !deliveredRequests.includes(request)
+      );
     }
     this.clock.schedule(1, () => this.processRequests());
   }
@@ -671,8 +749,9 @@ export class Network {
   processResponses() {
     this.downLinkBandwidthLeft = this.downLinkBandwidth;
     while (this.downLinkBandwidthLeft && this.inFlightResponses.size) {
-      let bandwidthPart = this.downLinkBandwidthLeft / this.inFlightResponses.size;
-      const deliveredChunks: Omit<NetworkResponseChunk, 'network'>[] = [];
+      let bandwidthPart =
+        this.downLinkBandwidthLeft / this.inFlightResponses.size;
+      const deliveredChunks: Omit<NetworkResponseChunk, "network">[] = [];
       for (const [, chunks] of this.inFlightResponses) {
         for (
           let bandwidthToUse = Math.min(chunks[0].bytesLeft, bandwidthPart);
@@ -687,7 +766,7 @@ export class Network {
               message: chunks[0].chunk.url,
               start: chunks[0].start,
               end: this.clock.time,
-              actor: "Network"
+              actor: "Network",
             });
             deliveredChunks.push(chunks[0].chunk);
             chunks.splice(0, 1);
