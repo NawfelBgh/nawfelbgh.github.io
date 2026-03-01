@@ -17,7 +17,7 @@ export const GET: APIRoute = ({ params }) => {
   const rightPaddings : Record<string, number> = {
     "diagram": 75,
   }
-  const rightPadding = rightPaddings[simulationId as string] ?? 0;
+  const rightPadding = rightPaddings[simulationId as string] ?? 50;
 
   return new Response(
     renderToSvg({logs, slideMode: false, rightPadding}), {

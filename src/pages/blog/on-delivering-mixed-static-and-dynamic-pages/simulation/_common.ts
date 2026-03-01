@@ -126,7 +126,7 @@ export interface SimulationConfig {
 }
 
 export class Client implements IClient {
-  name = 'Client';
+  name = "Client";
   private processingQueue: Queue<AnonymizedResponseChunk> = new Queue();
   private busy = false;
   private renderedStaticPart = false;
@@ -209,6 +209,27 @@ export class Client implements IClient {
     this.processQueue();
   }
 
+  finalizeProcessingStep() {
+    if (
+      this.ranScript &&
+      this.renderedDynamicPart &&
+      this.renderedStaticPart
+    ) {
+      const doneEvent: SimulationEvent = {
+        type: "Done",
+        object: "navigation",
+        start: this.clock.time,
+        end: this.clock.time,
+        actor: this.name,
+      };
+      this.logger.push(doneEvent);
+      this.onFinish?.();
+    }
+    this.processingQueue.pop();
+    this.busy = false;
+    this.processQueue();
+  }
+
   processQueue() {
     if (this.busy) {
       return;
@@ -218,97 +239,102 @@ export class Client implements IClient {
       return;
     }
     this.busy = true;
-    const processingTime = responseChunk.part && ["static html part", "dynamic html part"].includes(
-      responseChunk.part
-    )
-      ? this.config.renderFromHtmlDuration
-      : SCRIPT_URL === responseChunk.url ||
-          (SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url &&
-            !this.loadedDynamicPart)
-        ? this.config.executeJsDuration
-        : SCRIPT_WITH_DATA_LOADING_URL === responseChunk.url &&
-            this.loadedDynamicPart
-          ? this.config.executeJsDuration + this.config.renderFromJsonDuration
-          : responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL && this.ranScript
-            ? this.config.renderFromJsonDuration
-            : 0;
-    const start = this.clock.time;
-    this.clock.schedule(processingTime, () => {
-      if (
-        responseChunk.part && ["static html part", "dynamic html part"].includes(responseChunk.part)
-      ) {
-        this.logger.push({
-          type: "Layout",
-          object: responseChunk.url,
-          part: responseChunk.part,
-          start,
-          end: this.clock.time,
-          actor: this.name,
-        });
+    if (responseChunk.part && ["static html part", "dynamic html part"].includes(responseChunk.part)) {
+      const event: SimulationEvent = {
+        type: "Layout",
+        object: responseChunk.url,
+        part: responseChunk.part,
+        start: this.clock.time,
+        end: -1,
+        actor: this.name,
+      };
+      this.logger.push(event);
+      this.clock.schedule(this.config.renderFromHtmlDuration, () => {
+        event.end = this.clock.time;
         if (responseChunk.part == "static html part") {
           this.renderedStaticPart = true;
         } else {
           this.renderedDynamicPart = true;
         }
-      } else if (responseChunk.url === SCRIPT_URL) {
+        this.finalizeProcessingStep();
+      });
+    } else if (responseChunk.url === SCRIPT_URL) {
+      const event: SimulationEvent = {
+        type: "Execute JS",
+        object: responseChunk.url,
+        part: responseChunk.part,
+        start: this.clock.time,
+        end: -1,
+        actor: this.name,
+      };
+      this.logger.push(event);
+      this.clock.schedule(this.config.executeJsDuration, () => {
+        event.end = this.clock.time;
         this.ranScript = true;
-        this.logger.push({
-          type: "Execute JS",
-          object: responseChunk.url,
-          part: responseChunk.part,
-          start,
-          end: this.clock.time,
-          actor: this.name,
-        });
-      } else if (responseChunk.url === SCRIPT_WITH_DATA_LOADING_URL) {
+        this.finalizeProcessingStep();
+      });
+    } else if (responseChunk.url === SCRIPT_WITH_DATA_LOADING_URL) {
+      const event: SimulationEvent = {
+        type: "Execute JS",
+        object: responseChunk.url,
+        part: responseChunk.part,
+        start: this.clock.time,
+        end: -1,
+        actor: this.name,
+      };
+      this.logger.push(event);
+      this.clock.schedule(this.config.executeJsDuration, () => {
+        event.end = this.clock.time;
         this.ranScript = true;
-        this.logger.push({
-          type: "Execute JS",
-          object: responseChunk.url,
-          start: start,
-          end: start + this.config.executeJsDuration,
-          actor: this.name,
-        });
         if (this.loadedDynamicPart) {
-          this.logger.push({
+          const layoutEvent: SimulationEvent = {
             type: "Layout",
             object: responseChunk.url,
-            start: start + this.config.executeJsDuration,
-            end: this.clock.time,
+            start: this.clock.time,
+            end: -1,
             actor: this.name,
+          };
+          this.logger.push(layoutEvent);
+          this.clock.schedule(this.config.renderFromJsonDuration, () => {
+            layoutEvent.end = this.clock.time;
+            this.renderedDynamicPart = true;
+            this.finalizeProcessingStep();
           });
-          this.renderedDynamicPart = true;
-        } else if (!this.loadingDynamicPart) {
-          this.network.sendRequest({
-            client: this,
-            server: this.server,
-            size: this.config.requestSize,
-            url: DYNAMIC_PAGE_DATA_JSON_URL,
-            id: makeRequestId(),
-          });
+        } else {
+          if (!this.loadingDynamicPart) {
+            this.network.sendRequest({
+              client: this,
+              server: this.server,
+              size: this.config.requestSize,
+              url: DYNAMIC_PAGE_DATA_JSON_URL,
+              id: makeRequestId(),
+            });
+          }
+          this.finalizeProcessingStep();
         }
-      } else if (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL) {
-        this.loadedDynamicPart = true;
-      }
-
-      if (
-        this.ranScript &&
-        this.renderedDynamicPart &&
-        this.renderedStaticPart
-      ) {
-        this.logger.push({
-          type: "Done",
-          object: 'navigation',
+      });
+    } else if (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL) {
+      this.loadedDynamicPart = true;
+      if (this.ranScript) {
+        const layoutEvent: SimulationEvent = {
+          type: "Layout",
+          object: responseChunk.url,
           start: this.clock.time,
-          end: this.clock.time,
+          end: -1,
           actor: this.name,
+        };
+        this.logger.push(layoutEvent);
+        this.clock.schedule(this.config.renderFromJsonDuration, () => {
+          layoutEvent.end = this.clock.time;
+          this.renderedDynamicPart = true;
+          this.finalizeProcessingStep();
         });
-        this.onFinish?.();
+      } else {
+        this.finalizeProcessingStep();
       }
-      this.processingQueue.pop();
-      this.busy = false;
-      this.processQueue();
-    });
+    } else {
+      this.finalizeProcessingStep();
+    }
   }
 }
 
@@ -373,15 +399,16 @@ export class Database implements IServer {
     if (!request) {
       return;
     }
-    const start = this.clock.time;
+    const event: SimulationEvent = {
+      type: "DB processing",
+      object: request.url,
+      start: this.clock.time,
+      end: -1,
+      actor: this.name,
+    };
+    this.logger.push(event);
     this.clock.schedule(this.config.queryDuration, () => {
-      this.logger.push({
-        type: "DB processing",
-        object: request.url,
-        start,
-        end: this.clock.time,
-        actor: this.name,
-      });
+      event.end = this.clock.time;
       request.network.sendResponse({
         requestId: request.id,
         client: request.client,
@@ -399,7 +426,7 @@ export class Database implements IServer {
 }
 
 export class FrontendServer implements IServer, IClient {
-  name = 'Server';
+  name = "Server";
   private renderingQueue: Queue<
     NetworkRequest & { responseChunk: AnonymizedResponseChunk }
   > = new Queue();
@@ -531,16 +558,19 @@ export class FrontendServer implements IServer, IClient {
       return;
     }
     this.rendering = true;
+    const start = this.clock.time;
+    const event: SimulationEvent = {
+      type: "SSR",
+      object: request.url,
+      part: request.responseChunk.part,
+      start,
+      end: -1,
+      actor: this.name,
+    };
+    this.logger.push(event);
     this.clock.schedule(this.config.renderToHtmlDuration, () => {
       this.rendering = false;
-      this.logger.push({
-        type: "SSR",
-        object: request.url,
-        part: request.responseChunk.part,
-        start: this.clock.time - this.config.renderToHtmlDuration,
-        end: this.clock.time,
-        actor: this.name,
-      });
+      event.end = this.clock.time;
       request.network.sendResponse({
         ...request.responseChunk,
         requestId: request.id,
@@ -640,7 +670,7 @@ export class FrontendServer implements IServer, IClient {
 }
 
 export class Edge implements IServer, IClient {
-  name = 'Edge';
+  name = "Edge";
   constructor(
     private logger: Logger,
     private clock: Clock,
@@ -718,14 +748,14 @@ export class Network {
   inFlightRequests: {
     request: Omit<NetworkRequest, "network">;
     bytesLeft: number;
-    start: number;
+    event: SimulationEvent;
   }[] = [];
   inFlightResponses: Map<
     number,
     {
       chunk: Omit<NetworkResponseChunk, "network">;
       bytesLeft: number;
-      start: number;
+      event: SimulationEvent;
     }[]
   > = new Map();
 
@@ -740,39 +770,60 @@ export class Network {
   ) {}
 
   sendRequest(request: Omit<NetworkRequest, "network">) {
+    const latencyEvent: SimulationEvent = {
+      type: "Request latency",
+      object: request.url,
+      start: this.clock.time,
+      end: -1,
+      actor: request.client.name,
+    };
+    this.logger.push(latencyEvent);
     this.clock.schedule(this.latency, () => {
-      this.logger.push({
-        type: "Request latency",
+      latencyEvent.end = this.clock.time;
+      const transferEvent: SimulationEvent = {
+        type: "Request transfer",
         object: request.url,
-        start: this.clock.time - this.latency,
-        end: this.clock.time,
-        actor: request.client.name,// "Network",
-      });
+        start: this.clock.time,
+        end: -1,
+        actor: request.client.name,
+      };
+      this.logger.push(transferEvent);
       this.inFlightRequests.push({
         request,
-        start: this.clock.time,
         bytesLeft: request.size,
+        event: transferEvent,
       });
     });
   }
 
   sendResponse(response: Omit<NetworkResponseChunk, "network">) {
+    const start = this.clock.time;
+    const latencyEvent: SimulationEvent = {
+      type: "Response latency",
+      object: response.url,
+      part: response.part,
+      start,
+      end: -1,
+      actor: response.server.name,
+    };
+    this.logger.push(latencyEvent);
     this.clock.schedule(this.latency, () => {
-      this.logger.push({
-        type: "Response latency",
+      latencyEvent.end = this.clock.time;
+      const transferEvent: SimulationEvent = {
+        type: "Response transfer",
         object: response.url,
         part: response.part,
-        start: this.clock.time - this.latency,
-        end: this.clock.time,
-        actor: response.server.name, //"Network",
-      });
+        start: -1,
+        end: -1,
+        actor: response.server.name,
+      };
       const existing = this.inFlightResponses.get(response.requestId);
       this.inFlightResponses.set(response.requestId, [
         ...(existing ?? []),
         {
           chunk: response,
-          start: this.clock.time,
           bytesLeft: response.size,
+          event: transferEvent,
         },
       ]);
     });
@@ -789,13 +840,7 @@ export class Network {
         request.bytesLeft -= bandwidthUsed;
         this.upLinkBandwidthLeft -= bandwidthUsed;
         if (request.bytesLeft === 0) {
-          this.logger.push({
-            type: "Request transfer",
-            object: request.request.url,
-            start: request.start,
-            end: this.clock.time,
-            actor: request.request.client.name, //"Network",
-          });
+          request.event.end = this.clock.time;
           deliveredRequests.push(request.request);
         }
       }
@@ -815,28 +860,21 @@ export class Network {
   processResponses() {
     let downLinkBandwidthLeft = this.downLinkBandwidth;
     while (downLinkBandwidthLeft && this.inFlightResponses.size) {
-      let bandwidthPart =
-        downLinkBandwidthLeft / this.inFlightResponses.size;
+      let bandwidthPart = downLinkBandwidthLeft / this.inFlightResponses.size;
       const deliveredChunks: Omit<NetworkResponseChunk, "network">[] = [];
       for (const [, chunks] of this.inFlightResponses) {
         while (downLinkBandwidthLeft > 0 && chunks.length > 0) {
-          const bandwidthToUse = Math.min(chunks[0].bytesLeft, bandwidthPart)
+          if (chunks[0].event.start === -1) {
+            chunks[0].event.start = this.clock.time;
+            this.logger.push(chunks[0].event);
+          }
+          const bandwidthToUse = Math.min(chunks[0].bytesLeft, bandwidthPart);
           chunks[0].bytesLeft -= bandwidthToUse;
           downLinkBandwidthLeft -= bandwidthToUse;
           if (chunks[0].bytesLeft === 0) {
-            this.logger.push({
-              type: "Response transfer",
-              object: chunks[0].chunk.url,
-              part: chunks[0].chunk.part,
-              start: chunks[0].start,
-              end: this.clock.time,
-              actor: chunks[0].chunk.client.name, //"Network",
-            });
+            chunks[0].event.end = this.clock.time;
             deliveredChunks.push(chunks[0].chunk);
             chunks.splice(0, 1);
-            if (chunks.length) {
-              chunks[0].start = this.clock.time;
-            }
           }
         }
       }
