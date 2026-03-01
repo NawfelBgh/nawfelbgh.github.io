@@ -29,6 +29,11 @@ export class Clock {
   stop() {
     this.isStopped = true;
   }
+
+  reset() {
+    this.callbacks.clear();
+    this.time = 0;
+  }
 }
 
 export interface SimulationEvent {
@@ -181,8 +186,14 @@ export class Client implements IClient {
   }
 
   navigate(url: string, onFinish: () => void) {
-    this.sendRequest(url);
+    this.renderedStaticPart = false;
+    this.renderedDynamicPart = false;
+    this.ranScript = false;
+    this.loadingDynamicPart = false;
+    this.loadedDynamicPart = false;
     this.onFinish = onFinish;
+    
+    this.sendRequest(url);
   }
 
   onResponse(response: NetworkResponseChunk) {
