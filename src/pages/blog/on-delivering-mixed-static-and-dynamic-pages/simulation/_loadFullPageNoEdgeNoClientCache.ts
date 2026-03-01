@@ -38,7 +38,7 @@ export default function main(): Logger {
     config
   );
 
-  const clientToServerNetwork = new Network(logger, clock, 200, 25_000, 25_000);
+  const clientToServerNetwork = new Network(logger, clock, 200, 2500, 2500);
   const client = new Client(
     logger,
     clock,
