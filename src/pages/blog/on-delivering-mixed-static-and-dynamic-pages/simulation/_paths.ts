@@ -1,28 +1,18 @@
-//import type { Log } from "./_common.ts";
+import type { Logger } from "./_common.ts";
+import loadFullPageNoEdgeNoClientCache from "./_loadFullPageNoEdgeNoClientCache";
 
 export const STATIC_PATHS = [
-  { params: { diagramId: "streaming-from-server" } },
-  { params: { diagramId: "streaming-from-edge" } },
-  { params: { diagramId: "no-optimization" } },
-  { params: { diagramId: "preloading" } },
-  { params: { diagramId: "caching" } },
-  { params: { diagramId: "preloading+caching" } },
+  { params: { simulationId: "loadFullPageNoEdgeNoClientCache" } },
 ];
 
-export function getModule(diagramId: string): {
-  module: { main: (...args: boolean[]) => /*Log*/[] };
-  args: boolean[];
+export function getModule(simulationId: string): {
+  module: () => Logger;
 } {
-  if (diagramId.startsWith("preload-")) {
+  if (simulationId === "loadFullPageNoEdgeNoClientCache") {
     return {
-      module: { main: () => [] },
-      args: [
-        diagramId.endsWith("early-hints"),
-        diagramId.endsWith("link-header"),
-        diagramId.endsWith("link-tag"),
-      ],
+      module: loadFullPageNoEdgeNoClientCache,
     };
   }
 
-  throw new Error("Unknown diagramId");
+  throw new Error("Unknown simulationId");
 }

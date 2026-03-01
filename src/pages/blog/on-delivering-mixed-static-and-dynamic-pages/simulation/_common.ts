@@ -31,9 +31,10 @@ export class Clock {
   }
 }
 
-export interface Event {
+export interface SimulationEvent {
   type: string;
-  message: string;
+  object: string;
+  part: string | null;
   start: number;
   end: number;
   actor: string;
@@ -73,11 +74,21 @@ export type AnonymizedResponseChunk = Omit<
   "network" | "client" | "server" | "requestId"
 >;
 
-export type Logger = Array<Event>;
+export type Logger = Array<SimulationEvent>;
+
+export class ConsoleLogger extends Array<SimulationEvent> {
+  push(...xs: SimulationEvent[]): number {
+    super.push(...xs);
+    for (const x of xs) {
+      console.log(x);
+    }
+    return xs.length;
+  }
+}
 
 // TODO refine this
-export class DoneLogger extends Array<Event> {
-  push(...items: Event[]): number {
+export class DoneLogger extends Array<SimulationEvent> {
+  push(...items: SimulationEvent[]): number {
     let count = 0;
     for (const i of items) {
       if ("done" in i && !!i.done) {
@@ -225,7 +236,8 @@ export class Client implements IClient {
       ) {
         this.logger.push({
           type: "Layout",
-          message: "Render " + responseChunk.name,
+          object: responseChunk.url,
+          part: responseChunk.name,
           start,
           end: this.clock.time,
           actor: "Client",
@@ -239,7 +251,8 @@ export class Client implements IClient {
         this.ranScript = true;
         this.logger.push({
           type: "Execute JS",
-          message: "Execute " + responseChunk.url,
+          object: responseChunk.url,
+          part: null,
           start,
           end: this.clock.time,
           actor: "Client",
@@ -248,7 +261,8 @@ export class Client implements IClient {
         this.ranScript = true;
         this.logger.push({
           type: "Execute JS",
-          message: "Execute " + responseChunk.url,
+          object: responseChunk.url,
+          part: null,
           start: start,
           end: start + this.config.executeJsDuration,
           actor: "Client",
@@ -256,7 +270,8 @@ export class Client implements IClient {
         if (this.loadedDynamicPart) {
           this.logger.push({
             type: "Layout",
-            message: "Render " + responseChunk.url,
+            object: responseChunk.url,
+            part: null,
             start: start + this.config.executeJsDuration,
             end: this.clock.time,
             actor: "Client",
@@ -282,7 +297,8 @@ export class Client implements IClient {
       ) {
         this.logger.push({
           type: "Done",
-          message: "Done navigating",
+          object: 'navigation',
+          part: null,
           start: this.clock.time,
           end: this.clock.time,
           actor: "Client",
@@ -296,8 +312,8 @@ export class Client implements IClient {
   }
 }
 
-const FULL_PAGE_URL = "page (full)";
-const STATIC_PAGE_URL = "page (static)";
+export const FULL_PAGE_URL = "page (full)";
+export const STATIC_PAGE_URL = "page (static)";
 const DYNAMIC_PAGE_PART_URL = "page part (dynamic)";
 const SCRIPT_URL = "script.js";
 const SCRIPT_WITH_DATA_LOADING_URL = "script-with-data-loading.js";
@@ -317,11 +333,11 @@ class Queue<T> {
 
   peek(): T | undefined {
     if (!this.queue.length) {
-      if (this.stack.length) {
-        this.queue = this.stack.reverse();
-        this.stack = [];
+      if (!this.stack.length) {
+        return undefined;
       }
-      return undefined;
+      this.queue = this.stack.reverse();
+      this.stack = [];
     }
     return this.queue[this.queue.length - 1];
   }
@@ -356,14 +372,23 @@ export class Database implements IServer {
     if (!request) {
       return;
     }
+    const start = this.clock.time;
     this.clock.schedule(this.config.queryDuration, () => {
+      this.logger.push({
+        type: "DB processing",
+        object: request.url,
+        part: null,
+        start,
+        end: this.clock.time,
+        actor: "Database",
+      });
       request.network.sendResponse({
         requestId: request.id,
         client: request.client,
         server: this,
         size: this.config.queryResponseSize,
         url: request.url,
-        name: "db response",
+        name: "response",
         context: request.context,
       });
       this.requestQueue.pop();
@@ -427,7 +452,7 @@ export class FrontendServer implements IServer, IClient {
     return {
       url: SCRIPT_URL,
       size: this.config.scriptSize,
-      name: "",
+      name: "full",
       done: true,
       cacheHeader: true,
     };
@@ -437,7 +462,7 @@ export class FrontendServer implements IServer, IClient {
     return {
       url: SCRIPT_URL,
       size: this.config.scriptSize,
-      name: "",
+      name: "full",
       done: true,
       cacheHeader: true,
     };
@@ -447,7 +472,7 @@ export class FrontendServer implements IServer, IClient {
     return {
       url: DYNAMIC_PAGE_DATA_JSON_URL,
       size: this.config.dynamicDataSize,
-      name: "",
+      name: "full",
       done: true,
     };
   }
@@ -510,6 +535,7 @@ export class FrontendServer implements IServer, IClient {
     }
     this.rendering = true;
     this.clock.schedule(this.config.renderToHtmlDuration, () => {
+      this.rendering = false;
       request.network.sendResponse({
         ...request.responseChunk,
         requestId: request.id,
@@ -712,7 +738,8 @@ export class Network {
     this.clock.schedule(this.latency, () => {
       this.logger.push({
         type: "Request latency",
-        message: request.url,
+        object: request.url,
+        part: null,
         start: this.clock.time - this.latency,
         end: this.clock.time,
         actor: "Network",
@@ -729,7 +756,8 @@ export class Network {
     this.clock.schedule(this.latency, () => {
       this.logger.push({
         type: "Response latency",
-        message: response.url,
+        object: response.url,
+        part: response.name,
         start: this.clock.time - this.latency,
         end: this.clock.time,
         actor: "Network",
@@ -759,7 +787,8 @@ export class Network {
         if (request.bytesLeft === 0) {
           this.logger.push({
             type: "Request transfer",
-            message: request.request.url,
+            object: request.request.url,
+            part: null,
             start: request.start,
             end: this.clock.time,
             actor: "Network",
@@ -789,15 +818,16 @@ export class Network {
       for (const [, chunks] of this.inFlightResponses) {
         for (
           let bandwidthToUse = Math.min(chunks[0].bytesLeft, bandwidthPart);
-          bandwidthToUse > 0;
-          bandwidthToUse = Math.min(chunks[0].bytesLeft, bandwidthToUse)
+          bandwidthToUse > 0 && chunks.length > 0;
+          bandwidthToUse = Math.min(chunks[0]?.bytesLeft ?? 0, bandwidthToUse)
         ) {
           chunks[0].bytesLeft -= bandwidthToUse;
           this.downLinkBandwidthLeft -= bandwidthToUse;
           if (chunks[0].bytesLeft === 0) {
             this.logger.push({
               type: "Response transfer",
-              message: chunks[0].chunk.url,
+              object: chunks[0].chunk.url,
+              part: chunks[0].chunk.name,
               start: chunks[0].start,
               end: this.clock.time,
               actor: "Network",
