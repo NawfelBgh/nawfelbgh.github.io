@@ -129,6 +129,7 @@ export interface SimulationConfig {
   scriptSize: number;
   dynamicDataSize: number;
   preload?: boolean;
+  serverSideCache?: boolean;
 }
 
 export class Client implements IClient {
@@ -265,7 +266,7 @@ export class Client implements IClient {
       this.logger.push(event);
       this.clock.schedule(this.config.renderFromHtmlDuration, () => {
         event.end = this.clock.time;
-        if (responseChunk.part == "static html part") {
+        if (responseChunk.part === "static html part") {
           this.renderedStaticPart = true;
         } else {
           this.renderedDynamicPart = true;
@@ -449,7 +450,7 @@ export class FrontendServer implements IServer, IClient {
     NetworkRequest & { responseChunk: AnonymizedResponseChunk }
   > = new Queue();
   private rendering = false;
-  private staticPagePartCache?: AnonymizedResponseChunk;
+  private staticHTMLPartCached = false;
 
   constructor(
     private logger: Logger,
@@ -602,13 +603,10 @@ export class FrontendServer implements IServer, IClient {
         client: request.client,
         server: this,
         context: request.context,
-        done:
-          request.responseChunk?.done ??
-          !(
-            request.url === FULL_PAGE_URL &&
-            request.responseChunk.part === "static html part"
-          ),
       });
+      if (request.responseChunk.part === "static html part") {
+        this.staticHTMLPartCached = true;
+      }
       this.renderingQueue.pop();
       this.processRenderingQueue();
     });
@@ -643,8 +641,15 @@ export class FrontendServer implements IServer, IClient {
       });
     }
     if (sendStaticQuery) {
-      // TODO shall we implement caching in the server side too
-      if (!this.staticPagePartCache) {
+      if (this.config.serverSideCache && this.staticHTMLPartCached) {
+        request.network.sendResponse({
+          ...this.getStaticHtmlChunk(request.url),
+          requestId: request.id,
+          client: request.client,
+          server: this,
+          context: request.context,
+        });
+      } else {
         this.backendNetwork.sendRequest({
           size: this.config.requestSize,
           url: DB_STATIC_PART_QUERY,
@@ -652,15 +657,6 @@ export class FrontendServer implements IServer, IClient {
           server: this.database,
           id: makeRequestId(),
           context: request,
-        });
-      } else {
-        request.network.sendResponse({
-          ...this.getStaticHtmlChunk(request.url),
-          requestId: request.id,
-          client: request.client,
-          server: this,
-          context: request.context,
-          done: request.url === STATIC_PAGE_URL,
         });
       }
     }
@@ -692,6 +688,10 @@ export class FrontendServer implements IServer, IClient {
         context: request.context,
       });
     }
+  }
+
+  clearCache() {
+    this.staticHTMLPartCached = false;
   }
 }
 
