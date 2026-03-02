@@ -357,11 +357,11 @@ export class Client implements IClient {
   }
 }
 
-export const FULL_PAGE_URL = "page (full)";
-export const STATIC_PAGE_URL = "page (static)";
-const DYNAMIC_PAGE_PART_URL = "page part (dynamic)";
+export const FULL_PAGE_URL = "full-page";
+export const STATIC_PAGE_URL = "cacheable-page";
+const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 const SCRIPT_URL = "script.js";
-const SCRIPT_WITH_DATA_LOADING_URL = "script-with-data-loading.js";
+const SCRIPT_WITH_DATA_LOADING_URL = "script-with-loader.js";
 const DYNAMIC_PAGE_DATA_JSON_URL = "page-dynamic-data.json";
 
 class Queue<T> {

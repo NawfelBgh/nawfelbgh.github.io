@@ -1,70 +1,46 @@
-import type { Logger } from "./_common.ts";
-import loadFullPageNoEdgeNoClientCache from "./_loadFullPageNoEdgeNoClientCache";
-import loadFullPageNoEdgeWithClientCache from "./_loadFullPageNoEdgeWithClientCache";
-import loadFullPageWithEdgeNoClientCache from "./_loadFullPageWithEdgeNoClientCache";
+import { FULL_PAGE_URL, STATIC_PAGE_URL, type Logger } from "./_common.ts";
+import simulation, { type SimulationArgs } from "./_simulationModule.ts";
 
-import loadSplitPageNoPreloadNoEdgeNoClientCache from "./_loadSplitPageNoPreloadNoEdgeNoClientCache.ts";
-import loadSplitPageNoPreloadNoEdgeWithClientCache from "./_loadSplitPageNoPreloadNoEdgeWithClientCache.ts";
-import loadSplitPageNoPreloadWithEdgeNoClientCache from "./_loadSplitPageNoPreloadWithEdgeNoClientCache.ts";
+export const STATIC_PATHS: { params: Record<keyof SimulationArgs, string> }[] = [];
 
-import loadSplitPageWithPreloadNoEdgeNoClientCache from "./_loadSplitPageWithPreloadNoEdgeNoClientCache.ts";
-import loadSplitPageWithPreloadNoEdgeWithClientCache from "./_loadSplitPageWithPreloadNoEdgeWithClientCache.ts";
-import loadSplitPageWithPreloadWithEdgeNoClientCache from "./_loadSplitPageWithPreloadWithEdgeNoClientCache.ts";
+for (const serverCache of [false, true]) {
+  for (const preload of [false, true]) {
+    for (const edge of [false, true]) {
+      for (const warmUp of [false, true]) {
+        for (const noClientCache of [false, true]) {
+          for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL]) {
+            STATIC_PATHS.push({
+              params: {
+                serverCache: serverCache + '',
+                preload: preload + '',
+                edge: edge + '',
+                warmUp: warmUp + '',
+                noClientCache: noClientCache + '',
+                url,
+              }
+            });
+          } 
+        }
+      } 
+    }
+  } 
+}
 
-export const STATIC_PATHS = [
-  { params: { simulationId: "loadFullPageNoEdgeNoClientCache" } },
-  { params: { simulationId: "loadFullPageNoEdgeWithClientCache" } },
-  { params: { simulationId: "loadFullPageWithEdgeNoClientCache" } },
-
-  { params: { simulationId: "loadSplitPageNoPreloadNoEdgeNoClientCache" } },
-  { params: { simulationId: "loadSplitPageNoPreloadNoEdgeWithClientCache" } },
-  { params: { simulationId: "loadSplitPageNoPreloadWithEdgeNoClientCache" } },
-
-  { params: { simulationId: "loadSplitPageWithPreloadNoEdgeNoClientCache" } },
-  { params: { simulationId: "loadSplitPageWithPreloadNoEdgeWithClientCache" } },
-  { params: { simulationId: "loadSplitPageWithPreloadWithEdgeNoClientCache" } },
-];
-
-export function getModule(simulationId: string): {
-  module: () => Logger;
-} {
-  if (simulationId === "loadFullPageNoEdgeNoClientCache") {
-    return {
-      module: loadFullPageNoEdgeNoClientCache,
-    };
-  } else if (simulationId === "loadFullPageNoEdgeWithClientCache") {
-    return {
-      module: loadFullPageNoEdgeWithClientCache,
-    };
-  } else if (simulationId === "loadFullPageWithEdgeNoClientCache") {
-    return {
-      module: loadFullPageWithEdgeNoClientCache,
-    };
-  } else if (simulationId === "loadSplitPageNoPreloadNoEdgeNoClientCache") {
-    return {
-      module: loadSplitPageNoPreloadNoEdgeNoClientCache,
-    };
-  } else if (simulationId === "loadSplitPageNoPreloadNoEdgeWithClientCache") {
-    return {
-      module: loadSplitPageNoPreloadNoEdgeWithClientCache,
-    };
-  } else if (simulationId === "loadSplitPageNoPreloadWithEdgeNoClientCache") {
-    return {
-      module: loadSplitPageNoPreloadWithEdgeNoClientCache,
-    };
-  } else if (simulationId === "loadSplitPageWithPreloadNoEdgeNoClientCache") {
-    return {
-      module: loadSplitPageWithPreloadNoEdgeNoClientCache,
-    };
-  } else if (simulationId === "loadSplitPageWithPreloadNoEdgeWithClientCache") {
-    return {
-      module: loadSplitPageWithPreloadNoEdgeWithClientCache,
-    };
-  } else if (simulationId === "loadSplitPageWithPreloadWithEdgeNoClientCache") {
-    return {
-      module: loadSplitPageWithPreloadWithEdgeNoClientCache,
-    };
-  }
-
-  throw new Error("Unknown simulationId");
+export function runSimulation(args: Partial<Record<keyof SimulationArgs, string>>): Logger {
+  let {
+    serverCache,
+    preload,
+    edge,
+    warmUp,
+    noClientCache,
+    url,
+  } = args;
+  return simulation({
+    serverCache: serverCache === 'true',
+    preload: preload === 'true',
+    edge: edge === 'true',
+    warmUp: warmUp === 'true',
+    noClientCache: noClientCache === 'true',
+    url: url ?? "404",
+  });
 }
