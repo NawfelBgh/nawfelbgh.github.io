@@ -13,6 +13,7 @@ export type SimulationArgs = {
   serverCache: boolean,
   preload: boolean,
   edge: boolean,
+  edgePageAssembly: boolean,
   warmUp: boolean,
   noClientCache: boolean,
   url: string,
@@ -34,6 +35,7 @@ export default function main(args: SimulationArgs): Logger {
     dynamicDataSize: 50000,
     serverSideCache: args.serverCache,
     preload: args.preload,
+    edgePageAssembly: args.edgePageAssembly,
   };
 
   const logger: Logger = [];

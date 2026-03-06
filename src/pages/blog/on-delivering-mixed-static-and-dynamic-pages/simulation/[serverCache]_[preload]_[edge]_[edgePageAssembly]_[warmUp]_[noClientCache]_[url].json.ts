@@ -6,9 +6,9 @@ export function getStaticPaths() {
 }
 
 export const GET: APIRoute = async ({ params }) => {
-  const { serverCache, preload, edge, warmUp, noClientCache, url } = params;
+  const { serverCache, preload, edge, edgePageAssembly, warmUp, noClientCache, url } = params;
   return new Response(JSON.stringify(
-    runSimulation({serverCache, preload, edge, warmUp, noClientCache, url})
+    runSimulation({serverCache, preload, edge, edgePageAssembly, warmUp, noClientCache, url})
   ), {
     headers: {
       "Content-Type": "application/json",

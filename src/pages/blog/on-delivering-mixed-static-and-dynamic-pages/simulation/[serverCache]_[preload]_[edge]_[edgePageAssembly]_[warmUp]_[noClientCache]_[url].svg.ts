@@ -10,9 +10,9 @@ export function getStaticPaths() {
 }
 
 export const GET: APIRoute = ({ params }) => {
-  const { serverCache, preload, edge, warmUp, noClientCache, url } = params;
+  const { serverCache, preload, edge, edgePageAssembly, warmUp, noClientCache, url } = params;
 
-  const logs: Logger = runSimulation({serverCache, preload, edge, warmUp, noClientCache, url});
+  const logs: Logger = runSimulation({serverCache, preload, edge, edgePageAssembly, warmUp, noClientCache, url});
 
   return new Response(
     renderToSvg({logs, slideMode: false, rightPadding: 50}), {

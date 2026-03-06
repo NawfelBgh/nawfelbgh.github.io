@@ -9,16 +9,19 @@ for (const serverCache of [false, true]) {
       for (const warmUp of [false, true]) {
         for (const noClientCache of [false, true]) {
           for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL]) {
-            STATIC_PATHS.push({
-              params: {
-                serverCache: serverCache + '',
-                preload: preload + '',
-                edge: edge + '',
-                warmUp: warmUp + '',
-                noClientCache: noClientCache + '',
-                url,
-              }
-            });
+            for (const edgePageAssembly of [false, true]) {
+              STATIC_PATHS.push({
+                params: {
+                  serverCache: serverCache + '',
+                  preload: preload + '',
+                  edge: edge + '',
+                  warmUp: warmUp + '',
+                  noClientCache: noClientCache + '',
+                  url,
+                  edgePageAssembly: edgePageAssembly + '',
+                }
+              });
+            }
           } 
         }
       } 
@@ -34,6 +37,7 @@ export function runSimulation(args: Partial<Record<keyof SimulationArgs, string>
     warmUp,
     noClientCache,
     url,
+    edgePageAssembly,
   } = args;
   return simulation({
     serverCache: serverCache === 'true',
@@ -42,5 +46,6 @@ export function runSimulation(args: Partial<Record<keyof SimulationArgs, string>
     warmUp: warmUp === 'true',
     noClientCache: noClientCache === 'true',
     url: url ?? "404",
+    edgePageAssembly: edgePageAssembly === 'true',
   });
 }

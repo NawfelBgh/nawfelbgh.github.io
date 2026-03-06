@@ -130,6 +130,7 @@ export interface SimulationConfig {
   dynamicDataSize: number;
   preload?: boolean;
   serverSideCache?: boolean;
+  edgePageAssembly?: boolean;
 }
 
 export class Client implements IClient {
@@ -254,9 +255,9 @@ export class Client implements IClient {
       return;
     }
     this.busy = true;
-    if (responseChunk.part && ["static html part", "dynamic html part"].includes(responseChunk.part)) {
+    if (responseChunk.part && [STATIC_HTML_PART, DYNAMIC_HTML_PART].includes(responseChunk.part)) {
       const event: SimulationEvent = {
-        type: "Layout",
+        type: "Render",
         object: responseChunk.url,
         part: responseChunk.part,
         start: this.clock.time,
@@ -266,7 +267,7 @@ export class Client implements IClient {
       this.logger.push(event);
       this.clock.schedule(this.config.renderFromHtmlDuration, () => {
         event.end = this.clock.time;
-        if (responseChunk.part === "static html part") {
+        if (responseChunk.part === STATIC_HTML_PART) {
           this.renderedStaticPart = true;
         } else {
           this.renderedDynamicPart = true;
@@ -303,7 +304,7 @@ export class Client implements IClient {
         this.ranScript = true;
         if (this.loadedDynamicPart) {
           const layoutEvent: SimulationEvent = {
-            type: "Layout",
+            type: "Render",
             object: responseChunk.url,
             start: this.clock.time,
             end: -1,
@@ -332,7 +333,7 @@ export class Client implements IClient {
       this.loadedDynamicPart = true;
       if (this.ranScript) {
         const layoutEvent: SimulationEvent = {
-          type: "Layout",
+          type: "Render",
           object: responseChunk.url,
           start: this.clock.time,
           end: -1,
@@ -363,6 +364,9 @@ const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 const SCRIPT_URL = "script.js";
 const SCRIPT_WITH_DATA_LOADING_URL = "script-with-loader.js";
 const DYNAMIC_PAGE_DATA_JSON_URL = "page-dynamic-data.json";
+const STATIC_HTML_PART = "static html part";
+const DYNAMIC_HTML_PART = "dynamic html part";
+const HEAD_PART = "head";
 
 class Queue<T> {
   private stack: T[] = [];
@@ -464,7 +468,7 @@ export class FrontendServer implements IServer, IClient {
     return {
       url: FULL_PAGE_URL,
       size: this.config.headSize,
-      part: "head",
+      part: HEAD_PART,
       subResources: [SCRIPT_URL],
     };
   }
@@ -488,7 +492,7 @@ export class FrontendServer implements IServer, IClient {
     return {
       url,
       size: this.config.staticHtmlChunkSize,
-      part: "static html part",
+      part: STATIC_HTML_PART,
       done: url === STATIC_PAGE_URL,
     };
   }
@@ -497,7 +501,8 @@ export class FrontendServer implements IServer, IClient {
     return {
       url: FULL_PAGE_URL,
       size: this.config.dynamicHtmlChunkSize,
-      part: "dynamic html part",
+      part: DYNAMIC_HTML_PART,
+      done: true,
     };
   }
 
@@ -604,7 +609,7 @@ export class FrontendServer implements IServer, IClient {
         server: this,
         context: request.context,
       });
-      if (request.responseChunk.part === "static html part") {
+      if (request.responseChunk.part === STATIC_HTML_PART) {
         this.staticHTMLPartCached = true;
       }
       this.renderingQueue.pop();
@@ -708,6 +713,9 @@ export class Edge implements IServer, IClient {
   private cache = new Map<string, AnonymizedResponseChunk[]>();
   private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
 
+  private fullPageCachedChunks?: AnonymizedResponseChunk[];
+  private inProgressFullPageCachedChunks : NetworkResponseChunk[] = [];
+
   onRequest(request: NetworkRequest) {
     if (this.cache.has(request.url)) {
       this.logger.push({
@@ -726,6 +734,32 @@ export class Edge implements IServer, IClient {
           server: this,
         });
       }
+      return;
+    }
+    if (this.config.edgePageAssembly && request.url === FULL_PAGE_URL && this.fullPageCachedChunks) {
+      this.logger.push({
+        type: "Cache Hit (shared part)",
+        object: request.url,
+        start: this.clock.time,
+        end: this.clock.time,
+        actor: this.name
+      });
+      for (const chunk of this.fullPageCachedChunks) {
+        request.network.sendResponse({
+          client: request.client,
+          server: this,
+          requestId: request.id,
+          ...chunk
+        });
+      }
+      this.originNetwork.sendRequest({
+        id: makeRequestId(),
+        client: this,
+        server: this.origin,
+        url: DYNAMIC_PAGE_PART_URL,
+        size: this.config.requestSize,
+        context: request,
+      });
       return;
     }
     this.logger.push({
@@ -756,7 +790,6 @@ export class Edge implements IServer, IClient {
     }
     const originalRequest = response.context as NetworkRequest;
 
-    // Add to chunks
     if (this.inProgressCacheEntries.has(response.url)) {
       const chunks = this.inProgressCacheEntries.get(response.url)!;
       if (chunks[0].requestId === response.requestId && response !== chunks[0]) {
@@ -771,12 +804,33 @@ export class Edge implements IServer, IClient {
       }
     }
 
-    const { client, server, network, ...anonymizedResponseChunk } = response;
+    if (this.config.edgePageAssembly && originalRequest.url === FULL_PAGE_URL && !this.fullPageCachedChunks) {
+      if (
+        this.inProgressFullPageCachedChunks.length === 0 &&
+        response.part === HEAD_PART
+      ) {
+        this.inProgressFullPageCachedChunks.push(response);
+      } else if (
+        this.inProgressFullPageCachedChunks.length === 1 &&
+        response.part === STATIC_HTML_PART
+      ) {
+        this.inProgressFullPageCachedChunks.push(response);
+        this.fullPageCachedChunks = this.inProgressFullPageCachedChunks.map(
+          ({ context, client, server, network, ...anonymized }) => anonymized
+        );
+        this.inProgressFullPageCachedChunks.length = 0;
+      }
+    }
+
+    const { client, server, network, context, ...anonymizedResponseChunk } = response;
 
     originalRequest.network.sendResponse({
       ...anonymizedResponseChunk,
       client: originalRequest.client,
       server: this,
+      // Reset url to that of the origin request to account for edgePageAssembly
+      // which can replace FULL_PAGE_URL with DYNAMIC_PAGE_PART_URL
+      url: originalRequest.url,
     });
   }
 }
