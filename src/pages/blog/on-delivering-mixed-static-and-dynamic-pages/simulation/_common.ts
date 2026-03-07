@@ -431,9 +431,9 @@ export const STATIC_PAGE_URL = "split-page";
 const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 const SCRIPT_URL = "script.js";
 const SCRIPT_WITH_DATA_LOADING_URL = "script-with-loader.js";
-const DYNAMIC_PAGE_DATA_JSON_URL = "page-dynamic-data.json";
-const STATIC_HTML_PART = "static html part";
-const DYNAMIC_HTML_PART = "dynamic html part";
+const DYNAMIC_PAGE_DATA_JSON_URL = "dynamic-page-data.json";
+const STATIC_HTML_PART = "semi-static part";
+const DYNAMIC_HTML_PART = "dynamic part";
 const HEAD_PART = "head";
 
 class Queue<T> {
