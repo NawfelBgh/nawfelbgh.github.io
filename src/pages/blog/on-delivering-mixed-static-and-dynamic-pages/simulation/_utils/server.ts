@@ -27,10 +27,8 @@ import { Queue } from "./queue";
 
 export class FrontendServer implements IServer, IClient {
   name = "Server";
-  private renderingQueue: Queue<
-    NetworkRequest & { responseChunk: AnonymizedResponseChunk }
-  > = new Queue();
-  private rendering = false;
+  private taskQueue: Queue<(next: () => void) => void> = new Queue();
+  private busy = false;
   private staticHTMLPartCached = false;
 
   constructor(
@@ -108,38 +106,28 @@ export class FrontendServer implements IServer, IClient {
   }
 
   onResponse(response: NetworkResponseChunk): void {
+    this.taskQueue.add((next: () => void) => this.handleResponse(response, next));
+    this.processTaskQueue();
+  }
+
+  handleResponse(response: NetworkResponseChunk, next: () => void): void {
     const clientRequest = response.context as NetworkRequest;
+    let responseChunkToRender: AnonymizedResponseChunk | undefined = undefined;
     switch (clientRequest.url) {
       case FULL_PAGE_URL: {
         if (response.url === DB_STATIC_PART_QUERY) {
-          this.renderingQueue.add({
-            ...clientRequest,
-            responseChunk: this.getStaticHtmlChunk(clientRequest.url),
-          });
-          this.processRenderingQueue();
+          responseChunkToRender = this.getStaticHtmlChunk(clientRequest.url);
         } else if (response.url === DB_DYNAMIC_PART_QUERY) {
-          this.renderingQueue.add({
-            ...clientRequest,
-            responseChunk: this.getDynamicHtmlChunk(),
-          });
-          this.processRenderingQueue();
+          responseChunkToRender = this.getDynamicHtmlChunk();
         }
         break;
       }
       case STATIC_PAGE_URL: {
-        this.renderingQueue.add({
-          ...clientRequest,
-          responseChunk: this.getStaticHtmlChunk(clientRequest.url),
-        });
-        this.processRenderingQueue();
+        responseChunkToRender = this.getStaticHtmlChunk(clientRequest.url);
         break;
       }
       case DYNAMIC_PAGE_PART_URL: {
-        this.renderingQueue.add({
-          ...clientRequest,
-          responseChunk: this.getDynamicHtmlChunk(),
-        });
-        this.processRenderingQueue();
+        responseChunkToRender = this.getDynamicHtmlChunk();
         break;
       }
       case DYNAMIC_PAGE_DATA_JSON_URL: {
@@ -153,46 +141,59 @@ export class FrontendServer implements IServer, IClient {
         break;
       }
     }
+    if (responseChunkToRender) {
+      const start = this.clock.time;
+      this.logger.push({
+        type: "SSR",
+        object: clientRequest.url,
+        part: responseChunkToRender.part,
+        start,
+        end: start + this.config.renderToHtmlDuration,
+        actor: this.name,
+      });
+      this.clock.schedule(this.config.renderToHtmlDuration, () => {
+        clientRequest.network.sendResponse({
+          ...responseChunkToRender,
+          requestId: clientRequest.id,
+          client: clientRequest.client,
+          server: this,
+          context: clientRequest.context,
+        });
+        if (responseChunkToRender.part === STATIC_HTML_PART) {
+          this.staticHTMLPartCached = true;
+        }
+        next();
+      });
+    } else {
+      next();
+    }
   }
 
-  processRenderingQueue() {
-    if (this.rendering) {
+  processTaskQueue() {
+    if (this.busy) {
       return;
     }
-    const request = this.renderingQueue.peek();
-    if (!request) {
+    const task = this.taskQueue.pop();
+    if (!task) {
       return;
     }
-    this.rendering = true;
-    const start = this.clock.time;
-    const event: SimulationEvent = {
-      type: "SSR",
-      object: request.url,
-      part: request.responseChunk.part,
-      start,
-      end: -1,
-      actor: this.name,
-    };
-    this.logger.push(event);
-    this.clock.schedule(this.config.renderToHtmlDuration, () => {
-      this.rendering = false;
-      event.end = this.clock.time;
-      request.network.sendResponse({
-        ...request.responseChunk,
-        requestId: request.id,
-        client: request.client,
-        server: this,
-        context: request.context,
-      });
-      if (request.responseChunk.part === STATIC_HTML_PART) {
-        this.staticHTMLPartCached = true;
-      }
-      this.renderingQueue.pop();
-      this.processRenderingQueue();
+    this.busy = true;
+    task(() => {
+      this.busy = false;
+      this.clock.schedule(0, () => this.processTaskQueue());
     });
   }
 
   onRequest(request: NetworkRequest) {
+    this.taskQueue.add((next: () => void) => {
+      // handleRequest finishes instantly, so no need to pass next
+      this.handleRequest(request);
+      next();
+    });
+    this.processTaskQueue();
+  }
+
+  private handleRequest(request: NetworkRequest) {
     const sendStaticQuery = [FULL_PAGE_URL, STATIC_PAGE_URL].includes(
       request.url
     );

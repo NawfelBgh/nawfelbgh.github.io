@@ -53,16 +53,9 @@ export class ConsoleLogger extends Array<SimulationEvent> {
   }
 }
 
-export class LoadedLogger extends Array<SimulationEvent> {
-  push(...items: SimulationEvent[]): number {
-    let count = 0;
-    for (const i of items) {
-      if (i.object === 'Loaded') {
-        super.push(i);
-        count += 1;
-      }
-    }
-    return count;
+export class DevNullLogger extends Array<SimulationEvent> {
+  push(): number {
+    return 0;
   }
 }
 

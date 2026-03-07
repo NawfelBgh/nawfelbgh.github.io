@@ -15,13 +15,14 @@ export class Clock {
     this.isStopped = false;
     callback();
     while (this.callbacks.size > 0 && !this.isStopped) {
-      const currentCallbacks = this.callbacks.get(this.time);
-      if (currentCallbacks) {
+      let currentCallbacks = this.callbacks.get(this.time);
+      while (currentCallbacks) {
+        this.callbacks.delete(this.time);
         for (const cb of currentCallbacks) {
           cb();
         }
+        currentCallbacks = this.callbacks.get(this.time);
       }
-      this.callbacks.delete(this.time);
       this.time += 1;
     }
   }
