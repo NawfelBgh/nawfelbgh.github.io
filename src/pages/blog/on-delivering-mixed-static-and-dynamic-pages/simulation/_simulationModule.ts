@@ -27,6 +27,7 @@ export default function main(args: SimulationArgs): Logger {
     renderFromHtmlDuration: 50,
     renderFromJsonDuration: 100,
     executeJsDuration: 200,
+    hydrationDuration: 50,
     requestSize: 250,
     headSize: 1000,
     staticHtmlChunkSize: 50000,

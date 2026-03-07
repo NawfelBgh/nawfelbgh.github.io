@@ -131,17 +131,21 @@ export interface SimulationConfig {
   preload?: boolean;
   serverSideCache?: boolean;
   edgePageAssembly?: boolean;
+  hydrationDuration: number;
 }
 
 export class Client implements IClient {
   name = "Client";
   private processingQueue: Queue<AnonymizedResponseChunk> = new Queue();
   private busy = false;
-  private renderedStaticPart = false;
-  private renderedDynamicPart = false;
-  private ranScript = false;
-  private loadingDynamicPart = false;
-  private loadedDynamicPart = false;
+  private isStaticPartRendered = false;
+  private isDynamicPartRendered = false;
+  private isScriptExecuted = false;
+  private isLoadingDynamicPart = false;
+  private isDynamicPartLoaded = false;
+  private isStaticPartInteractive = false;
+  private isDynamicPartInteractive = false;
+  private pageUrl = ''; 
   private onFinish?: () => void;
   private cache = new Map<string, AnonymizedResponseChunk[]>();
   private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
@@ -173,7 +177,7 @@ export class Client implements IClient {
       for (const subResource of subResources) {
         this.sendRequest(subResource);
         if (subResource === DYNAMIC_PAGE_DATA_JSON_URL) {
-          this.loadingDynamicPart = true;
+          this.isLoadingDynamicPart = true;
         }
       }
     }
@@ -189,12 +193,15 @@ export class Client implements IClient {
   }
 
   navigate(url: string, onFinish: () => void) {
-    this.renderedStaticPart = false;
-    this.renderedDynamicPart = false;
-    this.ranScript = false;
-    this.loadingDynamicPart = false;
-    this.loadedDynamicPart = false;
+    this.isStaticPartRendered = false;
+    this.isDynamicPartRendered = false;
+    this.isScriptExecuted = false;
+    this.isLoadingDynamicPart = false;
+    this.isDynamicPartLoaded = false;
+    this.isStaticPartInteractive = false;
+    this.isDynamicPartInteractive = false;
     this.onFinish = onFinish;
+    this.pageUrl = url;
 
     this.sendRequest(url);
   }
@@ -225,27 +232,6 @@ export class Client implements IClient {
     this.processQueue();
   }
 
-  finalizeProcessingStep() {
-    if (
-      this.ranScript &&
-      this.renderedDynamicPart &&
-      this.renderedStaticPart
-    ) {
-      const doneEvent: SimulationEvent = {
-        type: "Done",
-        object: "navigation",
-        start: this.clock.time,
-        end: this.clock.time,
-        actor: this.name,
-      };
-      this.logger.push(doneEvent);
-      this.onFinish?.();
-    }
-    this.processingQueue.pop();
-    this.busy = false;
-    this.processQueue();
-  }
-
   processQueue() {
     if (this.busy) {
       return;
@@ -254,103 +240,163 @@ export class Client implements IClient {
     if (!responseChunk) {
       return;
     }
-    this.busy = true;
-    if (responseChunk.part && [STATIC_HTML_PART, DYNAMIC_HTML_PART].includes(responseChunk.part)) {
-      const event: SimulationEvent = {
-        type: "Render",
-        object: responseChunk.url,
-        part: responseChunk.part,
-        start: this.clock.time,
-        end: -1,
-        actor: this.name,
-      };
-      this.logger.push(event);
-      this.clock.schedule(this.config.renderFromHtmlDuration, () => {
-        event.end = this.clock.time;
-        if (responseChunk.part === STATIC_HTML_PART) {
-          this.renderedStaticPart = true;
-        } else {
-          this.renderedDynamicPart = true;
-        }
-        this.finalizeProcessingStep();
-      });
-    } else if (responseChunk.url === SCRIPT_URL) {
-      const event: SimulationEvent = {
-        type: "Execute JS",
-        object: responseChunk.url,
-        part: responseChunk.part,
-        start: this.clock.time,
-        end: -1,
-        actor: this.name,
-      };
-      this.logger.push(event);
-      this.clock.schedule(this.config.executeJsDuration, () => {
-        event.end = this.clock.time;
-        this.ranScript = true;
-        this.finalizeProcessingStep();
-      });
-    } else if (responseChunk.url === SCRIPT_WITH_DATA_LOADING_URL) {
-      const event: SimulationEvent = {
-        type: "Execute JS",
-        object: responseChunk.url,
-        part: responseChunk.part,
-        start: this.clock.time,
-        end: -1,
-        actor: this.name,
-      };
-      this.logger.push(event);
-      this.clock.schedule(this.config.executeJsDuration, () => {
-        event.end = this.clock.time;
-        this.ranScript = true;
-        if (this.loadedDynamicPart) {
-          const layoutEvent: SimulationEvent = {
-            type: "Render",
-            object: responseChunk.url,
-            start: this.clock.time,
-            end: -1,
-            actor: this.name,
-          };
-          this.logger.push(layoutEvent);
-          this.clock.schedule(this.config.renderFromJsonDuration, () => {
-            layoutEvent.end = this.clock.time;
-            this.renderedDynamicPart = true;
-            this.finalizeProcessingStep();
-          });
-        } else {
-          if (!this.loadingDynamicPart) {
-            this.network.sendRequest({
-              client: this,
-              server: this.server,
-              size: this.config.requestSize,
-              url: DYNAMIC_PAGE_DATA_JSON_URL,
-              id: makeRequestId(),
-            });
-          }
-          this.finalizeProcessingStep();
-        }
-      });
-    } else if (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL) {
-      this.loadedDynamicPart = true;
-      if (this.ranScript) {
-        const layoutEvent: SimulationEvent = {
-          type: "Render",
-          object: responseChunk.url,
+    const finalizeProcessingStep = () => {
+      if (this.isStaticPartInteractive && this.isDynamicPartInteractive) {
+        const doneEvent: SimulationEvent = {
+          type: "Done",
+          object: "navigation",
           start: this.clock.time,
-          end: -1,
+          end: this.clock.time,
           actor: this.name,
         };
-        this.logger.push(layoutEvent);
-        this.clock.schedule(this.config.renderFromJsonDuration, () => {
-          layoutEvent.end = this.clock.time;
-          this.renderedDynamicPart = true;
-          this.finalizeProcessingStep();
-        });
+        this.logger.push(doneEvent);
+        this.onFinish?.();
+      }
+      this.processingQueue.pop();
+      this.busy = false;
+      this.processQueue();
+    };
+
+    this.busy = true;
+    if (
+      responseChunk.part &&
+      [STATIC_HTML_PART, DYNAMIC_HTML_PART].includes(responseChunk.part)
+    ) {
+      this.renderHTMLChunk(responseChunk, finalizeProcessingStep);
+    } else if ([SCRIPT_URL, SCRIPT_WITH_DATA_LOADING_URL].includes(responseChunk.url)) {
+      this.executeJS(responseChunk, finalizeProcessingStep);
+    } else if (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL) {
+      this.isDynamicPartLoaded = true;
+      if (this.isScriptExecuted) {
+        this.renderDynamicPartJSON(finalizeProcessingStep);
       } else {
-        this.finalizeProcessingStep();
+        finalizeProcessingStep();
       }
     } else {
-      this.finalizeProcessingStep();
+      finalizeProcessingStep();
     }
+  }
+
+  renderHTMLChunk(responseChunk: AnonymizedResponseChunk, next: () => void) {
+    this.logger.push({
+      type: "Render",
+      object: responseChunk.url,
+      part: responseChunk.part,
+      start: this.clock.time,
+      end: this.clock.time + this.config.renderFromHtmlDuration,
+      actor: this.name,
+    });
+    this.clock.schedule(this.config.renderFromHtmlDuration, () => {
+      if (responseChunk.part === STATIC_HTML_PART) {
+        this.isStaticPartRendered = true;
+        if (this.isScriptExecuted) {
+          this.hydrateStaticChunk(next);
+        } else {
+          next();
+        }
+      } else if (responseChunk.part === DYNAMIC_HTML_PART) {
+        this.isDynamicPartRendered = true;
+        if (this.isScriptExecuted) {
+          this.hydrateDynamicChunk(next);
+        } else {
+          next();
+        }
+      } else {
+        next();
+      }
+    });
+  }
+
+  renderDynamicPartJSON(next: () => void) {
+    this.logger.push({
+      type: "Render",
+      object: DYNAMIC_PAGE_DATA_JSON_URL,
+      start: this.clock.time,
+      end: this.clock.time + this.config.renderFromJsonDuration,
+      actor: this.name,
+    });
+    this.clock.schedule(this.config.renderFromJsonDuration, () => {
+      this.isDynamicPartRendered = true;
+      this.isDynamicPartInteractive = true;
+      next();
+    });
+  }
+
+  hydrateStaticChunk(next: () => void) {
+    this.logger.push({
+      type: "Hydration",
+      object: this.pageUrl,
+      part: STATIC_HTML_PART,
+      start: this.clock.time,
+      end: this.clock.time + this.config.hydrationDuration,
+      actor: this.name,
+    });
+    this.clock.schedule(this.config.hydrationDuration, () => {
+      this.isStaticPartInteractive = true;
+      next();
+    });
+  }
+
+  hydrateDynamicChunk(next: () => void) {
+    this.logger.push({
+      type: "Hydration",
+      object: this.pageUrl === STATIC_PAGE_URL ? DYNAMIC_PAGE_DATA_JSON_URL : this.pageUrl,
+      part: this.pageUrl === STATIC_PAGE_URL ? undefined : DYNAMIC_HTML_PART,
+      start: this.clock.time,
+      end: this.clock.time + this.config.hydrationDuration,
+      actor: this.name,
+    });
+    this.clock.schedule(this.config.hydrationDuration, () => {
+      this.isDynamicPartInteractive = true;
+      next();
+    });
+  }
+
+  executeJS(responseChunk: AnonymizedResponseChunk, next: () => void) {
+    this.logger.push({
+      type: "Execute JS",
+      object: responseChunk.url,
+      part: responseChunk.part,
+      start: this.clock.time,
+      end: this.clock.time + this.config.executeJsDuration,
+      actor: this.name,
+    });
+    this.clock.schedule(this.config.executeJsDuration, () => {
+      this.isScriptExecuted = true;
+
+      if (responseChunk.url === SCRIPT_WITH_DATA_LOADING_URL && !this.isLoadingDynamicPart) {
+        this.network.sendRequest({
+          client: this,
+          server: this.server,
+          size: this.config.requestSize,
+          url: DYNAMIC_PAGE_DATA_JSON_URL,
+          id: makeRequestId(),
+        });
+      }
+      const afterStaticProcessing = () => {
+        const afterDynamicPartRendering = () => {
+          if (responseChunk.url === SCRIPT_URL && this.isDynamicPartRendered) {
+            this.hydrateDynamicChunk(next);
+          } else {
+            next();
+          }
+        };
+
+        if (this.isDynamicPartRendered) {
+          afterDynamicPartRendering();
+        } else if (this.isDynamicPartLoaded) {
+          this.renderDynamicPartJSON(afterDynamicPartRendering);
+        } else {
+          next();
+        }
+      };
+      
+      if (this.isStaticPartRendered) {
+        this.hydrateStaticChunk(afterStaticProcessing);
+      } else {
+        afterStaticProcessing();
+      }
+    });
   }
 
   clearCache() {
@@ -359,7 +405,7 @@ export class Client implements IClient {
 }
 
 export const FULL_PAGE_URL = "full-page";
-export const STATIC_PAGE_URL = "cacheable-page";
+export const STATIC_PAGE_URL = "split-page";
 const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 const SCRIPT_URL = "script.js";
 const SCRIPT_WITH_DATA_LOADING_URL = "script-with-loader.js";
@@ -480,9 +526,7 @@ export class FrontendServer implements IServer, IClient {
       part: "head",
       subResources: [
         SCRIPT_WITH_DATA_LOADING_URL,
-        ...(this.config.preload ?
-          [DYNAMIC_PAGE_DATA_JSON_URL] :
-          [])
+        ...(this.config.preload ? [DYNAMIC_PAGE_DATA_JSON_URL] : []),
       ],
       cacheHeader: true,
     };
@@ -707,14 +751,14 @@ export class Edge implements IServer, IClient {
     private clock: Clock,
     private originNetwork: Network,
     private origin: IServer,
-    private config: SimulationConfig,
+    private config: SimulationConfig
   ) {}
 
   private cache = new Map<string, AnonymizedResponseChunk[]>();
   private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
 
   private fullPageCachedChunks?: AnonymizedResponseChunk[];
-  private inProgressFullPageCachedChunks : NetworkResponseChunk[] = [];
+  private inProgressFullPageCachedChunks: NetworkResponseChunk[] = [];
 
   onRequest(request: NetworkRequest) {
     if (this.cache.has(request.url)) {
@@ -723,7 +767,7 @@ export class Edge implements IServer, IClient {
         object: request.url,
         start: this.clock.time,
         end: this.clock.time,
-        actor: this.name
+        actor: this.name,
       });
       const response = this.cache.get(request.url)!;
       for (const chunk of response) {
@@ -736,20 +780,24 @@ export class Edge implements IServer, IClient {
       }
       return;
     }
-    if (this.config.edgePageAssembly && request.url === FULL_PAGE_URL && this.fullPageCachedChunks) {
+    if (
+      this.config.edgePageAssembly &&
+      request.url === FULL_PAGE_URL &&
+      this.fullPageCachedChunks
+    ) {
       this.logger.push({
         type: "Cache Hit (shared part)",
         object: request.url,
         start: this.clock.time,
         end: this.clock.time,
-        actor: this.name
+        actor: this.name,
       });
       for (const chunk of this.fullPageCachedChunks) {
         request.network.sendResponse({
           client: request.client,
           server: this,
           requestId: request.id,
-          ...chunk
+          ...chunk,
         });
       }
       this.originNetwork.sendRequest({
@@ -767,7 +815,7 @@ export class Edge implements IServer, IClient {
       object: request.url,
       start: this.clock.time,
       end: this.clock.time,
-      actor: this.name
+      actor: this.name,
     });
     this.originNetwork.sendRequest({
       id: makeRequestId(),
@@ -792,7 +840,10 @@ export class Edge implements IServer, IClient {
 
     if (this.inProgressCacheEntries.has(response.url)) {
       const chunks = this.inProgressCacheEntries.get(response.url)!;
-      if (chunks[0].requestId === response.requestId && response !== chunks[0]) {
+      if (
+        chunks[0].requestId === response.requestId &&
+        response !== chunks[0]
+      ) {
         chunks.push(response);
       }
       if (response.done) {
@@ -804,7 +855,11 @@ export class Edge implements IServer, IClient {
       }
     }
 
-    if (this.config.edgePageAssembly && originalRequest.url === FULL_PAGE_URL && !this.fullPageCachedChunks) {
+    if (
+      this.config.edgePageAssembly &&
+      originalRequest.url === FULL_PAGE_URL &&
+      !this.fullPageCachedChunks
+    ) {
       if (
         this.inProgressFullPageCachedChunks.length === 0 &&
         response.part === HEAD_PART
@@ -822,7 +877,8 @@ export class Edge implements IServer, IClient {
       }
     }
 
-    const { client, server, network, context, ...anonymizedResponseChunk } = response;
+    const { client, server, network, context, ...anonymizedResponseChunk } =
+      response;
 
     originalRequest.network.sendResponse({
       ...anonymizedResponseChunk,
