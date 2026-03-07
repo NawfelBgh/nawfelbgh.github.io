@@ -161,6 +161,14 @@ export class Client implements IClient {
 
   private sendRequest(url: string) {
     if (this.cache.has(url)) {
+      this.logger.push({
+        type: "Cache Hit",
+        object: url,
+        start: this.clock.time,
+        end: this.clock.time,
+        actor: this.name,
+      });
+      this.registerFirstByte();
       this.replayFromCache(url);
       return;
     }
@@ -209,7 +217,7 @@ export class Client implements IClient {
     this.sendRequest(url);
   }
 
-  onResponse(response: NetworkResponseChunk) {
+  registerFirstByte() {
     if (!this.isFirstByteReceived) {
       this.isFirstByteReceived = true;
       this.logger.push({
@@ -220,6 +228,10 @@ export class Client implements IClient {
         actor: this.name
       })
     }
+  }
+
+  onResponse(response: NetworkResponseChunk) {
+    this.registerFirstByte();
     this.processSubResources(response.subResources);
 
     if (response.cacheHeader) {
@@ -430,7 +442,7 @@ export const FULL_PAGE_URL = "full-page";
 export const STATIC_PAGE_URL = "split-page";
 const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 const SCRIPT_URL = "script.js";
-const SCRIPT_WITH_DATA_LOADING_URL = "script-with-loader.js";
+const SCRIPT_WITH_DATA_LOADING_URL = "script+load.js";
 const DYNAMIC_PAGE_DATA_JSON_URL = "dynamic-page-data.json";
 const STATIC_HTML_PART = "semi-static part";
 const DYNAMIC_HTML_PART = "dynamic part";
@@ -713,6 +725,14 @@ export class FrontendServer implements IServer, IClient {
     }
     if (sendStaticQuery) {
       if (this.config.serverSideCache && this.staticHTMLPartCached) {
+        this.logger.push({
+          type: "Cache Hit",
+          object: request.url,
+          part: STATIC_HTML_PART,
+          start: this.clock.time,
+          end: this.clock.time,
+          actor: this.name,
+        });
         request.network.sendResponse({
           ...this.getStaticHtmlChunk(request.url),
           requestId: request.id,
