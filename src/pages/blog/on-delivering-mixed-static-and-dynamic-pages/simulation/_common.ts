@@ -91,12 +91,11 @@ export class ConsoleLogger extends Array<SimulationEvent> {
   }
 }
 
-// TODO refine this
-export class DoneLogger extends Array<SimulationEvent> {
+export class LoadedLogger extends Array<SimulationEvent> {
   push(...items: SimulationEvent[]): number {
     let count = 0;
     for (const i of items) {
-      if ("done" in i && !!i.done) {
+      if (i.object === 'Loaded') {
         super.push(i);
         count += 1;
       }
@@ -145,7 +144,9 @@ export class Client implements IClient {
   private isDynamicPartLoaded = false;
   private isStaticPartInteractive = false;
   private isDynamicPartInteractive = false;
-  private pageUrl = ''; 
+  private pageUrl = '';
+  private isFirstByteReceived = false;
+  private firstContentfulPaint = false;
   private onFinish?: () => void;
   private cache = new Map<string, AnonymizedResponseChunk[]>();
   private inProgressCacheEntries = new Map<string, NetworkResponseChunk[]>();
@@ -200,13 +201,25 @@ export class Client implements IClient {
     this.isDynamicPartLoaded = false;
     this.isStaticPartInteractive = false;
     this.isDynamicPartInteractive = false;
-    this.onFinish = onFinish;
+    this.isFirstByteReceived = false;
+    this.firstContentfulPaint = false;
     this.pageUrl = url;
+    this.onFinish = onFinish;
 
     this.sendRequest(url);
   }
 
   onResponse(response: NetworkResponseChunk) {
+    if (!this.isFirstByteReceived) {
+      this.isFirstByteReceived = true;
+      this.logger.push({
+        type: 'First Byte',
+        object: this.pageUrl,
+        start: this.clock.time,
+        end: this.clock.time,
+        actor: this.name
+      })
+    }
     this.processSubResources(response.subResources);
 
     if (response.cacheHeader) {
@@ -242,14 +255,13 @@ export class Client implements IClient {
     }
     const finalizeProcessingStep = () => {
       if (this.isStaticPartInteractive && this.isDynamicPartInteractive) {
-        const doneEvent: SimulationEvent = {
-          type: "Done",
-          object: "navigation",
+        this.logger.push({
+          type: "Loaded",
+          object: this.pageUrl,
           start: this.clock.time,
           end: this.clock.time,
           actor: this.name,
-        };
-        this.logger.push(doneEvent);
+        });
         this.onFinish?.();
       }
       this.processingQueue.pop();
@@ -287,6 +299,16 @@ export class Client implements IClient {
       actor: this.name,
     });
     this.clock.schedule(this.config.renderFromHtmlDuration, () => {
+      if (!this.firstContentfulPaint) {
+        this.firstContentfulPaint = true;
+        this.logger.push({
+          type: "First Contentful Paint",
+          object: this.pageUrl,
+          start: this.clock.time,
+          end: this.clock.time,
+          actor: this.name,
+        });
+      }
       if (responseChunk.part === STATIC_HTML_PART) {
         this.isStaticPartRendered = true;
         if (this.isScriptExecuted) {
