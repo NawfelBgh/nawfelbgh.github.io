@@ -1,4 +1,4 @@
-import type { Logger } from "./_common";
+import type { Logger } from "./_utils/common";
 
 type Args = {
   logs: Logger;

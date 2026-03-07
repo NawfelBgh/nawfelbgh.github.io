@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import type { Logger } from "./_common";
-import { runSimulation, STATIC_PATHS } from "./_paths";
+import type { Logger } from "./_utils/common";
+import { runSimulation, STATIC_PATHS } from "./_utils/page-load-simulation-paths";
 import { renderToSvg } from "./_renderToSvg";
 
 export const partial = true;

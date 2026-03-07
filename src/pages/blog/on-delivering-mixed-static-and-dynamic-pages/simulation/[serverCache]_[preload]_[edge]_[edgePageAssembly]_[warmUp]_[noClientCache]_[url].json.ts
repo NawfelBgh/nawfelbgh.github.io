@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { runSimulation, STATIC_PATHS } from "./_paths";
+import { runSimulation, STATIC_PATHS } from "./_utils/page-load-simulation-paths";
 
 export function getStaticPaths() {
   return structuredClone(STATIC_PATHS);

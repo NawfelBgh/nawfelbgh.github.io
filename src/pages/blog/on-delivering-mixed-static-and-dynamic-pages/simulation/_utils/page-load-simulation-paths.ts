@@ -1,5 +1,5 @@
-import { FULL_PAGE_URL, STATIC_PAGE_URL, type Logger } from "./_common.ts";
-import simulation, { type SimulationArgs } from "./_simulationModule.ts";
+import { FULL_PAGE_URL, STATIC_PAGE_URL, type Logger } from "./common.ts";
+import simulation, { type SimulationArgs } from "./page-load-simulation.ts";
 
 export const STATIC_PATHS: { params: Record<keyof SimulationArgs, string> }[] = [];
 
