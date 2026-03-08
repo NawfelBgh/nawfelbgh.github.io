@@ -3,9 +3,11 @@ import {
   DB_DYNAMIC_PART_QUERY,
   DB_STATIC_PART_QUERY,
   DYNAMIC_HTML_PART,
+  DYNAMIC_JSON_PART,
   DYNAMIC_PAGE_DATA_JSON_URL,
   DYNAMIC_PAGE_PART_URL,
   FULL_PAGE_URL,
+  FULL_PAGE_WITH_DYNAMIC_JSON_URL,
   HEAD_PART,
   makeRequestId,
   SCRIPT_URL,
@@ -19,7 +21,6 @@ import {
   type NetworkRequest,
   type NetworkResponseChunk,
   type SimulationConfig,
-  type SimulationEvent
 } from "./common";
 import type { Database } from "./database";
 import type { Network } from "./network";
@@ -42,6 +43,15 @@ export class FrontendServer implements IServer, IClient {
   private getFullPageHeadChunk(): AnonymizedResponseChunk {
     return {
       url: FULL_PAGE_URL,
+      size: this.config.headSize,
+      part: HEAD_PART,
+      subResources: [SCRIPT_URL],
+    };
+  }
+
+  private getFullPageWithDynamicJsonHeadChunk(): AnonymizedResponseChunk {
+    return {
+      url: FULL_PAGE_WITH_DYNAMIC_JSON_URL,
       size: this.config.headSize,
       part: HEAD_PART,
       subResources: [SCRIPT_URL],
@@ -97,9 +107,9 @@ export class FrontendServer implements IServer, IClient {
     };
   }
 
-  private getDynamicPageDataChunk(): AnonymizedResponseChunk {
+  private getDynamicPageDataChunk(url: string): AnonymizedResponseChunk {
     return {
-      url: DYNAMIC_PAGE_DATA_JSON_URL,
+      url,
       size: this.config.dynamicDataSize,
       done: true,
     };
@@ -122,6 +132,21 @@ export class FrontendServer implements IServer, IClient {
         }
         break;
       }
+      case FULL_PAGE_WITH_DYNAMIC_JSON_URL: {
+        if (response.url === DB_STATIC_PART_QUERY) {
+          responseChunkToRender = this.getStaticHtmlChunk(clientRequest.url);
+        } else if (response.url === DB_DYNAMIC_PART_QUERY) {
+          clientRequest.network.sendResponse({
+            ...this.getDynamicPageDataChunk(clientRequest.url),
+            part: DYNAMIC_JSON_PART,
+            requestId: clientRequest.id,
+            client: clientRequest.client,
+            server: this,
+            context: clientRequest.context,
+          });
+        }
+        break;
+      }
       case STATIC_PAGE_URL: {
         responseChunkToRender = this.getStaticHtmlChunk(clientRequest.url);
         break;
@@ -132,7 +157,7 @@ export class FrontendServer implements IServer, IClient {
       }
       case DYNAMIC_PAGE_DATA_JSON_URL: {
         clientRequest.network.sendResponse({
-          ...this.getDynamicPageDataChunk(),
+          ...this.getDynamicPageDataChunk(clientRequest.url),
           requestId: clientRequest.id,
           client: clientRequest.client,
           server: this,
@@ -194,18 +219,19 @@ export class FrontendServer implements IServer, IClient {
   }
 
   private handleRequest(request: NetworkRequest) {
-    const sendStaticQuery = [FULL_PAGE_URL, STATIC_PAGE_URL].includes(
+    const sendStaticQuery = [FULL_PAGE_URL, STATIC_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL].includes(
       request.url
     );
     const sendDynamicQuery = [
       FULL_PAGE_URL,
       DYNAMIC_PAGE_PART_URL,
       DYNAMIC_PAGE_DATA_JSON_URL,
+      FULL_PAGE_WITH_DYNAMIC_JSON_URL,
     ].includes(request.url);
 
-    if (request.url === FULL_PAGE_URL) {
+    if ([FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL].includes(request.url)) {
       request.network.sendResponse({
-        ...this.getFullPageHeadChunk(),
+        ...(request.url === FULL_PAGE_URL ? this.getFullPageHeadChunk() : this.getFullPageWithDynamicJsonHeadChunk()),
         requestId: request.id,
         client: request.client,
         server: this,

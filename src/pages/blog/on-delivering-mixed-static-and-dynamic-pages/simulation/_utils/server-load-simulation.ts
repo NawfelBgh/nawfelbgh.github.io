@@ -6,6 +6,7 @@ import {
   STATIC_PAGE_URL,
   FULL_PAGE_URL,
   DevNullLogger,
+  FULL_PAGE_WITH_DYNAMIC_JSON_URL,
 } from "./common";
 import { Database } from "./database";
 import { Edge } from "./edge";
@@ -28,7 +29,7 @@ for (const serverCache of [false, true]) {
   for (const preload of [false, true]) {
     for (const edge of [false, true]) {
       for (const clientsCount of [1, 10, 20, 40]) {
-        for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL]) {
+        for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL]) {
           for (const edgePageAssembly of [false, true]) {
             for (const durationMs of [10_000, 300_000]) {
               STATIC_PATHS.push({

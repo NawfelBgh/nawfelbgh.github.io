@@ -11,7 +11,10 @@ import {
   makeRequestId,
   DYNAMIC_PAGE_PART_URL,
   HEAD_PART,
-  STATIC_HTML_PART
+  STATIC_HTML_PART,
+  FULL_PAGE_WITH_DYNAMIC_JSON_URL,
+  DYNAMIC_PAGE_DATA_JSON_URL,
+  DYNAMIC_JSON_PART
 } from "./common";
 import type { Network } from "./network";
 
@@ -53,7 +56,7 @@ export class Edge implements IServer, IClient {
     }
     if (
       this.config.edgePageAssembly &&
-      request.url === FULL_PAGE_URL &&
+      [FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL].includes(request.url) &&
       this.fullPageCachedChunks
     ) {
       this.logger.push({
@@ -69,16 +72,28 @@ export class Edge implements IServer, IClient {
           server: this,
           requestId: request.id,
           ...chunk,
+          url: request.url,
         });
       }
-      this.originNetwork.sendRequest({
-        id: makeRequestId(),
-        client: this,
-        server: this.origin,
-        url: DYNAMIC_PAGE_PART_URL,
-        size: this.config.requestSize,
-        context: request,
-      });
+      if (request.url === FULL_PAGE_URL) {
+        this.originNetwork.sendRequest({
+          id: makeRequestId(),
+          client: this,
+          server: this.origin,
+          url: DYNAMIC_PAGE_PART_URL,
+          size: this.config.requestSize,
+          context: request,
+        });
+      } else if (request.url === FULL_PAGE_WITH_DYNAMIC_JSON_URL) {
+        this.originNetwork.sendRequest({
+          id: makeRequestId(),
+          client: this,
+          server: this.origin,
+          url: DYNAMIC_PAGE_DATA_JSON_URL,
+          size: this.config.requestSize,
+          context: request,
+        });
+      }
       return;
     }
     this.logger.push({
@@ -102,7 +117,7 @@ export class Edge implements IServer, IClient {
     if (response.cacheHeader) {
       if (
         !this.inProgressCacheEntries.has(response.url) &&
-        !this.cache.get(response.url)
+        !this.cache.has(response.url)
       ) {
         this.inProgressCacheEntries.set(response.url, [response]);
       }
@@ -128,7 +143,7 @@ export class Edge implements IServer, IClient {
 
     if (
       this.config.edgePageAssembly &&
-      originalRequest.url === FULL_PAGE_URL &&
+      [FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL].includes(originalRequest.url) &&
       !this.fullPageCachedChunks
     ) {
       if (
@@ -156,8 +171,9 @@ export class Edge implements IServer, IClient {
       client: originalRequest.client,
       server: this,
       // Reset url to that of the origin request to account for edgePageAssembly
-      // which can replace FULL_PAGE_URL with DYNAMIC_PAGE_PART_URL
+      // which can replace FULL_PAGE_URL with DYNAMIC_PAGE_PART_URL and FULL_PAGE_WITH_DYNAMIC_JSON_URL with DYNAMIC_PAGE_DATA_JSON_URL
       url: originalRequest.url,
+      part: originalRequest.url === FULL_PAGE_WITH_DYNAMIC_JSON_URL && response.url === DYNAMIC_PAGE_DATA_JSON_URL ? DYNAMIC_JSON_PART : response.part,
     });
   }
 }

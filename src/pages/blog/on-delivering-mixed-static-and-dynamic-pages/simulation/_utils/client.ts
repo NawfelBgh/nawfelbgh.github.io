@@ -12,7 +12,9 @@ import {
   DYNAMIC_HTML_PART,
   SCRIPT_URL,
   SCRIPT_WITH_DATA_LOADING_URL,
-  STATIC_PAGE_URL
+  STATIC_PAGE_URL,
+  FULL_PAGE_WITH_DYNAMIC_JSON_URL,
+  DYNAMIC_JSON_PART
 } from "./common";
 import type { Network } from "./network";
 import { Queue } from "./queue";
@@ -173,7 +175,10 @@ export class Client implements IClient {
       this.renderHTMLChunk(responseChunk, finalizeProcessingStep);
     } else if ([SCRIPT_URL, SCRIPT_WITH_DATA_LOADING_URL].includes(responseChunk.url)) {
       this.executeJS(responseChunk, finalizeProcessingStep);
-    } else if (responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL) {
+    } else if (
+      responseChunk.url === DYNAMIC_PAGE_DATA_JSON_URL ||
+      responseChunk.url === FULL_PAGE_WITH_DYNAMIC_JSON_URL && responseChunk.part === DYNAMIC_JSON_PART
+    ) {
       this.isDynamicPartLoaded = true;
       if (this.isScriptExecuted) {
         this.renderDynamicPartJSON(finalizeProcessingStep);
@@ -228,7 +233,13 @@ export class Client implements IClient {
   renderDynamicPartJSON(next: () => void) {
     this.logger.push({
       type: "Render",
-      object: DYNAMIC_PAGE_DATA_JSON_URL,
+      object:
+        this.pageUrl === STATIC_PAGE_URL ?
+          DYNAMIC_PAGE_DATA_JSON_URL :
+          this.pageUrl === FULL_PAGE_WITH_DYNAMIC_JSON_URL ?
+            FULL_PAGE_WITH_DYNAMIC_JSON_URL :
+            '?',
+      part: this.pageUrl === FULL_PAGE_WITH_DYNAMIC_JSON_URL ? DYNAMIC_JSON_PART : undefined,
       start: this.clock.time,
       end: this.clock.time + this.config.renderFromJsonDuration,
       actor: this.name,
@@ -292,18 +303,10 @@ export class Client implements IClient {
         });
       }
       const afterStaticProcessing = () => {
-        const afterDynamicPartRendering = () => {
-          if (responseChunk.url === SCRIPT_URL && this.isDynamicPartRendered) {
-            this.hydrateDynamicChunk(next);
-          } else {
-            next();
-          }
-        };
-
         if (this.isDynamicPartRendered) {
-          afterDynamicPartRendering();
+          this.hydrateDynamicChunk(next);
         } else if (this.isDynamicPartLoaded) {
-          this.renderDynamicPartJSON(afterDynamicPartRendering);
+          this.renderDynamicPartJSON(next);
         } else {
           next();
         }

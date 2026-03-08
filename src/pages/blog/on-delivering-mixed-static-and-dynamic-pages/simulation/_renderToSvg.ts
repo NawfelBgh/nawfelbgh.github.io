@@ -80,7 +80,7 @@ export function renderToSvg({ logs, slideMode, rightPadding }: Args): string {
   const pixelsPerMillisecond = 1;
   const endTime = logs[logs.length - 1].end;
   const padding = 20;
-  const objectNameWidth = slideMode ? 200 : 100;
+  const objectNameWidth = slideMode ? 200 : 200;
   const width = padding * 2 + objectNameWidth + endTime * pixelsPerMillisecond;
   const lineHeight = slideMode ? 32 : 20;
   const height =
