@@ -1,20 +1,24 @@
-# Optimizing The Loading Of Mixed Semi-Static And Dynamic Web Pages With Caching, Pre-Loading And Streaming
+# Optimizing The Loading Of Mixed Semi-Static And Dynamic Web Pages. Or: Do Not Jump Straight To Streaming.
 
 ## Introduction
 
-Web pages often contain dynamic parts which change frequently and which change depending on the user, and they contain semi-static parts which change infrequently and which are the same for all users.
+Web pages often contain dynamic parts which change frequently and whose content may depend on the user, and they contain also semi-static parts which change infrequently and which are the same for all users.
 
-In this article, I showcase 3 techniques for optimizing web pages loading time: Caching, Pre-Loading and HTTP-Streaming.
+Recently released JavaScript frameworks, and pioneers like MarkoJS, can optimize performance by streaming different parts of the page progressively to the user. Although an effective optimization, I argue in this article that we should reach for streaming only after taking into account a more important optimization: Caching. 
 
-Using the classification from my [How to make fast web frontends](/blog/web-frontend-performance) article, caching belongs to a first class of optimizations that work by reducing unnecessary work, while pre-loading and HTTP-streaming are optimizations that reduce user wait time by scheduling resources loading better. 
+In my article, [How to make fast web frontends](/blog/web-frontend-performance), I classified optimization techniques broadly into 2 categories:
 
-I compare in this article the use of Pre-Loading versus HTTP-Streaming, both combined with Caching.
+- Techniques which speed up loading by reducing the work necessary to deliver the content. of these techniques, Caching is a prime example.
+- Techniques which do not necessarily reduce work but instead reduce user wait time by scheduling resources loading intelligently. Both Pre-Loading and HTTP-streaming fall into this category.
+    - With HTTP-streaming, the server can start loading all page parts in parallel as soon as it receives the client's request.
+    - With Pre-Loading, the client can start fetching page parts as soon as it receives the page page's headers or its head element.
 
-In order to optimize performance, recently released JavaScript frameworks, and pioneers like MarkoJS, can stream different parts of the page progressively to the user. One critique of this approach is that delivering all page parts (dynamic and semi-static) as a single resource makes caching less efficient (Cite section from the old article). A second critique is that supporting streaming adds complexity to the implementation of the web framework.
+Although HTTP-streaming can start fetching resources earlier than pre-loading, it has some disadvantages which Pre-Loading completely avoids:
 
-Pre-loading can be used instead to optimize page loading: The highly cacheable semi-static page parts and the dynamic parts are delivered as separate resources. When loading a page, the main HTML document delivers semi-static page parts and preloads a second url to fetch dynamic parts. Pre-loading is simpler to implement and is more compatible with caching than streaming.
+- Being a form of inlining, HTTP-streaming [hiders caching](/blog/web-frontend-performance#25-bundling-resources): The highly cacheable semi-static page parts cannot benefit from HTTP caching as they are bundled with delivered the dynamic parts in a single URL.
+- HTTP-streaming requires support at the framework level, and may require non standard edge runtimes for the best performance.
 
-In this article, I present diagrams produced by simulation to explain how different approaches work and discuss there strength and weaknesses. 
+So in this article, I compare the performance of page loads when using Pre-Loading versus HTTP-Streaming, both combined with Caching, using diagrams produced by simulation. I aim to show that both can achieve similar performance.
 
 <!--
 ## On the interactions between optimizations
@@ -31,7 +35,7 @@ In this article, I explore the tension between this use of streaming and preload
 
 Streaming multiple parts of the page as a single HTTP response is a form of [inlining](#). It shares the same benefits: It reduces latency from network back and forth exchanges between the client and the server. But it also shares inlining [disadvantages](#) - It interacts badly with caching: Parts of the page with differing potential for caching have to be cached together (using the shortest cache TTL of all the parts) or not be cached at all.
 
-It is possible to address partially the caching potential that is lost by streaming the page as a whole by streaming the page from a smart edge function. An example implementation of this is Vercel's Next.js [Partial Pre-rendering](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model): An edge function is installed on the edge (in Vercel's CDN). When a client request hit the edge, the edge function streams the page parts which it has already in its cache, and requests the page parts that it does not have from the origin server. This only solves the problem partially: The data don't have to travel again and again between the server and the edge, but it does have to travel between the edge and the clients.
+
 
 Another aspect of streaming is that it allows the server to start loading all page parts as soon as it receives the page's request. In contrast, with browser preloading, the server has to wait for the following back and forth exchanges:
 
@@ -88,7 +92,7 @@ Additionally, the simulations assume that:
 
 - The server and the database are completely idle when the request arrives.
 - The server and the database are mono threaded processing requests one at a time.
-- The network is completely uncongested.
+- The network is completely un-congested.
 - The whole network bandwidth is instantly available (no slow starting).
 - No additional latency is created by HTTPS handshake
 - The page's script is async and therefore non render blocking
@@ -236,6 +240,8 @@ With pre-loading, the loading of the dynamic page part can be [quick-started ear
 </figure>
 
 ## Assembling the streamed page on the edge
+
+It is possible to address partially the caching potential that is lost by streaming the page as a whole by streaming the page from a smart edge function. An example implementation of this is Vercel's Next.js [Partial Pre-rendering](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model): An edge function is installed on the edge (in Vercel's CDN). When a client request hit the edge, the edge function streams the page parts which it has already in its cache, and requests the page parts that it does not have from the origin server. This only solves the problem partially: The data don't have to travel again and again between the server and the edge, but it does have to travel between the edge and the clients.
 
 <figure id="full-page-edge-page-assembly">
     <img
