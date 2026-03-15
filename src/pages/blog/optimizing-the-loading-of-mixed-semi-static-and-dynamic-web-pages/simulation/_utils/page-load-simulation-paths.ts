@@ -1,4 +1,4 @@
-import { FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL, STATIC_PAGE_URL, type Logger } from "./common.ts";
+import { FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL, SEMI_STATIC_PAGE_URL, type Logger } from "./common.ts";
 import simulation, { type SimulationArgs } from "./page-load-simulation.ts";
 
 export const STATIC_PATHS: { params: Record<keyof SimulationArgs, string> }[] = [];
@@ -8,7 +8,7 @@ for (const serverCache of [false, true]) {
     for (const edge of [false, true]) {
       for (const warmUp of [false, true]) {
         for (const noClientCache of [false, true]) {
-          for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL]) {
+          for (const url of [SEMI_STATIC_PAGE_URL, FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL]) {
             for (const edgePageAssembly of [false, true]) {
               STATIC_PATHS.push({
                 params: {

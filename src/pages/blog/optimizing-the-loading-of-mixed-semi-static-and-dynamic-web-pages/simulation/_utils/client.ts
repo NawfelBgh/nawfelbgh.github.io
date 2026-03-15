@@ -12,7 +12,7 @@ import {
   DYNAMIC_HTML_PART,
   SCRIPT_URL,
   SCRIPT_WITH_DATA_LOADING_URL,
-  STATIC_PAGE_URL,
+  SEMI_STATIC_PAGE_URL,
   FULL_PAGE_WITH_DYNAMIC_JSON_URL,
   DYNAMIC_JSON_PART
 } from "./common";
@@ -81,8 +81,11 @@ export class Client implements IClient {
   private replayFromCache(url: string) {
     const cachedChunks = this.cache.get(url)!;
     for (const chunk of cachedChunks) {
-      this.processSubResources(chunk.subResources);
       this.processingQueue.add(chunk);
+    }
+    // delayed processing sub-resources to give higher priority to the primary resource
+    for (const chunk of cachedChunks) {
+      this.processSubResources(chunk.subResources);
     }
     this.processQueue();
   }
@@ -234,7 +237,7 @@ export class Client implements IClient {
     this.logger.push({
       type: "Render",
       object:
-        this.pageUrl === STATIC_PAGE_URL ?
+        this.pageUrl === SEMI_STATIC_PAGE_URL ?
           DYNAMIC_PAGE_DATA_JSON_URL :
           this.pageUrl === FULL_PAGE_WITH_DYNAMIC_JSON_URL ?
             FULL_PAGE_WITH_DYNAMIC_JSON_URL :
@@ -269,8 +272,8 @@ export class Client implements IClient {
   hydrateDynamicChunk(next: () => void) {
     this.logger.push({
       type: "Hydration",
-      object: this.pageUrl === STATIC_PAGE_URL ? DYNAMIC_PAGE_DATA_JSON_URL : this.pageUrl,
-      part: this.pageUrl === STATIC_PAGE_URL ? undefined : DYNAMIC_HTML_PART,
+      object: this.pageUrl === SEMI_STATIC_PAGE_URL ? DYNAMIC_PAGE_DATA_JSON_URL : this.pageUrl,
+      part: this.pageUrl === SEMI_STATIC_PAGE_URL ? undefined : DYNAMIC_HTML_PART,
       start: this.clock.time,
       end: this.clock.time + this.config.hydrationDuration,
       actor: this.name,

@@ -3,7 +3,7 @@ import { Clock } from "./clock";
 import {
   type SimulationConfig,
   type Logger,
-  STATIC_PAGE_URL,
+  SEMI_STATIC_PAGE_URL,
   FULL_PAGE_URL,
   DevNullLogger,
   FULL_PAGE_WITH_DYNAMIC_JSON_URL,
@@ -29,7 +29,7 @@ for (const serverCache of [false, true]) {
   for (const preload of [false, true]) {
     for (const edge of [false, true]) {
       for (const clientsCount of [1, 10, 20, 40]) {
-        for (const url of [STATIC_PAGE_URL, FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL]) {
+        for (const url of [SEMI_STATIC_PAGE_URL, FULL_PAGE_URL, FULL_PAGE_WITH_DYNAMIC_JSON_URL]) {
           for (const edgePageAssembly of [false, true]) {
             for (const durationMs of [10_000, 300_000]) {
               STATIC_PATHS.push({
@@ -83,7 +83,7 @@ export default function main(args: SimulationArgs): number[] {
     hydrationDuration: 50,
     requestSize: 250,
     headSize: 1000,
-    staticHtmlChunkSize: 50000,
+    semiStaticHtmlChunkSize: 50000,
     dynamicHtmlChunkSize: 50000,
     scriptSize: 50000,
     dynamicDataSize: 50000,

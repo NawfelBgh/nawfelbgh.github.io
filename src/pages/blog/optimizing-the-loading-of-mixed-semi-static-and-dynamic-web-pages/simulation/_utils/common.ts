@@ -83,7 +83,7 @@ export interface SimulationConfig {
   executeJsDuration: number;
   requestSize: number;
   headSize: number;
-  staticHtmlChunkSize: number;
+  semiStaticHtmlChunkSize: number;
   dynamicHtmlChunkSize: number;
   scriptSize: number;
   dynamicDataSize: number;
@@ -95,17 +95,17 @@ export interface SimulationConfig {
 
 
 export const FULL_PAGE_URL = "full-page";
-export const STATIC_PAGE_URL = "split-page";
-export const FULL_PAGE_WITH_DYNAMIC_JSON_URL = "page-with-dynamic-json";
+export const SEMI_STATIC_PAGE_URL = "split-page";
+export const FULL_PAGE_WITH_DYNAMIC_JSON_URL = "full-page-with-dynamic-json";
 export const DYNAMIC_PAGE_PART_URL = "dynamic-page-part";
 export const SCRIPT_URL = "script.js";
 export const SCRIPT_WITH_DATA_LOADING_URL = "script+load.js";
 export const DYNAMIC_PAGE_DATA_JSON_URL = "dynamic-page-data.json";
-export const STATIC_HTML_PART = "semi-static html part";
-export const DYNAMIC_HTML_PART = "dynamic html part";
-export const DYNAMIC_JSON_PART = "dynamic json part";
+export const STATIC_HTML_PART = "semi-static part";
+export const DYNAMIC_HTML_PART = "dynamic part";
+export const DYNAMIC_JSON_PART = "dynamic json";
 export const HEAD_PART = "head";
 
-export const DB_STATIC_PART_QUERY = "db-static-part-query";
+export const DB_SEMI_STATIC_PART_QUERY = "db-semi-static-part-query";
 export const DB_DYNAMIC_PART_QUERY = "db-dynamic-part-query";
 

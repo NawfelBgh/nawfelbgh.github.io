@@ -30,7 +30,7 @@ export default function main(args: SimulationArgs): Logger {
     hydrationDuration: 50,
     requestSize: 250,
     headSize: 1000,
-    staticHtmlChunkSize: 25_000,
+    semiStaticHtmlChunkSize: 25_000,
     dynamicHtmlChunkSize: 25_000,
     dynamicDataSize: 25_000,
     scriptSize: 250_000,
