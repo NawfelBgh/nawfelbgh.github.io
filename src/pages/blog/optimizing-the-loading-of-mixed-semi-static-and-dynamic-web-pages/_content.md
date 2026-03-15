@@ -7,7 +7,7 @@ Web pages are often composed of:
 - semi-static page parts which change infrequently and which are the same for all users,
 - dynamic page parts which change frequently and whose content may depend on the user.
 
-Recently released JavaScript frameworks, and [pioneers](https://viethip.wordpress.com/2014/12/16/async-fragments-rediscovering-progressive-html-rendering-with-marko/) like MarkoJS, optimize page loading by progressively streaming different parts of the page to the client. Although this kind of streaming is an effective optimization, I argue in this article that we should reach for it only after taking care of a more important optimization: Caching.
+Recently released JavaScript frameworks, and [pioneers](https://viethip.wordpress.com/2014/12/16/async-fragments-rediscovering-progressive-html-rendering-with-marko/) like [marko](https://markojs.com/), optimize page loading by progressively streaming different parts of the page to the client. Although this kind of streaming is an effective optimization, I argue in this article that we should reach for it only after taking care of a more important optimization: Caching.
 
 In my article, [How to make fast web frontends](/blog/web-frontend-performance), I classified optimization techniques broadly into 2 categories:
 
@@ -56,7 +56,7 @@ The simulation is produced using the parameters:
 | Head Size                             | 1 KB              |
 | Static HTML Part Size                 | 25 KB             |
 | Dynamic HTML Part Size                | 25 KB             |
-| Script Size                           | 500 KB            |
+| Script Size                           | 250 KB            |
 | Dynamic JSON Data Size                | 25 KB             |
 | Client To Server Network Latency      | 200 milliseconds  |
 | Client To Server Network Bandwidth    | 2.5 MB/s          |
@@ -74,7 +74,7 @@ Additionally, the simulation assumes that:
 - No additional latency is created by HTTPS handshake
 - The page's script is async and not render blocking
 
-You can generate timeline charts with different simulation parameters by visiting this [playground](#);
+You can generate timeline charts with different simulation parameters by visiting this [playground](#).
 
 ## The baseline pages to compare: Full-Page with streaming vs Split-Page with pre-loading
 
@@ -149,7 +149,17 @@ Both the `full-page` and the `split-page` versions benefit from caching in the s
 
 ## Assembling the Full-Page version on the edge for better caching
 
-It is possible to address partially the caching potential that is lost by streaming the page as a whole by streaming the page from a smart edge function. An example implementation of this is Vercel's Next.js [Partial Pre-rendering](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model): An edge function is installed on the edge (in Vercel's CDN). When a client request hit the edge, the edge function streams the page parts which it has already in its cache, and requests the page parts that it does not have from the origin server. This only solves the problem partially: The data don't have to travel again and again between the server and the edge, but it does have to travel between the edge and the clients.
+As we saw in the previous section, the streamed `full-page` version cannot benefit fully from the edge cache: The page request has to reach the origin server which unnecessarily streams the otherwise cacheable semi-static page part to the client each time the page is requested.
+
+It is possible to address this problem partially with edge-side page assembly: Edge functions can be deployed on the edge in order to respond to client requests. When page requests hit the edge, the edge function streams the cached page parts directly to the client, and requests the dynamic page parts from the origin server. [Next.js](https://nextjs.org/) can do this when deployed on Vercel infrastructure. They call the feature [Partial Pre-rendering (or PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model).
+
+Edge-side page assembly has some drawbacks:
+
+- It requires framework and edge-vendor specific code which demand more work from framework developers
+- Edge functions must be deployed by the website owner increasing cost
+- The server doesn't have to send semi-static page parts again and again to the edge. But the edge has to send them again and again to returning clients, unless the web app uses a service worker for that purpose which increases its complexity.
+
+> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">"Look What They Need to Mimic a Fraction of Our Power"</a> ~ Pre-loaded `split-page`s 
 
 <figure id="full-page-edge-page-assembly">
     <img
@@ -159,22 +169,24 @@ It is possible to address partially the caching potential that is lost by stream
         height="1320"
     />
     <figcaption>
-       <p><a href="#full-page-edge-page-assembly">Streamed <code>full-page</code> version with edge page assembly:</a> Thanks to edge-side page assembly, the semi-static page part is now delivered from the edge, leading to a First Contentful Paint at T=159ms and a full page load at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_true_full-page.json">T=799ms</a> (identical to the <a href="#split-page-edge-caching"><code>split-page</code> version with edge caching</a> example).
+       <p><a href="#full-page-edge-page-assembly">Streamed <code>full-page</code> with edge page assembly:</a> Thanks to edge-side page assembly, the semi-static page part is now delivered from the edge, leading to a First Contentful Paint at T=159ms and a full page load at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_true_full-page.json">T=799ms</a> (identical to the <a href="#split-page-edge-caching"><code>split-page</code> version with edge caching</a> example).
        </p>
     </figcaption>
 </figure>
 
 ## Page loading from a returning user with warm client cache
 
+Lastly, an interesting, although less representative, speed benchmark is how fast the page loads for returning user that still have fresh cached resources in their browser cache.
+
 <figure id="full-page-edge+client-caching">
     <img
         alt="Streaming naive version"
-        src="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_false_full-page.svg"
-        width="1090"
-        height="1480"
+        src="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_false_full-page.svg"
+        width="911"
+        height="1200"
     />
     <figcaption>
-       <p><a href="#full-page-edge+client-caching">Streaming version for a returning user:</a> ...
+       <p><a href="#full-page-edge+client-caching">Streamed <code>full-page</code> for a returning user:</a> Since the <code>full-page</code> is not cacheable, the client has to request the full page, which it receives very rapidly in this example which presupposes edge-side page assembly from the previous section. The first page paint, is delayed until T=400ms in this example with the script which started executing before the page semi-static part arrived. The pages is fully loaded at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_false_full-page.svg">T=621ms</a>.
        </p>
     </figcaption>
 </figure>
@@ -187,7 +199,7 @@ It is possible to address partially the caching potential that is lost by stream
         height="900"
     />
     <figcaption>
-       <p><a href="#split-page-edge+client-caching">Split page version for a returning user:</a> ...
+       <p><a href="#split-page-edge+client-caching">Pre-loaded <code>split-page</code> for a returning user:</a> 
        </p>
     </figcaption>
 </figure>

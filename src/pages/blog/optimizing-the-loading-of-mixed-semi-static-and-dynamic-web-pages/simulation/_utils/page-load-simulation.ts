@@ -33,7 +33,7 @@ export default function main(args: SimulationArgs): Logger {
     staticHtmlChunkSize: 25_000,
     dynamicHtmlChunkSize: 25_000,
     dynamicDataSize: 25_000,
-    scriptSize: 500_000,
+    scriptSize: 250_000,
     serverSideCache: args.serverCache,
     preload: args.preload,
     edgePageAssembly: args.edgePageAssembly,
