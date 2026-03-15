@@ -19,10 +19,10 @@ The article is structured as follows:
 
 The focus in this article is to explain how various optimizations work and how different optimizations can help or interfere with each other.
 
-## Table of content
+## Table of contents
 
 - [Introduction](#introduction)
-- [Table of content](#table-of-content)
+- [Table of contents](#table-of-contents)
 - [1. The Web as a physical system](#1-the-web-as-a-physical-system)
   - [Frontends contribution to the web’s environmental footprint](#frontends-contribution-to-the-webs-environmental-footprint)
   - [Improving performance by using more powerful hardware](#improving-performance-by-using-more-powerful-hardware)
