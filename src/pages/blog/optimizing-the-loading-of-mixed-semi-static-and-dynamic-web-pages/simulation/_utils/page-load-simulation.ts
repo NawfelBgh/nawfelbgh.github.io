@@ -10,39 +10,36 @@ import { Network } from "./network";
 import { FrontendServer } from "./server";
 
 export type SimulationArgs = {
-  serverCache: boolean,
-  preload: boolean,
   edge: boolean,
-  edgePageAssembly: boolean,
   warmUp: boolean,
   noClientCache: boolean,
   url: string,
 };
 
-export default function main(args: SimulationArgs): Logger {
-  const config: SimulationConfig = {
-    queryDuration: 50,
-    queryResponseSize: 25_000,
-    renderToHtmlDuration: 50,
-    renderFromHtmlDuration: 50,
-    renderFromJsonDuration: 100,
-    executeJsDuration: 250,
-    hydrationDuration: 50,
-    requestSize: 250,
-    headSize: 1000,
-    semiStaticHtmlChunkSize: 25_000,
-    dynamicHtmlChunkSize: 25_000,
-    dynamicDataSize: 25_000,
-    scriptSize: 250_000,
-    serverSideCache: args.serverCache,
-    preload: args.preload,
-    edgePageAssembly: args.edgePageAssembly,
-  };
+export type NetworkConfig = {
+  latency: number,
+  upLinkBandwidth: number,
+  downLinkBandwidth: number,
+}
 
+export type SimulationNetworkConfig = {
+  serverToDbNetwork: NetworkConfig,
+  edgeToServerNetwork: NetworkConfig,
+  clientToEdgeNetwork: NetworkConfig,
+  clientToServerNetwork: NetworkConfig,
+}
+
+export default function main(args: SimulationArgs, config: SimulationConfig, networkConfig: SimulationNetworkConfig): Logger {
   const logger: Logger = [];
   const clock = new Clock();
 
-  const serverToDbNetwork = new Network(logger, clock, 5, 100_000, 100_000);
+  const serverToDbNetwork = new Network(
+    logger,
+    clock,
+    networkConfig.serverToDbNetwork.latency,
+    networkConfig.serverToDbNetwork.upLinkBandwidth,
+    networkConfig.serverToDbNetwork.downLinkBandwidth
+  );
   const database = new Database(logger, clock, config);
   const server = new FrontendServer(
     logger,
@@ -71,11 +68,22 @@ export default function main(args: SimulationArgs): Logger {
   };
 
   if (args.edge) {
-    // Splitting the latency 200 between edgeToServerNetwork and clientToEdgeNetwork
-    const edgeToServerNetwork = new Network(logger, clock, 150, 10_000, 10_000);
+    const edgeToServerNetwork = new Network(
+      logger,
+      clock,
+      networkConfig.edgeToServerNetwork.latency,
+      networkConfig.edgeToServerNetwork.upLinkBandwidth,
+      networkConfig.edgeToServerNetwork.downLinkBandwidth
+    );
     const edge = new Edge(logger, clock, edgeToServerNetwork, server, config);
   
-    const clientToEdgeNetwork = new Network(logger, clock, 50, 2500, 2500);
+    const clientToEdgeNetwork = new Network(
+      logger,
+      clock,
+      networkConfig.clientToEdgeNetwork.latency,
+      networkConfig.clientToEdgeNetwork.upLinkBandwidth,
+      networkConfig.clientToEdgeNetwork.downLinkBandwidth
+    );
     client = new Client(
       logger,
       clock,
@@ -96,7 +104,13 @@ export default function main(args: SimulationArgs): Logger {
      });
 
   } else {
-    const clientToServerNetwork = new Network(logger, clock, 200, 2500, 2500);
+    const clientToServerNetwork = new Network(
+      logger,
+      clock,
+      networkConfig.clientToServerNetwork.latency,
+      networkConfig.clientToServerNetwork.upLinkBandwidth,
+      networkConfig.clientToServerNetwork.downLinkBandwidth
+    );
     client = new Client(
       logger,
       clock,

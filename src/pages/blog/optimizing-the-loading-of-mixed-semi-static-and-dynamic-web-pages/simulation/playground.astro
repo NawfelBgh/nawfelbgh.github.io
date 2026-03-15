@@ -1,0 +1,393 @@
+---
+import BaseHead from "../../../../components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import { getAlternates, getThumbnailUrl } from "../../../../utils/blog";
+import PageLayout from "../../../../layouts/PageLayout.astro";
+
+const lang = "en";
+const post = await getEntry("blog", "web-frontend-performance");
+if (!post) throw new Error("Entry not found blog:web-frontend-performance");
+const image = getThumbnailUrl(post);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={post.data.title}
+      description={post.data.description}
+      image={image}
+      alternates={[]}
+    />
+    <style>
+      .page-wrapper {
+        padding: 1rem;
+      }
+      form {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+      fieldset {
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 0.5rem;
+      }
+      legend {
+        font-weight: bold;
+        padding: 0 0.5rem;
+      }
+      label {
+        font-size: 0.875rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      label input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+      input[type="number"], select {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button[type="submit"] {
+        grid-column: 1 / -1;
+        padding: 0.75rem;
+        background: var(--dark-gray);
+        color: var(--bg-color);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      button[type="submit"]:hover {
+        background: var(--darkest-gray);
+      }
+      output {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+        overflow-x: auto;
+        border: solid 1px var(--border-color);
+        padding: 1rem;
+        gap: 1rem;
+      }
+      output svg {
+        max-width: 100%;
+        height: auto;
+      }
+      :global(#logs-table) {
+        border-collapse: collapse;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+        
+        & :global(th, td) {
+          border: 1px solid var(--border-color);
+          padding: 0.25rem 0.5rem;
+          text-align: left;
+        }
+      }
+
+      /* Define dark mode */
+      :global(body.dark-theme) {
+        & :global(svg) {
+          filter: invert(85%);
+        }
+        & button[type="submit"] {
+          color: var(--text-color);
+          border: solid 1px var(--text-color);
+          background-color: var(--bg-color);
+          &:hover {
+            background-color: var(--light-gray);
+            color: var(--bg-color);
+          }
+        }
+      }
+      /* Define auto theme (Defaulting to dark theme if it's the user's preference) */
+      @media (prefers-color-scheme: dark) {
+        :global(body):not(.light-theme) {
+          & :global(svg) {
+            filter: invert(85%);
+          }
+          & button[type="submit"] {
+            color: var(--text-color);
+            border: solid 1px var(--text-color);
+            background-color: var(--bg-color);
+            &:hover {
+              background-color: var(--light-gray);
+              color: var(--bg-color);
+            }
+          }
+        }
+      }
+    </style>
+  </head>
+
+  <PageLayout lang={lang} alternates={[]}>
+    <div class="page-wrapper">
+      <h1>Page Load Simulation Playground</h1>
+      <form id="simulation-form">
+        <fieldset>
+          <legend>Simulation Args</legend>
+          <label>
+            <input type="checkbox" name="edge" value="true" />
+            Edge
+          </label>
+          <label>
+            <input type="checkbox" name="warmUp" value="true" />
+            Warm Up
+          </label>
+          <label>
+            <input type="checkbox" name="noClientCache" value="true" />
+            No Client Cache
+          </label>
+          <label>
+            <input type="checkbox" name="serverSideCache" value="true" />
+            Server Side Cache
+          </label>
+          <label>
+            <input type="checkbox" name="preload" value="true" />
+            Preload
+          </label>
+          <label>
+            <input type="checkbox" name="edgePageAssembly" value="true" />
+            Edge Page Assembly
+          </label>
+          <label>
+            URL
+            <select name="url">
+              <option value="split-page">Split Page</option>
+              <option value="full-page">Full Page</option>
+              <option value="full-page-with-dynamic-json">Full Page with Dynamic JSON</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Simulation Config</legend>
+          <label>
+            Query Duration (ms)
+            <input type="number" name="queryDuration" value="50" min="0" />
+          </label>
+          <label>
+            Query Response Size (bytes)
+            <input type="number" name="queryResponseSize" value="25000" min="0" />
+          </label>
+          <label>
+            Render to HTML Duration (ms)
+            <input type="number" name="renderToHtmlDuration" value="50" min="0" />
+          </label>
+          <label>
+            Render from HTML Duration (ms)
+            <input type="number" name="renderFromHtmlDuration" value="50" min="0" />
+          </label>
+          <label>
+            Render from JSON Duration (ms)
+            <input type="number" name="renderFromJsonDuration" value="100" min="0" />
+          </label>
+          <label>
+            Execute JS Duration (ms)
+            <input type="number" name="executeJsDuration" value="250" min="0" />
+          </label>
+          <label>
+            Hydration Duration (ms)
+            <input type="number" name="hydrationDuration" value="50" min="0" />
+          </label>
+          <label>
+            Request Size (bytes)
+            <input type="number" name="requestSize" value="250" min="0" />
+          </label>
+          <label>
+            Head Size (bytes)
+            <input type="number" name="headSize" value="1000" min="0" />
+          </label>
+          <label>
+            Semi-static HTML Chunk Size (bytes)
+            <input type="number" name="semiStaticHtmlChunkSize" value="25000" min="0" />
+          </label>
+          <label>
+            Dynamic HTML Chunk Size (bytes)
+            <input type="number" name="dynamicHtmlChunkSize" value="25000" min="0" />
+          </label>
+          <label>
+            Script Size (bytes)
+            <input type="number" name="scriptSize" value="250000" min="0" />
+          </label>
+          <label>
+            Dynamic Data Size (bytes)
+            <input type="number" name="dynamicDataSize" value="25000" min="0" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Network Config: Server to DB</legend>
+          <label>
+            Latency (ms)
+            <input type="number" name="serverToDbNetwork_latency" value="5" min="0" />
+          </label>
+          <label>
+            Uplink Bandwidth (KB/s)
+            <input type="number" name="serverToDbNetwork_upLinkBandwidth" value="100000" min="0" />
+          </label>
+          <label>
+            Downlink Bandwidth (KB/s)
+            <input type="number" name="serverToDbNetwork_downLinkBandwidth" value="100000" min="0" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Network Config: Edge to Server</legend>
+          <label>
+            Latency (ms)
+            <input type="number" name="edgeToServerNetwork_latency" value="150" min="0" />
+          </label>
+          <label>
+            Uplink Bandwidth (KB/s)
+            <input type="number" name="edgeToServerNetwork_upLinkBandwidth" value="10000" min="0" />
+          </label>
+          <label>
+            Downlink Bandwidth (KB/s)
+            <input type="number" name="edgeToServerNetwork_downLinkBandwidth" value="10000" min="0" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Network Config: Client to Edge</legend>
+          <label>
+            Latency (ms)
+            <input type="number" name="clientToEdgeNetwork_latency" value="50" min="0" />
+          </label>
+          <label>
+            Uplink Bandwidth (KB/s)
+            <input type="number" name="clientToEdgeNetwork_upLinkBandwidth" value="2500" min="0" />
+          </label>
+          <label>
+            Downlink Bandwidth (KB/s)
+            <input type="number" name="clientToEdgeNetwork_downLinkBandwidth" value="2500" min="0" />
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Network Config: Client to Server</legend>
+          <label>
+            Latency (ms)
+            <input type="number" name="clientToServerNetwork_latency" value="200" min="0" />
+          </label>
+          <label>
+            Uplink Bandwidth (KB/s)
+            <input type="number" name="clientToServerNetwork_upLinkBandwidth" value="2500" min="0" />
+          </label>
+          <label>
+            Downlink Bandwidth (KB/s)
+            <input type="number" name="clientToServerNetwork_downLinkBandwidth" value="2500" min="0" />
+          </label>
+        </fieldset>
+
+        <button type="submit">Run Simulation</button>
+      </form>
+      <output id="simulation-result"></output>
+      <noscript>This page requires JavaScript</noscript>
+    </div>
+    <script>
+      import { renderToSvg } from "./_utils/renderToSvg";
+      import simulation from "./_utils/page-load-simulation";
+
+      document.getElementById("simulation-form")?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+
+        const args = {
+          edge: formData.get("edge") === "true",
+          warmUp: formData.get("warmUp") === "true",
+          noClientCache: formData.get("noClientCache") === "true",
+          url: formData.get("url") as string,
+        };
+
+        const config = {
+          serverSideCache: formData.get("serverSideCache") === "true",
+          preload: formData.get("preload") === "true",
+          edgePageAssembly: formData.get("edgePageAssembly") === "true",
+          queryDuration: parseInt(formData.get("queryDuration") as string, 10),
+          queryResponseSize: parseInt(formData.get("queryResponseSize") as string, 10),
+          renderToHtmlDuration: parseInt(formData.get("renderToHtmlDuration") as string, 10),
+          renderFromHtmlDuration: parseInt(formData.get("renderFromHtmlDuration") as string, 10),
+          renderFromJsonDuration: parseInt(formData.get("renderFromJsonDuration") as string, 10),
+          executeJsDuration: parseInt(formData.get("executeJsDuration") as string, 10),
+          hydrationDuration: parseInt(formData.get("hydrationDuration") as string, 10),
+          requestSize: parseInt(formData.get("requestSize") as string, 10),
+          headSize: parseInt(formData.get("headSize") as string, 10),
+          semiStaticHtmlChunkSize: parseInt(formData.get("semiStaticHtmlChunkSize") as string, 10),
+          dynamicHtmlChunkSize: parseInt(formData.get("dynamicHtmlChunkSize") as string, 10),
+          scriptSize: parseInt(formData.get("scriptSize") as string, 10),
+          dynamicDataSize: parseInt(formData.get("dynamicDataSize") as string, 10),
+        };
+
+        const networkConfig = {
+          serverToDbNetwork: {
+            latency: parseInt(formData.get("serverToDbNetwork_latency") as string, 10),
+            upLinkBandwidth: parseInt(formData.get("serverToDbNetwork_upLinkBandwidth") as string, 10),
+            downLinkBandwidth: parseInt(formData.get("serverToDbNetwork_downLinkBandwidth") as string, 10),
+          },
+          edgeToServerNetwork: {
+            latency: parseInt(formData.get("edgeToServerNetwork_latency") as string, 10),
+            upLinkBandwidth: parseInt(formData.get("edgeToServerNetwork_upLinkBandwidth") as string, 10),
+            downLinkBandwidth: parseInt(formData.get("edgeToServerNetwork_downLinkBandwidth") as string, 10),
+          },
+          clientToEdgeNetwork: {
+            latency: parseInt(formData.get("clientToEdgeNetwork_latency") as string, 10),
+            upLinkBandwidth: parseInt(formData.get("clientToEdgeNetwork_upLinkBandwidth") as string, 10),
+            downLinkBandwidth: parseInt(formData.get("clientToEdgeNetwork_downLinkBandwidth") as string, 10),
+          },
+          clientToServerNetwork: {
+            latency: parseInt(formData.get("clientToServerNetwork_latency") as string, 10),
+            upLinkBandwidth: parseInt(formData.get("clientToServerNetwork_upLinkBandwidth") as string, 10),
+            downLinkBandwidth: parseInt(formData.get("clientToServerNetwork_downLinkBandwidth") as string, 10),
+          },
+        };
+
+        const logs = simulation(args, config, networkConfig);
+        const svg = renderToSvg({ logs, slideMode: false, rightPadding: 50 });
+        
+        const tableHtml = `<table id="logs-table">
+          <thead>
+            <tr>
+              <th>Actor</th>
+              <th>Object</th>
+              <th>Part</th>
+              <th>Type</th>
+              <th>Start (ms)</th>
+              <th>End (ms)</th>
+              <th>Duration (ms)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs.map(log => `<tr>
+              <td>${log.actor}</td>
+              <td>${log.object ?? ''}</td>
+              <td>${log.part ?? ''}</td>
+              <td>${log.type}</td>
+              <td>${log.start}</td>
+              <td>${log.end}</td>
+              <td>${log.end - log.start}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+        <a id="logs-json-link" href="#" target="_blank" rel="noopener">Get simulation logs as JSON</a>`;
+        
+        const output = document.getElementById("simulation-result");
+        if (output) {
+          output.innerHTML = svg + tableHtml;
+          const jsonLink = document.getElementById("logs-json-link") as HTMLAnchorElement;
+          if (jsonLink) {
+            const jsonBlob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
+            jsonLink.href = URL.createObjectURL(jsonBlob);
+          }
+        }
+      });
+    </script>
+  </PageLayout>
+</html>

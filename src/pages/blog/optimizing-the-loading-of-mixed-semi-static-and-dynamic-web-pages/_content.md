@@ -74,7 +74,7 @@ Additionally, the simulation assumes that:
 - No additional latency is created by HTTPS handshakes
 - The page's script is async and non-render-blocking
 
-You can generate timeline charts with different simulation parameters by visiting this [playground](#).
+You can generate timeline charts with different simulation parameters by visiting this [playground](/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/playground).
 
 ## The baseline pages to compare: Full-Page with streaming vs Split-Page with pre-loading
 

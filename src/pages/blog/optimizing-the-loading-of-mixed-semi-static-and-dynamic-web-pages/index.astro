@@ -6,8 +6,8 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 import Content from "./_content.md";
 
 const lang = "en";
-const post = await getEntry("blog", "web-frontend-performance");
-if (!post) throw new Error("Entry not found blog:web-frontend-performance");
+const post = await getEntry("blog", "optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages");
+if (!post) throw new Error("Entry not found blog:optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages");
 const image = getThumbnailUrl(post);
 const alternates = getAlternates(post, lang);
 ---
