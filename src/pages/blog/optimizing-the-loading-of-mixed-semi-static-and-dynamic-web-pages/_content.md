@@ -13,8 +13,8 @@ In my article, [How to make fast web frontends](/blog/web-frontend-performance),
 
 - Techniques which speed up things by reducing the work necessary, for the server and for the network, to deliver the content to the client. Of these techniques, [Caching](/blog/web-frontend-performance#22-caching) is a prime example.
 - Techniques which do not necessarily reduce work but instead reduce user wait time by scheduling resources loading intelligently. Both HTTP-streaming and Pre-Loading fall into this category.
-    - With [HTTP Response Streaming](/blog/web-frontend-performance#32-streaming), the server can start loading all page parts in parallel as soon as it receives the client's request.
-    - With [Pre-Loading](/blog/web-frontend-performance#33-preloading), the client can start fetching page parts as soon as it receives the page page's headers or its head element.
+  - With [HTTP Response Streaming](/blog/web-frontend-performance#32-streaming), the server can start loading all page parts in parallel as soon as it receives the client's request.
+  - With [Pre-Loading](/blog/web-frontend-performance#33-preloading), the client can start fetching page parts as soon as it receives the page page's headers or its head element.
 
 Although relying on HTTP response streaming allows the server to start fetching resources earlier than pre-loading, it comes with disadvantages:
 
@@ -119,7 +119,9 @@ Now let's add caching at two levels:
 - The server caches the semi-static page part, so it does not need to reach to the database to get this part.
 - An edge node, or a CDN point of presence, is placed between the client and the server, serving cacheable resources without reaching to the origin server.
 
-Both the `full-page` and the `split-page` versions benefit from caching in the server and the edge, with the later benefiting considerably more getting a 300ms earlier First Contentful Paint and full page load. 
+Both the `full-page` and the `split-page` versions benefit from caching in the server and the edge. The page load times improved by 290ms and 610ms respectively.
+
+The `split-page` version benefited considerably more from caching. Compared to the `full-page` version, it got a 300ms earlier First Contentful Paint and a 260ms earlier page load.
 
 <figure id="full-page-edge-caching">
     <img
@@ -142,7 +144,7 @@ Both the `full-page` and the `split-page` versions benefit from caching in the s
         height="1260"
     />
     <figcaption>
-       <p><a href="#split-page-edge-caching"><code>split-page</code> version with edge caching:</a> The semi-static page part is delivered from the edge with very reduced latency, leading to a First Contentful Paint as soon as T=160ms (300ms earlier than the <code>full-page</code>) and a full page load at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_true_split-page.json">T=699ms</a> (260ms earlier then the <code>full-page</code>).
+       <p><a href="#split-page-edge-caching"><code>split-page</code> version with edge caching:</a> The semi-static page part is delivered from the edge with very reduced latency, leading to a First Contentful Paint as soon as T=160ms (300ms earlier than the <code>full-page</code>) and a full page load at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_true_split-page.json">T=699ms</a> (260ms faster than the <code>full-page</code>, and 610ms faster than the <code>split-page</code>'s <a href="#split-page-preloading">version without caching</a>).
        </p>
     </figcaption>
 </figure>
@@ -159,7 +161,7 @@ Edge-side page assembly has some drawbacks:
 - Edge functions must be deployed by the website owner increasing cost
 - The server doesn't have to send semi-static page parts again and again to the edge. But the edge has to send them again and again to returning clients, unless the web app uses a service worker for that purpose which increases its complexity.
 
-> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">"Look What They Need to Mimic a Fraction of Our Power"</a> ~ Pre-loaded `split-page`s 
+> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">"Look What They Need to Mimic a Fraction of Our Power"</a> ~ Pre-loaded `split-page`s
 
 <figure id="full-page-edge-page-assembly">
     <img
@@ -206,3 +208,13 @@ Lastly, an interesting, although less representative, speed benchmark is how fas
 
 ## Conclusion
 
+In this article, we explored the performance trade-offs between streaming and pre-loading approaches for loading mixed semi-static and dynamic web pages. The simulation results demonstrate that:
+
+- Caching on the edge is more impactful than streaming and pre-loading.
+- When caching is applied, pre-loading can outperform streaming.
+- To make streaming work with caching, we need edge functions and additional infrastructure, which increases cost, complexity and vendor lock-in.
+- Returning users benefit most from pre-loading.
+
+Caching should be the first optimization priority. The combo of pre-loading and caching delivers performance comparable to, if not better than, streaming, while keeping the architecture simpler.
+
+Recently, many JavaScript frameworks have made it easy to deliver pages via streaming which is great for dynamic web pages, but sub-optimal for semi-static content which can benefit from caching. The split-page with pre-loading approach can technically be implemented without framework assistance. But for the sake of developer experience, and to set developers up for success, I would like to see JavaScript frameworks offer the tools and user guides on how to deliver dynamic page parts as separate pre-loaded resources, ideally with the framework automatically taking care of pre-loading.
