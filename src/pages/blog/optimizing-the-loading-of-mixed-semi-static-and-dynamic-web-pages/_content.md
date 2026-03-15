@@ -186,7 +186,7 @@ Lastly, an interesting, although less representative, speed benchmark is how fas
         height="1200"
     />
     <figcaption>
-       <p><a href="#full-page-edge+client-caching">Streamed <code>full-page</code> for a returning user:</a> Since the <code>full-page</code> is not cacheable, the client has to request the full page, which it receives very rapidly in this example which presupposes edge-side page assembly from the previous section. The first page paint, is delayed until T=400ms in this example with the script which started executing before the page semi-static part arrived. The pages is fully loaded at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_false_full-page.svg">T=621ms</a>.
+       <p><a href="#full-page-edge+client-caching">Streamed <code>full-page</code> for a returning user:</a> Since the <code>full-page</code> is not cacheable, the client has to request the full page, which it receives very rapidly in this example which presupposes edge-side page assembly from the previous section. The first contentful paint, is delayed until T=400ms in this example with the script which started executing before the page semi-static part arrived. The page is fully loaded at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_true_true_false_full-page.json">T=621ms</a>.
        </p>
     </figcaption>
 </figure>
@@ -195,11 +195,11 @@ Lastly, an interesting, although less representative, speed benchmark is how fas
     <img
         alt="Separate semi-static and dynamic resources version"
         src="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_false_split-page.svg"
-        width="873"
+        width="861"
         height="900"
     />
     <figcaption>
-       <p><a href="#split-page-edge+client-caching">Pre-loaded <code>split-page</code> for a returning user:</a> 
+       <p><a href="#split-page-edge+client-caching">Pre-loaded <code>split-page</code> for a returning user:</a> The semi-static page part is immediately available from the browser cache. Thanks to this, the first contentful paint arrives at T=50ms (350ms earlier than the <code>full-page</code> version) and the page is fully loaded at <a target="_blank" href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_false_split-page.json">T=571ms</a> (50ms earlier).
        </p>
     </figcaption>
 </figure>
