@@ -70,14 +70,17 @@ const image = getThumbnailUrl(post);
         display: flex;
         flex-direction: column;
         margin-top: 1rem;
-        overflow-x: auto;
         border: solid 1px var(--border-color);
         padding: 1rem;
         gap: 1rem;
       }
-      output svg {
+      output :global(#svg-container) {
         max-width: 100%;
         height: auto;
+        overflow-x: scroll;
+      }
+      output > :global(a) {
+        align-self: flex-start;
       }
       :global(#logs-table) {
         border-collapse: collapse;
@@ -129,6 +132,7 @@ const image = getThumbnailUrl(post);
   <PageLayout lang={lang} alternates={[]}>
     <div class="page-wrapper">
       <h1>Page Load Simulation Playground</h1>
+      <p>Featured in the article: <a href="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages">Optimizing The Loading Of Mixed Semi-Static And Dynamic Web Pages. Or: Do Not Jump Straight To Streaming</a>.
       <form id="simulation-form">
         <fieldset>
           <legend>Simulation Args</legend>
@@ -350,7 +354,7 @@ const image = getThumbnailUrl(post);
         };
 
         const logs = simulation(args, config, networkConfig);
-        const svg = renderToSvg({ logs, slideMode: false, rightPadding: 50 });
+        const svg = renderToSvg({ logs, rightPadding: 50 });
         
         const tableHtml = `<table id="logs-table">
           <thead>
@@ -376,15 +380,26 @@ const image = getThumbnailUrl(post);
             </tr>`).join('')}
           </tbody>
         </table>
-        <a id="logs-json-link" href="#" target="_blank" rel="noopener">Get simulation logs as JSON</a>`;
+        `;
         
         const output = document.getElementById("simulation-result");
         if (output) {
-          output.innerHTML = svg + tableHtml;
+          output.innerHTML = `
+            <div id="svg-container">${svg}</div>
+            <a id="svg-link" href="#" target="_blank" rel="noopener">Get as SVG</a>
+            <h2>Simulation Logs</h2>
+            ${tableHtml}
+            <a id="logs-json-link" href="#" target="_blank" rel="noopener">Get simulation logs as JSON</a>
+          `;
           const jsonLink = document.getElementById("logs-json-link") as HTMLAnchorElement;
           if (jsonLink) {
             const jsonBlob = new Blob([JSON.stringify(logs, null, 2)], { type: "application/json" });
             jsonLink.href = URL.createObjectURL(jsonBlob);
+          }
+          const svgLink = document.getElementById("svg-link") as HTMLAnchorElement;
+          if (svgLink) {
+            const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+            svgLink.href = URL.createObjectURL(svgBlob);
           }
         }
       });

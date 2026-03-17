@@ -4,6 +4,7 @@ import { getEntry } from "astro:content";
 import { getAlternates, getThumbnailUrl } from "../../../utils/blog";
 import PageLayout from "../../../layouts/PageLayout.astro";
 import Content from "./_content.md";
+import "../../../styles/article.css";
 
 const lang = "en";
 const post = await getEntry("blog", "optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages");
@@ -21,96 +22,6 @@ const alternates = getAlternates(post, lang);
       image={image}
       alternates={alternates}
     />
-    <style>
-      article {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 1em;
-      }
-
-      article > :global(*) {
-        width: min(840px, calc(100% - 2rem));
-      }
-
-      article > :global(hr) {
-        width: calc(0.6 * min(840px, calc(100% - 2rem)));
-        margin-block: 1.5em;
-        border-color: var(--border-color);
-      }
-
-      article > :global(figure) {
-        width: initial;
-        border: solid 1px var(--border-color);
-        margin-block: 1em;
-        margin-inline: 0;
-        display: flex;
-        flex-direction: column;
-
-        & :global(*) {
-          margin-inline: auto;
-        }
-        & :global(figcaption) {
-          padding: 1em;
-          max-width: 840px;
-        }
-
-        & :global(img) {
-          max-width: 100%;
-          height: auto;
-        }
-      }
-
-      /* Define dark mode */
-      :global(body.dark-theme) {
-        & article :global(img) {
-          filter: invert(85%);
-        }
-      }
-      /* Define auto theme (Defaulting to dark theme if it's the user's preference) */
-      @media (prefers-color-scheme: dark) {
-        :global(body):not(.light-theme) {
-          & article :global(img) {
-            filter: invert(85%);
-          }
-        }
-      }
-
-      article > :global(h1) {
-        margin-top: 2rem;
-      }
-
-      article > :global(h2, h3, h4, h5, h6) {
-        margin-top: 1rem;
-      }
-
-      article :global(blockquote) {
-        border: solid 1px var(--border-color);
-        box-sizing: border-box;
-        margin: 0;
-        margin-bottom: 1em;
-        padding: 1em;
-        padding-left: 1.5em;
-        border-left-width: 4px;
-
-        & > :global(p):last-child {
-          margin-bottom: 0;
-        }
-      }
-
-      #table-of-content-floating-link {
-        position: fixed;
-        top: 0;
-        right: 0;
-        padding: 0.5em 1em;
-        display: block;
-        background: var(--bg-color);
-        border-bottom-left-radius: 0.5em;
-        border-bottom: solid 1px var(--border-color);
-        border-left: solid 1px var(--border-color);
-        z-index: 1;
-      }
-    </style>
   </head>
 
   <PageLayout lang={lang} alternates={alternates}>

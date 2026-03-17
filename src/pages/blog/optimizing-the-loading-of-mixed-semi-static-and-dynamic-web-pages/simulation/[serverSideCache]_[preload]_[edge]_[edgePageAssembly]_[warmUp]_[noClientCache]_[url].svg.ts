@@ -15,7 +15,7 @@ export const GET: APIRoute = ({ params }) => {
   const logs: Logger = runSimulation({serverSideCache, preload, edge, edgePageAssembly, warmUp, noClientCache, url});
 
   return new Response(
-    renderToSvg({logs, slideMode: false, rightPadding: 50}), {
+    renderToSvg({logs, rightPadding: 50}), {
     headers: {
       "Content-Type": "image/svg+xml",
     },
