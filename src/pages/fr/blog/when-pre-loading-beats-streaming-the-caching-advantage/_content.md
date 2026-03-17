@@ -7,7 +7,7 @@ Les frameworks JavaScript récents, et le framework pionnier [Marko](https://mar
 
 Dans mon article, [Comment créer des frontends web rapides](/blog/web-frontend-performance), j'ai classé les techniques d'optimisation en deux grandes catégories :
 
-- Les techniques qui accélèrent le chargement des pages en réduisant le travail nécessaire, coté serveur et réseau, pour livrer le contenu au client. Le cache en est un exemple majeur.
+- Les techniques qui accélèrent le chargement des pages en réduisant le travail nécessaire côté serveur et réseau pour livrer le contenu au client. Le cache en est un exemple majeur.
 - Les techniques qui ne réduisent pas nécessairement le travail mais qui réduisent plutôt le temps d'attente de l'utilisateur en planifiant intelligemment le chargement des ressources. Le streaming HTTP et le pré-chargement rentrent dans cette catégorie.
   - Avec le streaming HTTP, le serveur peut commencer à charger toutes les parties de la page en parallèle dès qu'il reçoit la requête du client.
   - Avec le pré-chargement, le client peut commencer à récupérer les parties de la page dès qu'il reçoit les en-têtes de la page ou son élément head.
