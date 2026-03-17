@@ -1,0 +1,34 @@
+---
+import BaseHead from "../../../../components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import SimpleBlogLayout from "../../../../layouts/SimpleBlogLayout.astro";
+import {
+  getAlternates,
+  getProperty,
+  getThumbnailUrl,
+} from "../../../../utils/blog";
+import Content from "./_content.md";
+
+const lang = "fr";
+const post = await getEntry("blog", "when-pre-loading-beats-streaming-the-caching-advantage");
+if (!post) throw new Error("Entry not found blog:when-pre-loading-beats-streaming-the-caching-advantage");
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+const title = getProperty(post, "title", lang);
+const description = getProperty(post, "description", lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      alternates={alternates}
+    />
+  </head>
+  <SimpleBlogLayout post={post} lang={lang} alternates={alternates}>
+    <Content />
+  </SimpleBlogLayout>
+</html>
