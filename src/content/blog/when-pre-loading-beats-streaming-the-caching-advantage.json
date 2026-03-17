@@ -1,0 +1,11 @@
+{
+  "title": "When Pre-Loading Beats Streaming: The Caching Advantage",
+  "description": "Simulation shows pre-loading outperforms streaming when caching is involved, making it the better choice for mixed semi-static and dynamic pages.",
+  "pubDate": "2026-03-17",
+  "i18n": {
+    "fr": {
+      "title": "Quand le pré-chargement l'emporte sur le streaming : l'avantage du cache",
+      "description": "La simulation montre que le pré-chargement peut battre le streaming grâce au cache, ce qui en fait le meilleur choix pour les pages mixtes semi-statiques et dynamiques."
+    }
+  }
+}
