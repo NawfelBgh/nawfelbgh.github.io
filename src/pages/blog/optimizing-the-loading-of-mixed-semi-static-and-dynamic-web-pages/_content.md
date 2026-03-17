@@ -83,7 +83,7 @@ Let's see the page loading timeline diagrams for two versions of our web page:
 - The first version streams all page content in response to a single URL `full-page`.
 - The second version delivers the semi-static page part in response to the URL `split-page`, and then the dynamic part as a response to `dynamic-page-part.json`.
 
-The streamed `full-page` version finishes loading only 50ms earlier than the `split-page` version with pre-loading. As for the First Contentful Paint metric, it is identical.
+In this first round of simulation, I omitted caching purposefully to show its effect later on. In it, both full-page and split-page achieved identical First Contentful Paint latency, with the former loading 50ms earlier than the latter.
 
 <figure id="full-page-naive">
     <img
@@ -121,7 +121,7 @@ Now let's add caching at two levels:
 
 Both the `full-page` and the `split-page` versions benefit from caching in the server and the edge. Their page load times improved by 290ms and 610ms respectively.
 
-The `split-page` version benefited considerably more from caching. Compared to the `full-page` version, it got a 300ms earlier First Contentful Paint and a 260ms earlier page load.
+The `split-page` version benefited more from caching. Compared to the `full-page` version, it got a 300ms earlier First Contentful Paint and a 260ms earlier page load.
 
 <figure id="full-page-edge-caching">
     <img
@@ -194,7 +194,7 @@ Lastly, an interesting, though less representative, speed benchmark is how fast 
     </figcaption>
 </figure>
 
-<figure id="split-page-edge-caching">
+<figure id="split-page-edge+client-caching">
     <img
         alt="Split-page version with edge caching for returning user"
         src="/blog/optimizing-the-loading-of-mixed-semi-static-and-dynamic-web-pages/simulation/true_true_true_false_true_false_split-page.svg"
