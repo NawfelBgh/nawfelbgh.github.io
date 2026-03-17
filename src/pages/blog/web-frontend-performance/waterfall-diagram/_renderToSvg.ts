@@ -1,14 +1,19 @@
 import type { Log } from "./_common";
 
 type Args = {
-  logs: Log[],
-  slideMode: boolean ;
+  logs: Log[];
+  slideMode: boolean;
   rightPadding: number;
   showLatencyLines: boolean;
-}
+};
 
-export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }: Args) : string {
-    const grouped: {
+export function renderToSvg({
+  logs,
+  slideMode,
+  showLatencyLines,
+  rightPadding,
+}: Args): string {
+  const grouped: {
     actor: string;
     objects: {
       object: string;
@@ -68,7 +73,11 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
   }[] = [];
   for (const item of grouped) {
     const objects = item.objects.length;
-    const objectsEvents = item.objects.map((o) => o.events.filter(e => showLatencyLines || !e.event.includes('latency')).length);
+    const objectsEvents = item.objects.map(
+      (o) =>
+        o.events.filter((e) => showLatencyLines || !e.event.includes("latency"))
+          .length
+    );
     const size = 1 + objects * 2 + objectsEvents.reduce((acc, x) => acc + x, 0);
     groupedSizes.push({
       size,
@@ -87,7 +96,7 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
     groupedSizes.reduce((acc, x) => acc + x.size, 0) * lineHeight + padding * 2;
   const fontSize = slideMode ? 28 : 16;
   const titleFontSize = slideMode ? fontSize + 4 : fontSize;
-  const detailFontSize = slideMode ? fontSize - 8 : fontSize;
+  const detailFontSize = slideMode ? fontSize - 4 : fontSize - 2;
   const strokeWidth = slideMode ? 2 : 1;
   const latencyDasharray = "8,4";
 
@@ -98,7 +107,7 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
       const x = padding + objectNameWidth + index * pixelsPerMillisecond;
       if (index % 200 === 0) {
         gridLines.push(
-          `<text x="${x}" y="${detailFontSize}" font-size="${detailFontSize}" fill="black" text-anchor="middle">${index}ms</text>`
+          `<text x="${x}" y="${detailFontSize}" font-size="${detailFontSize}" fill="black" font-family="sans-serif" text-anchor="middle">${index}ms</text>`
         );
       }
       gridLines.push(
@@ -118,7 +127,7 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
     const y = padding + linesBefore * lineHeight;
 
     actorElements.push(
-      `<text x="${padding}" y="${y + fontSize}" font-size="${titleFontSize}" fill="black" style="font-weight: 600;">${item.actor}</text>`
+      `<text x="${padding}" y="${y + fontSize}" font-size="${titleFontSize}" fill="black" font-family="sans-serif" style="font-weight: 600;">${item.actor}</text>`
     );
 
     for (let oIndex = 0; oIndex < item.objects.length; oIndex++) {
@@ -134,7 +143,7 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
       const oY = y + linesBefore * lineHeight;
 
       actorElements.push(
-        `<text x="${padding}" y="${oY + fontSize}" font-size="${titleFontSize}" fill="black">${object.object}</text>`
+        `<text x="${padding}" y="${oY + fontSize}" font-size="${titleFontSize}" fill="black" font-family="sans-serif">${object.object}</text>`
       );
 
       let shownEventLinesCount = 0;
@@ -146,20 +155,20 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
         const rectWidth =
           (event.endTime - event.startTime) * pixelsPerMillisecond;
 
-        const isLatency = event.event.includes('latency');
+        const isLatency = event.event.includes("latency");
 
         actorElements.push(
-          `<rect x="${rectX}" y="${oY}" width="${Math.max(rectWidth, 1)}" height="${lineHeight}" stroke="black" stroke-dasharray="${isLatency && slideMode ? latencyDasharray : ''}" stroke-width="${strokeWidth}" fill="${event.highlight ? "#BDD4FF" : "white"}"/>`
+          `<rect x="${rectX}" y="${oY}" width="${Math.max(rectWidth, 1)}" height="${lineHeight}" stroke="black" stroke-dasharray="${isLatency && slideMode ? latencyDasharray : ""}" stroke-width="${strokeWidth}" fill="${event.highlight ? "#BDD4FF" : "white"}"/>`
         );
         if (!isLatency || showLatencyLines) {
-            actorElements.push(
+          actorElements.push(
             `<line x1="${rectX}" y1="${oY + lineHeight}" x2="${rectX}" y2="${eY + fontSize}" stroke="rgba(0,0,0,0.25)"/>`
-            );
-            actorElements.push(
-            `<text x="${rectX}" y="${eY + fontSize}" font-size="${fontSize}" fill="black">${event.event}${event.segment ? ` (${event.segment})` : ""}</text>`
-            );
+          );
+          actorElements.push(
+            `<text x="${rectX}" y="${eY + fontSize}" font-size="${detailFontSize}" fill="black" font-family="sans-serif">${event.event}${event.segment ? ` (${event.segment})` : ""}</text>`
+          );
 
-            shownEventLinesCount += 1;
+          shownEventLinesCount += 1;
         }
       }
     }
@@ -172,5 +181,5 @@ export function renderToSvg({ logs, slideMode, showLatencyLines, rightPadding }:
   ${actorElements.join("\n  ")}
 </svg>`;
 
-return svg;
+  return svg;
 }
