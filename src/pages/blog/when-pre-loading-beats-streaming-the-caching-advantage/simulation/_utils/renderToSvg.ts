@@ -1,41 +1,27 @@
-import type { Log } from "./_common";
+import type { Logger } from "./common";
 
 type Args = {
-  logs: Log[];
-  slideMode: boolean;
+  logs: Logger;
   rightPadding: number;
-  showLatencyLines: boolean;
 };
 
-export function renderToSvg({
-  logs,
-  slideMode,
-  showLatencyLines,
-  rightPadding,
-}: Args): string {
+export function renderToSvg({ logs, rightPadding }: Args): string {
   const grouped: {
     actor: string;
     objects: {
       object: string;
+      part?: string;
       events: {
+        type: string;
         event: string;
-        segment?: string;
-        highlight?: boolean;
-        startTime: number;
-        endTime: number;
+        start: number;
+        end: number;
       }[];
     }[];
   }[] = [];
 
-  for (const {
-    actor,
-    object,
-    segment,
-    event,
-    startTime,
-    endTime,
-    highlight,
-  } of logs) {
+  for (const { type, actor, object: eventObject, part, start, end } of logs) {
+    const object = eventObject ?? "unknown";
     const item = grouped.find((i) => i.actor === actor);
     if (!item) {
       grouped.push({
@@ -43,26 +29,34 @@ export function renderToSvg({
         objects: [
           {
             object,
-            events: [{ event, segment, startTime, endTime, highlight }],
+            part,
+            events: [
+              {
+                type,
+                event: type,
+                start,
+                end,
+              },
+            ],
           },
         ],
       });
       continue;
     }
-    const o = item.objects.find((o) => o.object === object);
+    const o = item.objects.find((o) => o.object === object && o.part === part);
     if (!o) {
       item.objects.push({
         object,
-        events: [{ segment, event, startTime, endTime, highlight }],
+        part,
+        events: [{ type, event: type, start, end }],
       });
       continue;
     }
     o.events.push({
-      event,
-      segment,
-      startTime,
-      endTime,
-      highlight,
+      type,
+      event: type,
+      start,
+      end,
     });
   }
 
@@ -73,11 +67,7 @@ export function renderToSvg({
   }[] = [];
   for (const item of grouped) {
     const objects = item.objects.length;
-    const objectsEvents = item.objects.map(
-      (o) =>
-        o.events.filter((e) => showLatencyLines || !e.event.includes("latency"))
-          .length
-    );
+    const objectsEvents = item.objects.map((o) => o.events.length);
     const size = 1 + objects * 2 + objectsEvents.reduce((acc, x) => acc + x, 0);
     groupedSizes.push({
       size,
@@ -87,18 +77,17 @@ export function renderToSvg({
   }
 
   const pixelsPerMillisecond = 1;
-  const endTime = logs[logs.length - 1].endTime;
+  const endTime = logs[logs.length - 1].end;
   const padding = 20;
-  const objectNameWidth = slideMode ? 200 : 100;
+  const objectNameWidth = 200;
   const width = padding * 2 + objectNameWidth + endTime * pixelsPerMillisecond;
-  const lineHeight = slideMode ? 32 : 20;
+  const lineHeight = 20;
   const height =
     groupedSizes.reduce((acc, x) => acc + x.size, 0) * lineHeight + padding * 2;
-  const fontSize = slideMode ? 28 : 16;
-  const titleFontSize = slideMode ? fontSize + 4 : fontSize;
-  const detailFontSize = slideMode ? fontSize - 4 : fontSize - 2;
-  const strokeWidth = slideMode ? 2 : 1;
-  const latencyDasharray = "8,4";
+  const fontSize = 16;
+  const titleFontSize = fontSize;
+  const detailFontSize = 14;
+  const strokeWidth = 1;
 
   // Generate grid lines
   const gridLines = [];
@@ -143,7 +132,7 @@ export function renderToSvg({
       const oY = y + linesBefore * lineHeight;
 
       actorElements.push(
-        `<text x="${padding}" y="${oY + fontSize}" font-size="${titleFontSize}" fill="black" font-family="sans-serif">${object.object}</text>`
+        `<text x="${padding}" y="${oY + fontSize}" font-size="${titleFontSize}" fill="black" font-family="sans-serif">${object.object}${object.part ? ` (${object.part})` : ""}</text>`
       );
 
       let shownEventLinesCount = 0;
@@ -151,21 +140,20 @@ export function renderToSvg({
         const event = object.events[eIndex];
         const eY = oY + (1 + shownEventLinesCount) * lineHeight;
         const rectX =
-          padding + objectNameWidth + event.startTime * pixelsPerMillisecond;
-        const rectWidth =
-          (event.endTime - event.startTime) * pixelsPerMillisecond;
+          padding + objectNameWidth + event.start * pixelsPerMillisecond;
+        const rectWidth = (event.end - event.start) * pixelsPerMillisecond;
 
         const isLatency = event.event.includes("latency");
 
         actorElements.push(
-          `<rect x="${rectX}" y="${oY}" width="${Math.max(rectWidth, 1)}" height="${lineHeight}" stroke="black" stroke-dasharray="${isLatency && slideMode ? latencyDasharray : ""}" stroke-width="${strokeWidth}" fill="${event.highlight ? "#BDD4FF" : "white"}"/>`
+          `<rect x="${rectX}" y="${oY}" width="${Math.max(rectWidth, 1)}" height="${lineHeight}" stroke="black" stroke-width="${strokeWidth}" fill="white" opacity="${isLatency ? "0.25" : "1"}"/>`
         );
-        if (!isLatency || showLatencyLines) {
+        if (true) {
           actorElements.push(
             `<line x1="${rectX}" y1="${oY + lineHeight}" x2="${rectX}" y2="${eY + fontSize}" stroke="rgba(0,0,0,0.25)"/>`
           );
           actorElements.push(
-            `<text x="${rectX}" y="${eY + fontSize}" font-size="${detailFontSize}" fill="black" font-family="sans-serif">${event.event}${event.segment ? ` (${event.segment})` : ""}</text>`
+            `<text x="${rectX}" y="${eY + fontSize}" font-size="${detailFontSize}" fill="black" font-family="sans-serif">${event.event}</text>`
           );
 
           shownEventLinesCount += 1;
@@ -174,7 +162,7 @@ export function renderToSvg({
     }
   }
 
-  const totalWidth = width + (slideMode ? 40 : 0) + rightPadding;
+  const totalWidth = width + rightPadding;
   const svg = `<svg version="1.1" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" xmlns="http://www.w3.org/2000/svg">
   <rect x="0" y="0" width="${width + rightPadding}" height="${height}" stroke="none" fill="white"/>
   ${gridLines.join("\n  ")}

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="300"
+   height="200"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="when-pre-loading-beats-streaming-the-caching-advantage.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview20"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.5450131"
+     inkscape:cx="126.71841"
+     inkscape:cy="132.41582"
+     inkscape:window-width="1792"
+     inkscape:window-height="1007"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <defs
+     id="defs5">
+    <linearGradient
+       id="gradient-left"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         style="stop-color:#8B4513;stop-opacity:1"
+         id="stop1" />
+      <stop
+         offset="100%"
+         style="stop-color:#2D1810;stop-opacity:1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       id="gradient-right"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         style="stop-color:#0A1628;stop-opacity:1"
+         id="stop3" />
+      <stop
+         offset="100%"
+         style="stop-color:#000000;stop-opacity:1"
+         id="stop4" />
+    </linearGradient>
+    <filter
+       id="glow"
+       x="-0.32"
+       y="-0.2"
+       width="1.64"
+       height="1.4">
+      <feGaussianBlur
+         stdDeviation="2"
+         result="coloredBlur"
+         id="feGaussianBlur4" />
+      <feMerge
+         id="feMerge5">
+        <feMergeNode
+           in="coloredBlur"
+           id="feMergeNode4" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode5" />
+      </feMerge>
+    </filter>
+    <filter
+       id="glow-6"
+       x="-0.32"
+       y="-0.2"
+       width="1.64"
+       height="1.4">
+      <feGaussianBlur
+         stdDeviation="2"
+         result="coloredBlur"
+         id="feGaussianBlur4-0" />
+      <feMerge
+         id="feMerge5-3">
+        <feMergeNode
+           in="coloredBlur"
+           id="feMergeNode4-2" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode5-6" />
+      </feMerge>
+    </filter>
+  </defs>
+  <rect
+     x="0"
+     y="0"
+     width="300"
+     height="200"
+     fill="#F8F8F8"
+     stroke="#999999"
+     stroke-width="1"
+     id="rect-bg"
+     style="fill:#ffffff;fill-opacity:1" />
+  <!-- PRE-LOADING -->
+  <path
+     style="fill:none;stroke:#999999;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+     d="M -4.1412716,202.62159 303.2331,-1.6811302"
+     id="path1"
+     sodipodi:nodetypes="cc" />
+  <text
+     x="214.34305"
+     y="33.317863"
+     font-family="Arial, sans-serif"
+     font-size="24"
+     font-weight="bold"
+     font-style="italic"
+     fill="#B22222"
+     id="text6"
+     style="font-size:29.3333px;text-align:end;text-anchor:end;fill:#B22222;fill-opacity:1">PRE-LOADING</text>
+  <rect
+     x="15"
+     y="51"
+     width="15"
+     height="8"
+     fill="#daa520"
+     rx="2"
+     id="rect8"
+     style="stroke-width:0.435746" />
+  <rect
+     x="30.108177"
+     y="66.802788"
+     width="80"
+     height="8"
+     fill="#daa520"
+     rx="2"
+     id="rect8-3" />
+  <rect
+     x="30.108177"
+     y="82.605576"
+     width="80"
+     height="8"
+     fill="#daa520"
+     rx="2"
+     id="rect8-1" />
+  <rect
+     x="30.108177"
+     y="98.408363"
+     width="70"
+     height="8"
+     fill="#daa520"
+     rx="2"
+     id="rect8-2" />
+  <!-- STREAMING -->
+  <text
+     x="287.14569"
+     y="183.90486"
+     font-family="Arial, sans-serif"
+     font-size="24"
+     font-weight="bold"
+     font-style="italic"
+     fill="#1e90ff"
+     id="text12"
+     style="font-size:29.3333px"><tspan
+       style="text-align:end;text-anchor:end"
+       id="tspan1">STREAMING</tspan></text>
+  <polygon
+     points="180,94 180,70 195,82 "
+     fill="#1e90ff"
+     filter="url(#glow)"
+     id="polygon12"
+     transform="translate(49.357596,32.079466)" />
+  <polygon
+     points="180,94 180,70 195,82 "
+     fill="#1e90ff"
+     filter="url(#glow)"
+     id="polygon12-9"
+     transform="translate(29.157596,31.879466)"
+     style="filter:url(#glow-6)" />
+  <rect
+     x="183.64827"
+     y="136.31813"
+     width="80"
+     height="8"
+     fill="#555555"
+     rx="2"
+     id="rect14" />
+  <rect
+     x="183.64827"
+     y="136.31813"
+     width="45"
+     height="8"
+     fill="#1e90ff"
+     rx="2"
+     id="rect15" />
+  <!-- VS -->
+  <circle
+     cx="150"
+     cy="100"
+     r="18"
+     fill="#DAA520"
+     id="circle18" />
+  <text
+     x="150"
+     y="107"
+     font-family="Arial, sans-serif"
+     font-size="20px"
+     font-weight="bold"
+     fill="#333333"
+     text-anchor="middle"
+     id="text18"
+     style="font-size:18.6667px">VS</text>
+  <!-- Title -->
+  <rect
+     x="0"
+     y="0"
+     width="300"
+     height="200"
+     fill="none"
+     stroke="#999999"
+     stroke-width="1"
+     id="rect20" />
+</svg>
