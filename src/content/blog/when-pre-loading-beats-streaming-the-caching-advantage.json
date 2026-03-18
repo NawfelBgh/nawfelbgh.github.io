@@ -5,7 +5,7 @@
   "i18n": {
     "fr": {
       "title": "Quand le pré-chargement l'emporte sur le streaming : l'avantage du cache",
-      "description": "La simulation montre que le pré-chargement peut battre le streaming grâce au cache, ce qui en fait le meilleur choix pour les pages mixtes semi-statiques et dynamiques."
+      "description": "La simulation montre que le pré-chargement peut battre le streaming grâce au cache, ce qui en fait le meilleur choix pour les pages avec du contenu semi-statique et dynamique mixte."
     }
   }
 }
