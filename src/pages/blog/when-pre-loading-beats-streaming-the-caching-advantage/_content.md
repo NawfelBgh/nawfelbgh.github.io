@@ -177,7 +177,7 @@ Edge-side page assembly has some drawbacks:
 
 ## Page loading from a returning user with warm client cache
 
-Lastly, we examine a less representative but still interesting scenario: how fast each page loads for returning users who have fresh cached resources in their browser cache.
+Lastly, let's examine a less representative but still interesting scenario: how fast each page loads for returning users who have fresh cached resources in their browser cache.
 
 <figure id="full-page-edge+client-caching">
     <img
