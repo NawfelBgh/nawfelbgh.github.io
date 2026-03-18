@@ -79,7 +79,7 @@ You can generate timeline charts with different parameters by visiting [the simu
 Let's see the page loading timeline diagrams for two versions of our web page:
 
 - The first version streams all page content in response to a single URL `full-page`.
-- The second version delivers the semi-static page part in response to the URL `split-page`, and then the dynamic part as a response to `dynamic-page-part.json`.
+- The second version delivers the semi-static page part in response to the URL `split-page`, and then the dynamic part as a response to `dynamic-page-data.json`.
 
 In the first round of simulation, which omits caching, both `full-page` and `split-page` achieved identical First Contentful Paint latency, with the former completely loading 50ms earlier than the latter.
 
@@ -143,6 +143,7 @@ The `split-page` version benefited more from caching. Compared to the `full-page
     />
     <figcaption>
        <p><a href="#split-page-edge-caching">Preloaded Split-Page with server and edge caching:</a> The semi-static page part is delivered from the edge with very reduced latency, leading to a First Contentful Paint as soon as T=160ms (300ms earlier than the <code>full-page</code> version) and a full page load at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_true_split-page.json">T=699ms</a> (260ms faster than the <code>full-page</code> version, and 610ms faster than the <code>split-page</code> <a href="#split-page-preloading">version without caching</a>).
+       </p><p>Pre-loading significantly impacts performance. <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_false_true_false_true_true_split-page.svg">Without it</a>, the <code>split-page</code> takes 421ms longer to fully load <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_false_true_false_true_true_split-page.json">(T=1120ms)</a> even with caching enabled.
        </p>
     </figcaption>
 </figure>
@@ -159,7 +160,7 @@ Edge-side page assembly has some drawbacks:
 - Edge functions must be deployed by the website owner, increasing cost
 - The origin server no longer repeatedly sends semi-static page parts to the edge. However, the edge still sends them to returning clients on each request. This can be solved by implementing the same page assembly approach using a service worker, but that would increase app complexity.
 
-> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">"Look What They Need to Mimic a Fraction of Our Power"</a> ~ Pre-loaded `split-page`s
+> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">Look What They Need to Mimic a Fraction of Our Power!</a> ~ Pre-loaded `split-page`s
 
 <figure id="full-page-edge-page-assembly">
     <img
@@ -212,9 +213,7 @@ In this article, we explored the performance trade-offs between two approaches f
 
 In our simulation, we observed that:
 
-- **Edge caching delivers the biggest wins**: Adding server-side and edge caching improved load times for both approaches.
-- **Split-page with pre-loading wins with caching**: Because it separates cacheable content from dynamic content, split-page benefited more from caching than full-page streaming.
-- **Full-page streaming requires extra infrastructure to match performance**: To achieve similar caching benefits, full-page streaming needs edge functions (e.g., Next.js Partial Pre-rendering), adding cost and complexity.
-- **Returning users benefit most from split-page**: With browser caching enabled, split-page achieved faster First Contentful Paint than full-page streaming.
+- **With caching, Split-Page with Pre-Loading achieves faster load times than Full-Page Streaming**, because it separates cacheable content from dynamic content, allowing each to be cached independently.
+- **Full-page Streaming needs edge functions to achieve similar caching benefits**, adding cost and complexity.
 
-JavaScript frameworks today make Full-Page Streaming easy, which works well for dynamic content. However, this approach delivers all content in a single response, preventing edge and browser caches from storing the semi-static parts. Split-Page with Pre-loading avoids this problem and can be implemented without framework support. That said, I believe frameworks should offer APIs to enable this pattern with good developer experience. [Astro](https://astro.build/) already delivers this thanks to its [server islands](https://docs.astro.build/en/guides/server-islands/).
+JavaScript frameworks today make Full-Page Streaming easy, which works well for dynamic content but hinders edge and browser caching of semi-static content. Split-Page with Pre-loading avoids this problem and can be implemented without framework support. That said, framework support is needed to use this pattern alongside DX-enhancing features like [Astro](https://astro.build/)'s [server islands](https://docs.astro.build/en/guides/server-islands/) or [SolidStart's](https://docs.solidjs.com/solid-start/) and [TanStackStart's](https://tanstack.com/start/latest) server functions.
