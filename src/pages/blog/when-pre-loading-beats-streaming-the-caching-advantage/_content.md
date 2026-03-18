@@ -152,15 +152,16 @@ The `split-page` version benefited more from caching. Compared to the `full-page
 
 As we saw in the previous section, the streamed `full-page` version cannot take full advantage of edge caching: each page request must reach the origin server, which re-sends the otherwise cacheable semi-static page part to the client every time.
 
-It is possible to address this problem partially with edge-side page assembly: Edge functions can be deployed on the edge in order to respond to client requests. When page requests hit the edge, the edge function streams the cached page parts directly to the client, and requests the dynamic page parts from the origin server. [Next.js](https://nextjs.org/) can do this when deployed on Vercel infrastructure. They call the feature [Partial Pre-rendering (or PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model).
+It is possible to address this problem with edge-side page assembly, which involves caching semi-static parts at the edge and streaming them to the client as dynamic parts are fetched from the origin server.
+- This approach has existed since the early 2000s with [Edge Side Includes (ESI)](https://en.wikipedia.org/wiki/Edge_Side_Includes).
+- Facebook implemented a similar approach, called [BigPipe](https://engineering.fb.com/2010/06/04/web/bigpipe-pipelining-web-pages-for-high-performance/) in 2010.
+- More recently, [Next.js](https://nextjs.org/) implemented this pattern with [Partial Pre-rendering (PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model) available on Vercel.
 
 Edge-side page assembly has some drawbacks:
 
-- It requires framework and edge-vendor specific code which is more work for framework developers
-- Edge functions must be deployed by the website owner, increasing cost
-- The origin server no longer repeatedly sends semi-static page parts to the edge. However, the edge still sends them to returning clients on each request. This can be solved by implementing the same page assembly approach using a service worker, but that would increase app complexity.
-
-> <a target="_blank" href="https://knowyourmeme.com/memes/look-what-they-need-to-mimic-a-fraction-of-our-power/">Look What They Need to Mimic a Fraction of Our Power!</a> ~ Pre-loaded `split-page`s
+- It requires framework support and often vendor-specific code
+- It requires edge processing, which may incur additional costs
+- The origin server no longer repeatedly sends semi-static parts to the edge. However, the edge still sends them to returning clients on each request.
 
 <figure id="full-page-edge-page-assembly">
     <img
@@ -214,6 +215,6 @@ In this article, we explored the performance trade-offs between two approaches f
 In our simulation, we observed that:
 
 - **With caching, Split-Page with Pre-Loading achieves faster load times than Full-Page Streaming**, because it separates cacheable content from dynamic content, allowing each to be cached independently.
-- **Full-page Streaming needs edge functions to achieve similar caching benefits**, adding cost and complexity.
+- **Full-page Streaming needs edge-side processing to achieve similar caching benefits**, adding cost and complexity.
 
 JavaScript frameworks today make Full-Page Streaming easy, which works well for dynamic content but hinders edge and browser caching of semi-static content. Split-Page with Pre-loading avoids this problem and can be implemented without framework support. That said, framework support is needed to use this pattern alongside DX-enhancing features like [Astro](https://astro.build/)'s [server islands](https://docs.astro.build/en/guides/server-islands/) or [SolidStart's](https://docs.solidjs.com/solid-start/) and [TanStackStart's](https://tanstack.com/start/latest) server functions.
