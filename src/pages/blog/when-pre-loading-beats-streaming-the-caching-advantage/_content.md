@@ -217,9 +217,9 @@ In this article, we explored the performance trade-offs between two approaches f
 
 In our simulation, we observed that:
 
-- **With caching, Split-Page with Pre-Loading achieves faster load times than Full-Page Streaming**, because it separates cacheable content from dynamic content, allowing each to be cached independently.
-- **Full-Page Streaming needs edge-side processing to achieve similar caching benefits**, adding cost and complexity.
-- **With edge-side page assembly, Full-page Streaming can load pages slightly faster for new users**, because the edge can start loading dynamic page parts earlier.
-- **Split-Page with Preloading can load pages slightly faster for returning users, even against edge-side page assembly**, because the client can start processing cached page resources earlier.
+- **With edge caching, Split-Page with Pre-Loading achieves faster load times than Full-Page Streaming**, because it separates cacheable content from dynamic content, allowing the fast delivery of semi-static content from the edge.
+- **Full-Page Streaming needs edge-side processing to achieve similar caching benefits**, but that adds cost and complexity.
+- **Without browser cache, edge-side page assembly can give Full-Page Streaming a slight advantage**, because the edge starts fetching dynamic parts earlier.
+- **With fresh browser cache, Split-Page with Pre-Loading has a slight advantage**, because cached resources are available immediately.
 
 Recent JavaScript frameworks make Full-Page Streaming easy, which works well for dynamic content but hinders edge and browser caching of semi-static content. Split-Page with Pre-loading avoids this problem and can be implemented without framework support. That said, framework support is needed to use this pattern alongside DX-enhancing features like server functions/actions in various frameworks, which abstract away endpoint creation and invocation. Among mainstream JS frameworks, [Astro](https://astro.build/)'s [server islands](https://docs.astro.build/en/guides/server-islands/) implement the Split-Page approach with arguably the best developer experience.
