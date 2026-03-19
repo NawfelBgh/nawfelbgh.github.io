@@ -79,7 +79,7 @@ You can generate timeline charts with different parameters by visiting [the simu
 Let's see the page loading timeline diagrams for two versions of our web page:
 
 - The first version streams all page content in response to a single URL `full-page`.
-- The second version delivers the semi-static page part in response to the URL `split-page`, and then the dynamic part as a response to `dynamic-page-data.json`.
+- The second version delivers the semi-static page part in response to the URL `split-page`, and then the dynamic part in response to `dynamic-page-data.json`.
 
 In the first round of simulation, which omits caching, both `full-page` and `split-page` achieved identical First Contentful Paint latency, with the former completely loading 50ms earlier than the latter.
 
@@ -165,13 +165,15 @@ Edge-side page assembly has some drawbacks:
 
 <figure id="full-page-edge-page-assembly">
     <img
-        alt="Full-Page Streaming with edge page assembly"
+        alt="Full-Page Streaming with edge-side page assembly"
         src="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_true_true_true_full-page.svg"
         width="989"
         height="1320"
     />
     <figcaption>
-       <p><a href="#full-page-edge-page-assembly">Full-Page Streaming with edge page assembly:</a> Thanks to edge-side page assembly, the semi-static page part is now delivered from the edge, leading to a First Contentful Paint at T=160ms and a full page load at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_true_true_true_full-page.json">T=699ms</a> (identical to the <a href="#split-page-edge-caching"><code>split-page</code> version with edge caching</a> example).</p>
+       <p><a href="#full-page-edge-page-assembly">Full-Page Streaming with edge-side page assembly:</a> Thanks to edge-side page assembly, the semi-static page part is now delivered from the edge, leading to a First Contentful Paint at T=160ms and a full page load at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_true_true_true_full-page.json">T=699ms</a> (identical to the <a href="#split-page-edge-caching"><code>split-page</code> version with edge caching</a> example).</p>
+       <p>In this example, the edge starts fetching the dynamic page part 100ms earlier than the <code>split-page</code> version. That is earlier by twice the edge-to-client latency. As a result, the client receives the dynamic page part earlier (at T=521ms instead of T=562ms). However, in this example, the client is busy executing the page's script when the dynamic page part is received, so the slight loading advantage does not get observed by the user. Under ideal circumstances, <code>full-page</code> with edge-side page assembly should be able to beat <code>split-page</code> with pre-loading by two times the edge-to-client latency.
+       </p>
     </figcaption>
 </figure>
 
@@ -187,7 +189,7 @@ Lastly, let's examine a less representative but still interesting scenario: how 
         height="1200"
     />
     <figcaption>
-       <p><a href="#full-page-edge+client-caching">Full-Page Streaming for a returning user:</a> The client requests <code>full-page</code> which is not cacheable, and receives it very rapidly (because of edge-side page assembly from the previous section). First Contentful Paint is delayed until T=400ms because the script started executing before the page's semi-static part arrived. The page is fully loaded at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_true_true_false_full-page.json">T=621ms</a>.
+       <p><a href="#full-page-edge+client-caching">Full-Page Streaming for a returning user:</a> The client requests <code>full-page</code> which is not cacheable, and receives it very rapidly (because of edge-side page assembly from the previous section). The script starts executing as soon as the page head is received (at T=100ms). First Contentful Paint is delayed until T=400ms because the script started executing before the page's semi-static part arrived. The page is fully loaded at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_true_true_false_full-page.json">T=621ms</a>.
        </p>
     </figcaption>
 </figure>
@@ -200,7 +202,8 @@ Lastly, let's examine a less representative but still interesting scenario: how 
         height="900"
     />
     <figcaption>
-       <p><a href="#split-page-edge+client-caching">Pre-loaded Split-Page for a returning user:</a> The semi-static page part is immediately available from the browser cache. Thanks to this, the First Contentful Paint arrives at T=50ms (350ms earlier than the <code>full-page</code> version) and the page is fully loaded at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_false_split-page.json">T=571ms</a> (50ms earlier).
+       <p><a href="#split-page-edge+client-caching">Pre-loaded Split-Page for a returning user:</a> The semi-static page part is immediately available from the browser cache. Thanks to this, both the static page part and the page script are available for processing from the cache at T=0ms. The First Contentful Paint arrives at T=50ms (350ms earlier than the <code>full-page</code> version), the script starts executing at T=50ms, and the page is fully loaded at <a target="_blank" href="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_false_split-page.json">T=571ms</a> (50ms earlier than the <code>full-page</code> version).</p>
+       <p>Note that for returning users, the Split-Page with Preloading version has an edge over the Full-Page Streaming version, even with edge-side page assembly. The Full-Page version always needs to download the page's head element and the semi-static part from the edge, while these elements are available from the cache for the Split-Page at T=0ms. As such, the client can start processing cached resources earlier. Also, with the Split-Page approach, the client preloads the dynamic page part at T=0ms which means that the edge can start fetching the dynamic parts from the server as early as with the Full-Page Streaming under edge-side page assembly.
        </p>
     </figcaption>
 </figure>
@@ -215,6 +218,8 @@ In this article, we explored the performance trade-offs between two approaches f
 In our simulation, we observed that:
 
 - **With caching, Split-Page with Pre-Loading achieves faster load times than Full-Page Streaming**, because it separates cacheable content from dynamic content, allowing each to be cached independently.
-- **Full-page Streaming needs edge-side processing to achieve similar caching benefits**, adding cost and complexity.
+- **Full-Page Streaming needs edge-side processing to achieve similar caching benefits**, adding cost and complexity.
+- **With edge-side page assembly, Full-page Streaming can load pages slightly faster for new users**, because the edge can start loading dynamic page parts earlier.
+- **Split-Page with Preloading can load pages slightly faster for returning users, even against edge-side page assembly**, because the client can start processing cached page resources earlier.
 
 Recent JavaScript frameworks make Full-Page Streaming easy, which works well for dynamic content but hinders edge and browser caching of semi-static content. Split-Page with Pre-loading avoids this problem and can be implemented without framework support. That said, framework support is needed to use this pattern alongside DX-enhancing features like server functions/actions in various frameworks, which abstract away endpoint creation and invocation. Among mainstream JS frameworks, [Astro](https://astro.build/)'s [server islands](https://docs.astro.build/en/guides/server-islands/) implement the Split-Page approach with arguably the best developer experience.
