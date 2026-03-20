@@ -1,5 +1,7 @@
 # How to make fast web frontends
 
+<time class="date" datetime="2025-07-11">2025-07-11</time>
+
 ## Introduction
 
 In this article, I will discuss techniques for optimizing the performance of web frontends.

@@ -2,6 +2,7 @@
     --white: #fff;
     --black: #000;
     --light-gray: #e2e2e2;
+    --mid-light-gray: #cacaca;
     --gray: #666;
     --dark-gray: #444;
     --darker-gray: #363636;
@@ -26,7 +27,7 @@ body * {
 body.dark-theme {
     --bg-color: var(--darkest-gray);
     --text-color: var(--light-gray);
-    --light-text-color: var(--white);
+    --light-text-color: var(--mid-light-gray);
     --heading-color: var(--white);
     --border-color: var(--dark-gray);
     --link-color: var(--white);
@@ -41,7 +42,7 @@ body.dark-theme * {
     body:not(.light-theme) {
         --bg-color: var(--darkest-gray);
         --text-color: var(--light-gray);
-        --light-text-color: var(--white);
+        --light-text-color: var(--mid-light-gray);
         --heading-color: var(--white);
         --border-color: var(--dark-gray);
         --link-color: var(--white);

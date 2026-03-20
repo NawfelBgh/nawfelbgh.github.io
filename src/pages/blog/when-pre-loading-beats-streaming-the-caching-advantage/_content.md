@@ -1,5 +1,7 @@
 # When Pre-Loading Beats Streaming: The Caching Advantage
 
+<time class="date" datetime="2026-03-18">2026-03-18</time>
+
 ## Introduction
 
 Web pages are often composed of:

@@ -99,3 +99,8 @@ table {
     text-align: left;
   }
 }
+
+h1+p:has(time) {
+  margin-bottom: 0;
+  color: var(--light-text-color);
+}
