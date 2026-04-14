@@ -158,6 +158,7 @@ It is possible to address this problem with edge-side page assembly, which invol
 - This approach has existed since the early 2000s with [Edge Side Includes (ESI)](https://en.wikipedia.org/wiki/Edge_Side_Includes).
 - Facebook implemented a similar approach, called [BigPipe](https://engineering.fb.com/2010/06/04/web/bigpipe-pipelining-web-pages-for-high-performance/) in 2010.
 - More recently, [Next.js](https://nextjs.org/) implemented this pattern with [Partial Pre-rendering (PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model) available on Vercel.
+- Today, many frameworks can run at the edge, enabling them to render pages there rather than on the origin server. This allows streaming the mixed page as one resource while still taking advantage of the edge cache for the semi-static part of the page.
 
 Edge-side page assembly has some drawbacks:
 

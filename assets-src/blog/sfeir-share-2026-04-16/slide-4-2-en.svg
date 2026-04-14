@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-4-2-en.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.4139958"
+     inkscape:cx="944.45403"
+     inkscape:cy="700.4902"
+     inkscape:window-width="1712"
+     inkscape:window-height="1007"
+     inkscape:window-x="24"
+     inkscape:window-y="31"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     showguides="true" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:14.1111px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="17.907597"
+       y="35.807644"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.1111px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.264583"
+         x="17.907597"
+         y="35.807644">Comparison (Returning User)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="10.567807"
+       y="61.162102"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="10.567807"
+         y="61.162102">Streaming</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="10.530601"
+       y="191.75714"
+       id="text3-1"><tspan
+         sodipodi:role="line"
+         id="tspan3-3"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.7px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="10.530601"
+         y="191.75714">Pre-Loading</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.396875;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:2.38125, 2.38125;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 68.262511,107.42084 H 391.00964"
+       id="path1"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.396875;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:2.38125, 2.38125;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 68.262511,246.26094 H 391.00983"
+       id="path1-8"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="20.126972"
+       y="78.406929"
+       id="text3-0"><tspan
+         sodipodi:role="line"
+         id="tspan3-5"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="20.126972"
+         y="78.406929">Client</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="19.717007"
+       y="109.63396"
+       id="text3-0-4"><tspan
+         sodipodi:role="line"
+         id="tspan3-5-2"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="19.717007"
+         y="109.63396">Edge</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="19.717007"
+       y="248.54019"
+       id="text3-0-4-4"><tspan
+         sodipodi:role="line"
+         id="tspan3-5-2-8"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="19.717007"
+         y="248.54019">Edge</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="20.035332"
+       y="132.4081"
+       id="text3-0-6"><tspan
+         sodipodi:role="line"
+         id="tspan3-5-8"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="20.035332"
+         y="132.4081">Server</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="20.126972"
+       y="218.8911"
+       id="text3-0-61"><tspan
+         sodipodi:role="line"
+         id="tspan3-5-88"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="20.126972"
+         y="218.8911">Client</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.87778px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="20.035332"
+       y="265.48386"
+       id="text3-0-6-3"><tspan
+         sodipodi:role="line"
+         id="tspan3-5-8-5"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87778px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         x="20.035332"
+         y="265.48386">Server</tspan></text>
+    <rect
+       style="fill:#1e88e5;fill-opacity:1;stroke:none;stroke-width:0.451867;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-4"
+       width="33.072918"
+       height="17.008566"
+       x="71.437737"
+       y="226.93614" />
+    <rect
+       style="fill:#1e88e5;fill-opacity:1;stroke:none;stroke-width:0.285786;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-9-4"
+       width="13.229167"
+       height="17.008566"
+       x="57.943748"
+       y="207.16855" />
+    <rect
+       style="fill:#ffa726;fill-opacity:1;stroke:none;stroke-width:0.571571;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-2-3"
+       width="52.916668"
+       height="17.008566"
+       x="71.023468"
+       y="207.16855" />
+    <rect
+       style="fill:#e53935;fill-opacity:1;stroke:none;stroke-width:0.494995;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-3-3-7"
+       width="39.6875"
+       height="17.008566"
+       x="134.2027"
+       y="253.93375" />
+    <rect
+       style="fill:#e53935;fill-opacity:1;stroke:none;stroke-width:0.639036;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-2-1-0"
+       width="66.145836"
+       height="17.008566"
+       x="248.54947"
+       y="226.12119" />
+    <rect
+       style="fill:#1e88e5;fill-opacity:1;stroke:none;stroke-width:0.285786;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1"
+       width="13.229167"
+       height="17.008566"
+       x="105.83334"
+       y="67.468712" />
+    <rect
+       style="fill:#1e88e5;fill-opacity:1;stroke:none;stroke-width:0.451867;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-8-4"
+       width="33.072918"
+       height="17.008566"
+       x="121.72626"
+       y="87.80983" />
+    <rect
+       style="fill:#e53935;fill-opacity:1;stroke:none;stroke-width:0.494995;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-3-3"
+       width="39.6875"
+       height="17.008566"
+       x="134.19861"
+       y="120.47136" />
+    <rect
+       style="fill:#ffa726;fill-opacity:1;stroke:none;stroke-width:0.808323;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-2-7"
+       width="105.83334"
+       height="17.008566"
+       x="118.88009"
+       y="67.468712" />
+    <rect
+       style="fill:#e53935;fill-opacity:1;stroke:none;stroke-width:0.639036;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-2-1-6"
+       width="66.145836"
+       height="17.008566"
+       x="249.25551"
+       y="67.468712" />
+    <rect
+       style="fill:#ffa726;fill-opacity:1;stroke:none;stroke-width:0.338152;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       id="rect1-0-6-1-0"
+       width="7.9375"
+       height="7.9375"
+       x="74.083336"
+       y="103.45206" />
+  </g>
+</svg>

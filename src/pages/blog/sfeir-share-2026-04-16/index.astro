@@ -1,0 +1,71 @@
+---
+import BaseHead from "@src/components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import { getAlternates, getProperty, getThumbnailUrl } from "@src/utils/blog";
+import Content from "./_content.md";
+import PageLayout from "@src/layouts/PageLayout.astro";
+import "@src/styles/slides.css";
+
+const lang = "en";
+const post = await getEntry("blog", "sfeir-share-2026-04-16");
+if (!post) throw new Error("Entry not found blog:sfeir-share-2026-04-16");
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+const title = getProperty(post, "title", lang);
+const description = getProperty(post, "description", lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      alternates={alternates}
+    />
+    <style>
+      article {
+        max-width: min(840px, calc(100% - 2rem));
+        margin: auto;
+        padding: 1em;
+        padding-top: 2em;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      h1 + time {
+        display: block;
+        text-align: center;
+        margin-bottom: 1em;
+      }
+
+      :global(hr) {
+        border: solid 0.5px var(--border-color);
+        width: 50%;
+        margin-block: 1em;
+      }
+    </style>
+  </head>
+  <PageLayout lang={lang} alternates={alternates}>
+    <article>
+      <h1>{title}</h1>
+      <time datetime={post.data.pubDate}>{post.data.pubDate}</time>
+      <Content />
+    </article>
+  </PageLayout>
+
+  <div
+    data-presentation-wrapper="true"
+    tabindex="0"
+    style="display: none; height: 100%; align-items: center; justify-content: center;"
+  >
+  </div>
+  <script>
+    import "@src/utils/slides.ts";
+  </script>
+
+
+</html>

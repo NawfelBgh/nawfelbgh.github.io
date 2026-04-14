@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 508 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="slide-0-0-en.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.56914048"
+     inkscape:cx="934.74286"
+     inkscape:cy="542.92395"
+     inkscape:window-width="1760"
+     inkscape:window-height="1007"
+     inkscape:window-x="0"
+     inkscape:window-y="31"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <filter
+       id="glow"
+       x="-0.32"
+       y="-0.2"
+       width="1.64"
+       height="1.4">
+      <feGaussianBlur
+         stdDeviation="2"
+         result="coloredBlur"
+         id="feGaussianBlur4" />
+      <feMerge
+         id="feMerge5">
+        <feMergeNode
+           in="coloredBlur"
+           id="feMergeNode4" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode5" />
+      </feMerge>
+    </filter>
+    <filter
+       id="glow-6"
+       x="-0.32"
+       y="-0.2"
+       width="1.64"
+       height="1.4">
+      <feGaussianBlur
+         stdDeviation="2"
+         result="coloredBlur"
+         id="feGaussianBlur4-0" />
+      <feMerge
+         id="feMerge5-3">
+        <feMergeNode
+           in="coloredBlur"
+           id="feMergeNode4-2" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode5-6" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="385.02902"
+       y="103.93552"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-size:16.9333px;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="385.02902"
+         y="103.93552">When Pre-Loading</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="385.02902"
+         y="125.10214"
+         id="tspan8">Beats Streaming:</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="385.02902"
+         y="146.26877"
+         id="tspan9">&quot;The Caching Advantage&quot;</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="385.02902"
+         y="167.43539"
+         id="tspan10" /><tspan
+         sodipodi:role="line"
+         style="font-size:16.9333px;text-align:center;text-anchor:middle;fill:#666666;fill-opacity:1;stroke-width:0.264583"
+         x="385.02902"
+         y="188.60202"
+         id="tspan11">Nawfel Bengherbia</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="437.73801"
+       y="24.751646"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         style="font-size:16.9333px;stroke-width:0.264583"
+         x="437.73801"
+         y="24.751646"><tspan
+           style="fill:#ee6714;fill-opacity:1"
+           id="tspan12">[</tspan><tspan
+           style="font-size:19.7556px;fill:#006396;fill-opacity:1"
+           id="tspan6">sf</tspan><tspan
+           style="fill:#ee6714;fill-opacity:1"
+           id="tspan14">☰</tspan><tspan
+           style="font-size:19.7556px;fill:#006396;fill-opacity:1"
+           id="tspan7">ir</tspan><tspan
+           style="fill:#ee6714;fill-opacity:1"
+           id="tspan13">]</tspan></tspan></text>
+    <rect
+       x="22.633547"
+       y="64.480927"
+       width="237.33389"
+       height="158.2226"
+       fill="#F8F8F8"
+       stroke="#999999"
+       stroke-width="0.791109"
+       id="rect-bg"
+       style="fill:#ffffff;fill-opacity:1" />
+    <path
+       style="fill:none;stroke:#999999;stroke-width:1.18666;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="M 22.90955,222.4164 259.65307,64.892578"
+       id="path1"
+       sodipodi:nodetypes="cc" />
+    <text
+       x="192.2027"
+       y="90.839508"
+       font-family="Arial, sans-serif"
+       font-size="24"
+       font-weight="bold"
+       font-style="italic"
+       fill="#B22222"
+       id="text6"
+       style="font-size:23.2047px;text-align:end;text-anchor:end;fill:#b22222;fill-opacity:1;stroke-width:0.791109">PRE-LOADING</text>
+    <rect
+       x="34.500378"
+       y="104.82794"
+       width="11.866737"
+       height="6.3289089"
+       fill="#daa520"
+       rx="1.5822272"
+       id="rect8"
+       style="stroke-width:0.344701" />
+    <rect
+       x="46.452702"
+       y="117.32969"
+       width="63.289024"
+       height="6.3289089"
+       fill="#daa520"
+       rx="1.5822272"
+       id="rect8-3"
+       style="stroke-width:0.791109" />
+    <rect
+       x="46.452702"
+       y="129.83148"
+       width="63.289024"
+       height="6.3289089"
+       fill="#daa520"
+       rx="1.5822272"
+       id="rect8-1"
+       style="stroke-width:0.791109" />
+    <rect
+       x="46.452702"
+       y="142.33385"
+       width="55.377869"
+       height="6.3289089"
+       fill="#daa520"
+       rx="1.5822272"
+       id="rect8-2"
+       style="stroke-width:0.791109" />
+    <text
+       x="249.79767"
+       y="209.97107"
+       font-family="Arial, sans-serif"
+       font-size="24"
+       font-weight="bold"
+       font-style="italic"
+       fill="#1e90ff"
+       id="text12"
+       style="font-size:23.2047px;stroke-width:0.791109"><tspan
+         style="text-align:end;text-anchor:end;stroke-width:0.791109"
+         id="tspan1-4">STREAMING</tspan></text>
+    <polygon
+       points="180,94 180,70 195,82 "
+       fill="#1e90ff"
+       filter="url(#glow)"
+       id="polygon12"
+       transform="matrix(0.79111331,0,0,0.79111331,61.680776,89.859547)" />
+    <polygon
+       points="180,94 180,70 195,82 "
+       fill="#1e90ff"
+       filter="url(#glow)"
+       id="polygon12-9"
+       transform="matrix(0.79111331,0,0,0.79111331,45.700324,89.701047)"
+       style="filter:url(#glow-6)" />
+    <rect
+       x="167.91971"
+       y="172.32414"
+       width="63.289024"
+       height="6.3289089"
+       fill="#555555"
+       rx="1.5822272"
+       id="rect14"
+       style="stroke-width:0.791109" />
+    <rect
+       x="167.91971"
+       y="172.32414"
+       width="35.600044"
+       height="6.3289089"
+       fill="#1e90ff"
+       rx="1.5822272"
+       id="rect15"
+       style="stroke-width:0.791109" />
+    <circle
+       cx="141.3"
+       cy="143.5925"
+       r="14.240025"
+       fill="#daa520"
+       id="circle18"
+       style="stroke-width:0.791109" />
+    <text
+       x="141.3"
+       y="149.13043"
+       font-family="Arial, sans-serif"
+       font-size="20px"
+       font-weight="bold"
+       fill="#333333"
+       text-anchor="middle"
+       id="text18"
+       style="font-size:14.7674px;stroke-width:0.791109">VS</text>
+    <rect
+       x="22.633547"
+       y="64.480927"
+       width="237.33389"
+       height="158.2226"
+       fill="none"
+       stroke="#999999"
+       stroke-width="0.791109"
+       id="rect20" />
+  </g>
+</svg>
