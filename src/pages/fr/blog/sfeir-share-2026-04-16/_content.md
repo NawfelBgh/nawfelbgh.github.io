@@ -104,7 +104,9 @@ Voyons maintenant une autre façon de charger cette page : en divisant les parti
 
 ## Comparaison (1)
 
-Si nous comparons les approches de pre-loading et de streaming, le streaming semble l'emporter ici car il commence à charger le contenu dynamique de la page plus tôt. Voyons ce qui se passe quand nous ajoutons la mise en cache.
+Si nous comparons les approches de pre-loading et de streaming, le streaming semble l'emporter ici car il commence à charger le contenu dynamique de la page plus tôt. 
+
+Voyons ce qui se passe quand nous ajoutons la mise en cache.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-4-en.svg" style="top:0; left:0; width:100%;" />

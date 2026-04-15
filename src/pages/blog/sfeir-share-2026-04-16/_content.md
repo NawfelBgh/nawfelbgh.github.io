@@ -105,7 +105,9 @@ Now let's see how to load this page in an alternative way: By splitting the semi
 
 ## Comparison (1)
 
-If we compare the pre-loading and the streaming approaches, it looks like streaming is the winner here because it starts loading the page's dynamic content earlier. Now let's look what happens when we add caching.
+If we compare the pre-loading and the streaming approaches, it looks like streaming is the winner here because it starts loading the page's dynamic content earlier.
+
+Now let's look what happens when we add caching.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-4-en.svg" style="top:0; left:0; width:100%;" />
