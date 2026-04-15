@@ -1,7 +1,7 @@
 > J'ai présenté mon article [Quand le pré-chargement l'emporte sur le streaming : l'avantage du cache](/blog/when-pre-loading-beats-streaming-the-caching-advantage) lors de l'événement _[SFEIR](https://sfeir.com/en/) Share_.
 
 <div class="slide">
-    <img src="/blog/sfeir-share-2026-04-16/slide-0-0-en.svg" style="top:0; left:0; width:100%;" />
+    <img src="/blog/sfeir-share-2026-04-16/slide-0-0-fr.svg" style="top:0; left:0; width:100%;" />
 </div>
 
 ## Introduction
@@ -26,7 +26,7 @@ Je vous invite à consulter l'article pour les diagrammes générés par simulat
 - le rendu côté serveur et les requêtes à la base de données
 
 <div class="slide">
-    <img src="/blog/sfeir-share-2026-04-16/slide-0-1-en.svg" style="top:0; left:0; width:100%;" />
+    <img src="/blog/sfeir-share-2026-04-16/slide-0-1-fr.svg" style="top:0; left:0; width:100%;" />
     <img src="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_false_split-page.svg" style="top:20%; left:20%; width:60%; border: solid 1px #999;" />
 </div>
 
@@ -39,7 +39,7 @@ Je vous invite à consulter l'article pour les diagrammes générés par simulat
 - Nous terminerons par les enseignements et une vue sur le support des différentes techniques par les frameworks
 
 <div class="slide">
-    <img src="/blog/sfeir-share-2026-04-16/slide-0-2-en.svg" style="top:0; left:0; width:100%;" />
+    <img src="/blog/sfeir-share-2026-04-16/slide-0-2-fr.svg" style="top:0; left:0; width:100%;" />
 </div>
 
 ---
@@ -172,7 +172,7 @@ Ce problème existe depuis un moment et a beaucoup de solutions, qui consistent 
 - Aujourd'hui, de nombreux frameworks JavaScript peuvent fonctionner entièrement sur l'edge. Les frameworks qui supportent le streaming peuvent donc streamer depuis l'edge tout en profitant du cache côté edge.
 
 <div class="slide">
-    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-3-0-en.svg" style="top: 0; left: 0%; width: 100%;" />
+    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-3-0-fr.svg" style="top: 0; left: 0%; width: 100%;" />
 </div>
 
 ---
@@ -270,11 +270,11 @@ Ce que nous pouvons conclure de tout cela est que les deux techniques, streaming
   - Les server islands d'Astro sont l'approche la plus proche pour implémenter le pattern de page divisée avec pre-loading, tout en bénéficiant d'une DX de première classe.
 
 <div class="slide">
-    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-1-en.svg" style="top: 0; left: 0%; width: 100%;" />
+    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-1-fr.svg" style="top: 0; left: 0%; width: 100%;" />
 </div>
 
 ---
 
 <div class="slide">
-    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-2-en.svg" style="top: 0; left: 0%; width: 100%;" />
+    <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-2-fr.svg" style="top: 0; left: 0%; width: 100%;" />
 </div>
