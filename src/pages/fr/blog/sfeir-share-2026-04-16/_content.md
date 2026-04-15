@@ -147,7 +147,7 @@ Regardons le diagramme de chargement pour la version en streaming de la page :
 Regardons maintenant le diagramme de chargement pour la page divisée avec pre-loading :
 
 - La partie semi-statique est servie depuis le cache edge ce qui réduit la latence.
-  - Le `head` de la page etant chargé plus tôt, le client peut commencer à charger les parties dynamiques plus tôt que sans le cache edge.
+  - Le `head` de la page étant chargé plus tôt, le client peut commencer à charger les parties dynamiques plus tôt que sans le cache edge.
   - Le script commence aussi à charger plus tôt.
 
 <div class="slide">
@@ -238,7 +238,7 @@ Quand un utilisateur revisite notre page pré-chargée avec un cache récent, le
 
 ## Comparaison (Utilisateurs récurrents)
 
-Avec le pre-loading, les utilisateurs récurrents avec un cache récent ont un First-Paint plus rapide qu'avec le streaming. Et les parties dynamiques sont chargées aussi vite qu'avec le streaming.
+Pour les utilisateurs récurrents avec un cache récent, le pre-loading donne un First-Paint plus rapide que le streaming. Le pre-loading arrive également à charger la partie dynamique de la page aussi vite que le streaming.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-4-2-en.svg" style="top: 0; left: 0%; width: 100%;" />

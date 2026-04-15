@@ -239,7 +239,7 @@ When a user revisits our pre-loaded page with a fresh cache, things are a bit di
 
 ## Comparison (Returning users)
 
-With pre-loading, returning users with a fresh cache get earlier first paint than with streaming. And dynamic page parts are loaded as fast as with streaming.
+For returning users with a fresh cache, pre-loading gives earlier First-Paint than streaming. Pre-loading manages to load the page's dynamic part as fast as streaming too.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-4-2-en.svg" style="top: 0; left: 0%; width: 100%;" />
