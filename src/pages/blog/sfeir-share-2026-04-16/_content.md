@@ -64,7 +64,7 @@ We want to load this page as fast and efficiently as possible.
 
 Let's first show a very naive way to deliver our page: The server returns an empty HTML document which loads a script which when loaded on the client will load the page semi-static and the dynamic parts.
 
-The problem with such an approach is the added latency from the network round trips between the client and the server. We see that the server starts loading or generating page parts very late.
+I'm using this example solely as a worst-case scenario, showcasing clearly the main performance problem: the added latency from the network round trips between the client and the server, before the server even starts loading or generating the page content.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-1-en.svg" style="top:0; left:0; width:100%;" />
@@ -91,9 +91,10 @@ Let's now see how to load this page with streaming:
 
 Now let's see how to load this page in an alternative way: By splitting the semi-static and dynamic parts as 2 different resources.
 
-- The server responds with only the semi-static part to the page initial request.
+- Streaming is used here to deliver the page `head` even before the server generates its content, although caching makes this detail irrelevant in the next pre-loading examples.
+- The server serves only the semi-static part to the page in response to the initial request.
 - The client sends a second request to get the dynamic part.
-  - Pre-loading is used so that the client can request the dynamic page part as soon as it gets the page head.
+  - Pre-loading is used so that the client can request the dynamic page part as soon as it gets the page `head`.
 - The server can start loading the semi-static page part as soon as it receives the first request, but it starts loading the dynamic page part after an additional network round trip with the client
 
 <div class="slide">
