@@ -26,6 +26,8 @@ The diagrams that I'll be showing on these slides are very simplified and hand-c
 - the page content loading, rendering and hydration
 - server-side rendering and database lookups
 
+The article also links to a [simulation playground](/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/playground) which lets you try out different parameters like network bandwidth, file sizes, processing time and more.
+
 <div class="slide">
     <img src="/blog/sfeir-share-2026-04-16/slide-0-1-en.svg" style="top:0; left:0; width:100%;" />
     <img src="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_false_split-page.svg" style="top:20%; left:20%; width:60%; border: solid 1px #999;" />

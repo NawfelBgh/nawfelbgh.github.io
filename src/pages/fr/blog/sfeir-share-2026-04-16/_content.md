@@ -25,6 +25,8 @@ Je vous invite à consulter l'article pour les diagrammes générés par simulat
 - le chargement du contenu, le rendu et l'hydratation de la page
 - le rendu côté serveur et les requêtes à la base de données
 
+L'article donne également accès à [un environnement de simulation](/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/playground) permettant de tester différents paramètres tels que la bande passante du réseau, la taille des fichiers, le temps de traitement, etc.
+
 <div class="slide">
     <img src="/blog/sfeir-share-2026-04-16/slide-0-1-fr.svg" style="top:0; left:0; width:100%;" />
     <img src="/blog/when-pre-loading-beats-streaming-the-caching-advantage/simulation/true_true_true_false_true_false_split-page.svg" style="top:20%; left:20%; width:60%; border: solid 1px #999;" />
@@ -76,7 +78,7 @@ Voyons maintenant comment charger cette page avec du streaming :
 - Le serveur retourne tout le contenu de la page au client dans le même fichier HTML, streamant différentes parties de la page au fur et à mesure qu'elles deviennent disponibles.
   - La balise `head` de la page est streamée très tôt pour démarrer rapidement le chargement du script de la page.
 - Le serveur peut commencer à charger, et la partie semi-statique et la partie dynamique de la page dès qu'il reçoit la première requête.
-    - On remarque qu'une fois la partie dynamique est prête coté serveur, elle doit attendre la transmission de la partie semi-statique avant d'être envoyée au client.
+  - On remarque qu'une fois la partie dynamique est prête coté serveur, elle doit attendre la transmission de la partie semi-statique avant d'être envoyée au client.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-2-en.svg" style="top:0; left:0; width:100%;" />
@@ -91,7 +93,7 @@ Voyons maintenant une autre façon de charger cette page : en divisant les parti
 - Le serveur répond uniquement avec la partie semi-statique à la requête initiale de la page.
 - Le client envoie une deuxième requête pour obtenir la partie dynamique.
   - Le pre-loading est utilisé pour que le client puisse demander la partie dynamique dès qu'il reçoit la balise `head` de la page.
-- Le serveur peut commencer à charger la partie semi-statique dès qu'il reçoit la première requête, mais il commence à charger la partie dynamique après un aller-retour  réseau supplémentaire avec le client.
+- Le serveur peut commencer à charger la partie semi-statique dès qu'il reçoit la première requête, mais il commence à charger la partie dynamique après un aller-retour réseau supplémentaire avec le client.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-3-en.svg" style="top:0; left:0; width:100%;" />
@@ -266,7 +268,7 @@ Ce que nous pouvons conclure de tout cela est que les deux techniques, streaming
   - Les frameworks qui supportent le streaming déployés sur l'edge.
 - Le pre-loading fonctionne bien avec la mise en cache edge traditionnelle.
   - Il ne nécessite pas le support du framework. Mais pour une expérience développeur optimale, le support du framework est nécessaire :
-    - Les *server functions* permettent d'appeler du code backend depuis le frontend de manière type-safe sans avoir à déclarer d'endpoints. Mais pour supporter le pre-loading des *server functions*, le framework doit fournir au minimum des APIs pour obtenir leurs URLs. Actuellement, ces APIs sont absentes ou non documentées.
+    - Les _server functions_ permettent d'appeler du code backend depuis le frontend de manière type-safe sans avoir à déclarer d'endpoints. Mais pour supporter le pre-loading des _server functions_, le framework doit fournir au minimum des APIs pour obtenir leurs URLs. Actuellement, ces APIs sont absentes ou non documentées.
   - Les server islands d'Astro sont l'approche la plus proche pour implémenter le pattern de page divisée avec pre-loading, tout en bénéficiant d'une DX de première classe.
 
 <div class="slide">
