@@ -94,26 +94,21 @@
          style="font-size:11.2889px;line-height:1.5;stroke-width:0.264583"
          x="15.824009"
          y="187.32248"
-         id="tspan8">    - Edge Side Imports (Since early 2000s)</tspan><tspan
+         id="tspan11">    - Edge Side Imports (Since early 2000s)</tspan><tspan
          sodipodi:role="line"
          style="font-size:11.2889px;line-height:1.5;stroke-width:0.264583"
          x="15.824009"
          y="204.25583"
-         id="tspan11">    - Facebook's BigPipe (2010)</tspan><tspan
-         sodipodi:role="line"
-         style="font-size:11.2889px;line-height:1.5;stroke-width:0.264583"
-         x="15.824009"
-         y="221.18918"
          id="tspan12">    - Next.js Partial Pre-Rendering (Since late 2023)</tspan><tspan
          sodipodi:role="line"
          style="font-size:11.2889px;line-height:1.5;stroke-width:0.264583"
          x="15.824009"
-         y="238.12253"
+         y="221.18918"
          id="tspan16">    - Deploy the entire frontend server at the edge</tspan><tspan
          sodipodi:role="line"
          style="font-size:11.2889px;line-height:1.5;stroke-width:0.264583"
          x="15.824009"
-         y="255.05588"
+         y="238.12253"
          id="tspan7" /></text>
   </g>
 </svg>

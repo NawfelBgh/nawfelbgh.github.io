@@ -12,19 +12,19 @@ Hello everyone. Today, I am going to present the content of my article: ["When P
 
 I will compare two different ways to deliver web pages: streaming, which is increasingly supported by web frameworks, and pre-loading, which gets less attention. I show that both optimizations can provide similar performance. I compare both approaches in depth, showing in which situation each is the better one.
 
-I show that web pages can be made to load fast even when streaming is not possible. Also, I show that pre-loading is a more economical option because it plays well with caching, and argue that frameworks ought to add first-class support for it. 
+I show that web pages can be made to load fast even when streaming is not possible. Also, I show that pre-loading is a more economical option because it plays well with caching, and argue that frameworks ought to support pre-loading natively.
 
 ---
 
 ## Simulation
 
-To be as fair as possible in my comparison, I used a simulator to generate the page loading timelines of different scenarios.
+To be as fair as possible in my comparison, I created and used a simulator to generate the page loading timelines of different scenarios.
 
-The diagrams that I'll be showing on these slides are very simplified and hand-created. I invite you to check the article for the simulation-generated diagrams which have more fine-grained details:
+The diagrams that I'll be showing on these slides are very simplified and hand-created. I invite you to check the article for the simulation-generated diagrams with more fine-grained details, distinguishing:
 
-- script loading and execution are shown separately
-- page content loading, rendering and hydration are shown separately
-- server-side rendering and database lookups are shown separately
+- the loading and execution of the script
+- the page content loading, rendering and hydration
+- server-side rendering and database lookups
 
 <div class="slide">
     <img src="/blog/sfeir-share-2026-04-16/slide-0-1-en.svg" style="top:0; left:0; width:100%;" />
@@ -37,7 +37,7 @@ The diagrams that I'll be showing on these slides are very simplified and hand-c
 
 - I will first define what kind of pages we will be optimizing
 - Then we will see the loading timeline diagrams in many different setups
-- Finally we will conclude with takeaways and commentary on framework support for different techniques
+- Finally we will conclude with takeaways and a view on framework support for different techniques
 
 <div class="slide">
     <img src="/blog/sfeir-share-2026-04-16/slide-0-2-en.svg" style="top:0; left:0; width:100%;" />
@@ -62,7 +62,7 @@ We want to load this page as fast and efficiently as possible.
 
 Let's first show a very naive way to deliver our page: The server returns an empty HTML document which loads a script which when loaded on the client will load the page semi-static and the dynamic parts.
 
-The problem with such an approach is the added latency from the back and forth network exchanges by the client and the server. We see that the server starts loading or generating page parts very late.
+The problem with such an approach is the added latency from the network round trips between the client and the server. We see that the server starts loading or generating page parts very late.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-1-en.svg" style="top:0; left:0; width:100%;" />
@@ -74,10 +74,10 @@ The problem with such an approach is the added latency from the back and forth n
 
 Let's now see how to load this page with streaming:
 
-- The server returns all page content to the client in the same HTML file.
-- But it streams different page parts progressively as they become available.
-    - The Head of the page is streamed very early to quickly start the loading of the page's script
-- The server can start loading page parts data as soon as it receives the request to the page
+- The server returns all page content to the client in the same HTML file, streaming different parts as they become available.
+  - The page `head` is streamed very early to quickly start loading the page's script.
+- The server can start loading, both the semi-static and the dynamic part of the page, as soon as it receives the first request.
+  - Note that once the dynamic part is ready on the server side, it must wait for the semi-static part to be transmitted before being sent to the client.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-2-en.svg" style="top:0; left:0; width:100%;" />
@@ -87,13 +87,12 @@ Let's now see how to load this page with streaming:
 
 ## Split-Page with Pre-loading
 
-Now let's see how to load this page in an alternative way: By splitting the semi-static and dynamic parts as 2 different resources. 
+Now let's see how to load this page in an alternative way: By splitting the semi-static and dynamic parts as 2 different resources.
 
 - The server responds with only the semi-static part to the page initial request.
 - The client sends a second request to get the dynamic part.
-    - Pre-loading is used so that the client can request the dynamic page part as soon as it gets the page head.
-- The server can start loading the semi-static page part as soon as it receives the request for the page
-- The server starts loading the dynamic page part after an additional back and forth network exchange with the client
+  - Pre-loading is used so that the client can request the dynamic page part as soon as it gets the page head.
+- The server can start loading the semi-static page part as soon as it receives the first request, but it starts loading the dynamic page part after an additional network round trip with the client
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-3-en.svg" style="top:0; left:0; width:100%;" />
@@ -103,7 +102,7 @@ Now let's see how to load this page in an alternative way: By splitting the semi
 
 ## Comparison (1)
 
-If we compare the pre-loading and the streaming approaches, it looks like streaming is the winner here because it starts loading both page parts earlier. Now let's look what happens when we add caching.
+If we compare the pre-loading and the streaming approaches, it looks like streaming is the winner here because it starts loading the page's dynamic content earlier. Now let's look what happens when we add caching.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-4-en.svg" style="top:0; left:0; width:100%;" />
@@ -116,7 +115,7 @@ If we compare the pre-loading and the streaming approaches, it looks like stream
 Now let's add two layers of cache:
 
 - A CDN/Edge node between the client and the server.
-    - The edge node is close to the client in order to reduce latency for cached content
+  - The edge node is close to the client in order to reduce latency for cached content
 - A server-side cache which is used in case the edge cache can't be used.
 
 <div class="slide">
@@ -129,8 +128,8 @@ Now let's add two layers of cache:
 
 Let's look at the loading timeline for the streamed full-page version:
 
-- The head element and the semi-static page part cannot benefit from the edge cache because they are bundled with the dynamic part as a single resource.
-    - The semi-static page part is served from the server cache, hence the faster loading.
+- The head element and the semi-static page part cannot benefit from the edge cache because they are bundled with the non-cacheable dynamic part as a single resource.
+  - The semi-static page part is served from the server cache, hence the faster loading.
 - The script can now be loaded from the edge, instead of the server, which reduces its loading time.
 
 <div class="slide">
@@ -144,8 +143,8 @@ Let's look at the loading timeline for the streamed full-page version:
 Now let's look at the loading timeline for the split-page with pre-loading:
 
 - The semi-static page part is served from the edge cache which reduces latency.
-    - The head of the page is loaded earlier. The client can start loading dynamic page parts earlier than without the edge cache.
-    - The script starts loading earlier too.
+  - The head of the page is loaded earlier. The client can start loading dynamic page parts earlier than without the edge cache.
+  - The script starts loading earlier too.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-2-2-en.svg" style="top: 0; left: 0%; width: 100%;" />
@@ -155,7 +154,7 @@ Now let's look at the loading timeline for the split-page with pre-loading:
 
 ## Comparison (2)
 
-If we compare both approaches in the presence of the edge cache, we can see that the split-page with pre-loading version loads faster than the streamed full-page version.
+If we compare both approaches in the presence of the edge cache, we can see that the split-page with pre-loading version loads faster than the streamed full-page version, because the client receives the semi-static content and static script earlier, clearing the way for faster dynamic content processing.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-2-3-en.svg" style="top: 0; left: 0%; width: 100%;" />
@@ -170,7 +169,6 @@ We saw that the streaming approach could not take full advantage of the edge cac
 This problem has been known for a while and has many solutions, which always amount to doing some computation at the edge:
 
 - [Edge Side Includes (ESI)](https://en.wikipedia.org/wiki/Edge_Side_Includes) are special HTML tags that are interpreted at the edge to allow injecting dynamic content into a cached page.
-- Facebook implemented [BigPipe](https://engineering.fb.com/2010/06/04/web/bigpipe-pipelining-web-pages-for-high-performance/) which does something similar in 2010.
 - More recently, [Next.js](https://nextjs.org/) implemented [Partial Pre-rendering (PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model) which serves cacheable page components from the edge cache and streams the dynamic content from the origin server. PPR is only available on Vercel edge infrastructure.
 - Today, many JavaScript frameworks can run entirely at the edge. Frameworks that support streaming can therefore stream from the edge and take advantage of the edge cache.
 
@@ -212,12 +210,11 @@ Now let's examine what happens when a returning user revisits our streamed page 
 
 - The edge re-sends the static page content from its cache.
 - As soon as the client receives the page head, it can start executing the script it already has in its cache.
-    - The script doesn't need to get downloaded, only executed, which is faster.
+  - The script doesn't need to get downloaded, only executed, which is faster.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-4-0-en.svg" style="top: 0; left: 0%; width: 100%;" />
 </div>
-
 
 ---
 
@@ -226,7 +223,7 @@ Now let's examine what happens when a returning user revisits our streamed page 
 When a user revisits our pre-loaded page with a fresh cache, things are a bit different:
 
 - Thanks to the semi-static page part being cached on the client, the client can start rendering the page and executing the script at T=0s.
-    - Both the semi-static page part and the script take less time to load because they don't need to be downloaded.
+  - Both the semi-static page part and the script take less time to load because they don't need to be downloaded.
 - The client also starts pre-loading the dynamic page part at T=0s which is optimal.
 
 <div class="slide">
@@ -251,27 +248,27 @@ What we can conclude from all of this is that both full-page streaming and split
 
 - Pre-loading is the winner for returning users with a fresh browser cache, because static and semi-static content are processed immediately, and dynamic content is fetched with no added latency.
 - Otherwise,
-    - Without edge-side caching, the winner is streaming, because it starts loading page data, semi-static and dynamic, sooner.
-    - With edge-side caching, the winner is pre-loading, because it can serve cacheable page content early from the edge,
-        - Except if we use edge-side page assembly, in which case the winner is streaming.
+  - Without edge-side caching, the winner is streaming, because it starts loading page data, semi-static and dynamic, sooner.
+  - With edge-side caching, the winner is pre-loading, because it can serve cacheable page content early from the edge,
+    - Except if we use edge-side page assembly, in which case the winner is streaming.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-0-en.svg" style="top: 0; left: 0%; width: 100%;" />
 </div>
 
-----
+---
 
-## Support in mainstream frameworks 
+## Support in mainstream frameworks
 
 - Streaming requires framework support.
-    - The good thing is that increasingly more frameworks support it
+  - The good thing is that increasingly more frameworks support it
 - Streaming while taking advantage from the edge cache is possible in:
-    - Next.js via edge-side page assembly (via PPR)
-    - Frameworks that support streaming when deployed at the edge.
+  - Next.js via edge-side page assembly (via PPR)
+  - Frameworks that support streaming when deployed at the edge.
 - Pre-loading works well with traditional edge caching
-    - It does not require framework support. But for optimal developer experience, framework support is needed:
-        - Server functions make it possible to call backend code from the frontend in a type safe way without having to declare endpoints. But to support both using server functions and pre-loading, the framework must provide at least APIs to get server function URLs. Currently, these APIs are either absent or not documented
-    - Astro's server islands are the closest thing to implementing the split-page with pre-loading pattern with first-class DX.
+  - It does not require framework support. But for optimal developer experience, framework support is needed:
+    - Server functions make it possible to call backend code from the frontend in a type safe way without having to declare endpoints. But to support both using server functions and pre-loading, the framework must provide at least APIs to get server function URLs. Currently, these APIs are either absent or not documented
+  - Astro's server islands are the closest thing to implementing the split-page with pre-loading pattern with first-class DX.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-5-1-en.svg" style="top: 0; left: 0%; width: 100%;" />
