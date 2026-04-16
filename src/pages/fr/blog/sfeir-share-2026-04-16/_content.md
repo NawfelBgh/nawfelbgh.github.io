@@ -1,4 +1,4 @@
-> J'ai présenté mon article [Quand le pré-chargement l'emporte sur le streaming : l'avantage du cache](/blog/when-pre-loading-beats-streaming-the-caching-advantage) lors de l'événement _[SFEIR](https://sfeir.com/en/) Share_.
+> J'ai présenté mon article [Quand le pré-chargement l'emporte sur le streaming&nbsp;: l'avantage du cache](/blog/when-pre-loading-beats-streaming-the-caching-advantage) lors de l'événement _[SFEIR](https://sfeir.com/en/) Share_.
 
 <div class="slide">
     <img src="/blog/sfeir-share-2026-04-16/slide-0-0-fr.svg" style="top:0; left:0; width:100%;" />
@@ -6,11 +6,11 @@
 
 ## Introduction
 
-Bonjour à tous. Aujourd'hui, je vais vous présenter le contenu de mon article : ["Quand le pré-chargement l'emporte sur le streaming : l'avantage du cache"](/blog/when-pre-loading-beats-streaming-the-caching-advantage).
+Bonjour à tous. Aujourd'hui, je vais vous présenter le contenu de mon article&nbsp;: ["Quand le pré-chargement l'emporte sur le streaming&nbsp;: l'avantage du cache"](/blog/when-pre-loading-beats-streaming-the-caching-advantage).
 
-Je vais comparer deux manières différentes de livrer des pages web : le streaming, qui est de plus en plus supporté par les frameworks, et le pre-loading, qui reçoit moins d'attention. Je montre que les deux optimisations peuvent fournir des performances similaires. Je compare les deux approches en profondeur, montrant dans quelle situation chacune est la meilleure.
+Je vais comparer deux manières différentes de livrer des pages web&nbsp;: le streaming, qui est de plus en plus supporté par les frameworks, et le pre-loading, qui reçoit moins d'attention. Je montre que les deux optimisations peuvent fournir des performances similaires. Je compare les deux approches en profondeur, montrant dans quelle situation chacune est la meilleure.
 
-Je montre que les pages web peuvent être chargées rapidement même quand le streaming n'est pas possible. Aussi, je montre que le pre-loading est une option plus économique car il fonctionne bien avec la mise en cache, et je défends l’idée que les frameworks devraient supporter le pre-loading nativement.
+En fait, un but de l'écriture de mon article est de rappeler les limites du streaming et défendre le pre-loading en tant qu'optimisation simple et efficace qui mérite une intégration plus poussée dans les frameworks web.
 
 ---
 
@@ -19,7 +19,7 @@ Je montre que les pages web peuvent être chargées rapidement même quand le st
 Pour être aussi équitable que possible dans ma comparaison, j'ai créé et utilisé un simulateur pour générer les diagrammes de chargement de différents scénarios.
 
 Les diagrammes que je vais montrer sur ces slides sont très simplifiés et créés à la main.
-Je vous invite à consulter l'article pour les diagrammes générés par simulation qui ont des détails plus fins, distinguant :
+Je vous invite à consulter l'article pour les diagrammes générés par simulation qui ont des détails plus fins, distinguant&nbsp;:
 
 - le chargement et l'exécution du script
 - le chargement du contenu, le rendu et l'hydratation de la page
@@ -48,7 +48,7 @@ L'article donne également accès à [un environnement de simulation](/blog/when
 
 ## La page à optimiser
 
-Voici l'énoncé du problème : nous avons une page web qui contient deux types de contenu :
+Voici l'énoncé du problème&nbsp;: nous avons une page web qui contient deux types de contenu&nbsp;:
 
 - Du contenu semi-statique, codé en orange, qui change rarement et qui est le même pour tous les utilisateurs,
 - Du contenu dynamique, codé en rouge, qui change fréquemment et/ou qui dépend de l'utilisateur.
@@ -61,9 +61,9 @@ Nous voulons charger cette page aussi rapidement et efficacement que possible.
 
 ---
 
-Montrons d'abord une manière très naïve de livrer notre page : le serveur retourne un document HTML vide qui charge un script qui, une fois chargé sur le client, chargera les parties semi-statique et dynamique de la page.
+Montrons d'abord une manière très naïve de livrer notre page&nbsp;: le serveur retourne un document HTML vide qui charge un script qui, une fois chargé sur le client, chargera les parties semi-statique et dynamique de la page.
 
-Je montre cet exemple ici uniquement comme pire cas, illustrant clairement le principal problème de performance : la latence supplémentaire due aux allers-retours réseau entre le client et le serveur, avant même que le serveur ne commence à charger ou à générer le contenu de la page.
+Je montre cet exemple ici uniquement comme pire cas, illustrant clairement le principal problème de performance&nbsp;: la latence induite par les allers-retours réseau entre le client et le serveur, et le fait qu'il faut exécuter le script côté client avant même que le serveur ne commence à charger ou à générer le contenu de la page.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-1-1-en.svg" style="top:0; left:0; width:100%;" />
@@ -73,7 +73,7 @@ Je montre cet exemple ici uniquement comme pire cas, illustrant clairement le pr
 
 ## Streaming de page complète
 
-Voyons maintenant comment charger cette page avec du streaming :
+Voyons maintenant comment charger cette page avec du streaming&nbsp;:
 
 - Le serveur retourne tout le contenu de la page au client dans le même fichier HTML, streamant différentes parties de la page au fur et à mesure qu'elles deviennent disponibles.
   - La balise `head` de la page est streamée très tôt pour démarrer rapidement le chargement du script de la page.
@@ -88,7 +88,7 @@ Voyons maintenant comment charger cette page avec du streaming :
 
 ## Page divisée avec pre-loading
 
-Voyons maintenant une autre façon de charger cette page : en divisant les parties semi-statiques et dynamiques en 2 ressources différentes.
+Voyons maintenant une autre façon de charger cette page&nbsp;: en divisant les parties semi-statiques et dynamiques en 2 ressources différentes.
 
 - Le streaming est utilisé ici pour envoyer le `head` de la page avant même que le serveur ne génère son contenu. Mais le cache rend ce détail sans importance dans les exemples suivants de pre-loading.
 - Le serveur répond uniquement avec la partie semi-statique à la requête initiale de la page.
@@ -116,7 +116,7 @@ Voyons ce qui se passe quand nous ajoutons la mise en cache.
 
 ## Mise en cache
 
-Ajoutons maintenant deux couches de cache :
+Ajoutons maintenant deux couches de cache&nbsp;:
 
 - Un nœud CDN/Edge entre le client et le serveur.
   - Ce nœud est proche du client pour réduire la latence du contenu mis en cache.
@@ -130,7 +130,7 @@ Ajoutons maintenant deux couches de cache :
 
 ### Streaming avec le cache côté edge
 
-Regardons le diagramme de chargement pour la version en streaming de la page :
+Regardons le diagramme de chargement pour la version en streaming de la page&nbsp;:
 
 - Le `head` et la partie semi-statique ne peuvent pas bénéficier du cache edge car ils sont groupés avec la partie dynamique non cacheable en une seule ressource.
   - La partie semi-statique est servie depuis le cache serveur, d'où un chargement plus rapide.
@@ -144,11 +144,11 @@ Regardons le diagramme de chargement pour la version en streaming de la page :
 
 ### Pre-loading avec le cache côté edge
 
-Regardons maintenant le diagramme de chargement pour la page divisée avec pre-loading :
+Regardons maintenant le diagramme de chargement pour la page divisée avec pre-loading&nbsp;:
 
 - La partie semi-statique est servie depuis le cache edge ce qui réduit la latence.
-  - Le `head` de la page étant chargé plus tôt, le client peut commencer à charger les parties dynamiques plus tôt que sans le cache edge.
-  - Le script commence aussi à charger plus tôt.
+  - Le `head` de la page étant chargé plus tôt, le client peut commencer à charger la partie dynamique plus tôt que sans le cache edge.
+  - Le script commence aussi à charger plus tôt, et est chargé depuis l'edge avec latence réduite.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-2-2-en.svg" style="top: 0; left: 0%; width: 100%;" />
@@ -158,7 +158,7 @@ Regardons maintenant le diagramme de chargement pour la page divisée avec pre-l
 
 ## Comparaison (2)
 
-Si nous comparons les deux approches en présence du cache edge, nous voyons que la version avec pre-loading charge plus vite que la version en streaming, parce que le client reçoit le contenu semi-statique et le script statique plus tôt, dégagent la voie pour un traitement plus rapide du contenu dynamique.
+Si nous comparons les deux approches en présence du cache edge, nous voyons que la version avec pre-loading l'emporte sur la version streaming en termes de First-Paint et de chargement final. Le client reçoit le contenu semi-statique et le script statique plus tôt, dégageant la voie pour un traitement plus rapide du contenu dynamique.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-2-3-en.svg" style="top: 0; left: 0%; width: 100%;" />
@@ -170,9 +170,9 @@ Si nous comparons les deux approches en présence du cache edge, nous voyons que
 
 Nous avons vu que l'approche streaming ne pouvait pas profiter pleinement du cache edge car les parties semi-statiques et dynamiques sont groupées en une seule ressource.
 
-Ce problème existe depuis un moment et a beaucoup de solutions, qui consistent toutes à faire du calcul côté edge :
+Ce problème peut être réglé en faisant du calcul côté edge. Parmi les solutions possibles, je cite&nbsp;:
 
-- [Edge Side Includes (ESI)](https://en.wikipedia.org/wiki/Edge_Side_Includes) sont des balises HTML spéciales interprétées sur l'edge pour permettre l'injection de contenu dynamique dans une page mise en cache.
+- [Edge Side Includes (ESI)](https://en.wikipedia.org/wiki/Edge_Side_Includes), désigné an début des années 2000, sont des balises HTML spéciales interprétées sur l'edge pour permettre l'injection de contenu dynamique dans une page mise en cache.
 - Plus récemment, [Next.js](https://nextjs.org/) a implémenté [Partial Pre-rendering (PPR)](https://vercel.com/blog/partial-prerendering-with-next-js-creating-a-new-default-rendering-model) qui sert les composants de page cacheables depuis le cache d'edge et stream le contenu dynamique depuis le serveur d'origine. PPR n'est disponible que sur l'edge de Vercel.
 - Aujourd'hui, de nombreux frameworks JavaScript peuvent fonctionner entièrement sur l'edge. Les frameworks qui supportent le streaming peuvent donc streamer depuis l'edge tout en profitant du cache côté edge.
 
@@ -198,7 +198,7 @@ Regardons le diagramme de chargement de la page quand elle est assemblée sur l'
 
 ## Comparaison (Assemblage côté edge)
 
-Maintenant, grâce à l'assemblage côté edge, l'approche streaming récupère son avantage sur la version pre-loading, car elle est aussi efficace pour charger la partie semi-statique et la partie dynamique commence à charger plus tôt.
+Maintenant, grâce à l'assemblage côté edge, l'approche streaming récupère son avantage sur la version pre-loading, car elle est aussi efficace pour charger la partie semi-statique, et la partie dynamique commence à charger plus tôt.
 
 <div class="slide">
     <img loading="lazy" src="/blog/sfeir-share-2026-04-16/slide-3-2-en.svg" style="top: 0; left: 0%; width: 100%;" />
@@ -224,7 +224,7 @@ Examinons ce qui se passe quand un utilisateur récurrent revisite notre page en
 
 ### Pre-loading avec cache, pour les utilisateurs récurrents
 
-Quand un utilisateur revisite notre page pré-chargée avec un cache récent, les choses sont un peu différentes :
+Quand un utilisateur revisite notre page pré-chargée avec un cache récent, les choses sont un peu différentes&nbsp;:
 
 - Grâce au fait que la partie semi-statique est mise en cache sur le client, le client peut commencer à faire le rendu de la page et à exécuter le script à T=0s.
   - La partie semi-statique et le script prennent moins de temps à charger car ils n'ont pas besoin d'être téléchargés.
@@ -248,7 +248,7 @@ Pour les utilisateurs récurrents avec un cache récent, le pre-loading donne un
 
 ## En résumé
 
-Ce que nous pouvons conclure de tout cela est que les deux techniques, streaming de page complète et page divisée avec pre-loading, améliorent les performances de chargement. Le pre-loading surpasse le streaming et inversement dans différents contextes :
+Ce que nous pouvons conclure de tout cela est que les deux techniques, streaming de page complète et page divisée avec pre-loading, améliorent les performances de chargement. Le pre-loading surpasse le streaming et inversement dans différents contextes&nbsp;:
 
 - Le pre-loading est le gagnant pour les utilisateurs récurrents avec un cache navigateur récent, car le contenu statique et semi-statique est traité immédiatement et le contenu dynamique est récupéré sans latence ajoutée.
 - Sinon,
@@ -266,11 +266,11 @@ Ce que nous pouvons conclure de tout cela est que les deux techniques, streaming
 
 - Le streaming nécessite le support du framework.
   - La bonne chose est que de plus en plus de frameworks le supportent.
-- Le streaming tout en profitant du cache edge est possible avec :
+- Le streaming tout en profitant du cache edge est possible avec&nbsp;:
   - Next.js via l'assemblage côté edge (via PPR)
   - Les frameworks qui supportent le streaming déployés sur l'edge.
 - Le pre-loading fonctionne bien avec la mise en cache edge traditionnelle.
-  - Il ne nécessite pas le support du framework. Mais pour une expérience développeur optimale, le support du framework est nécessaire :
+  - Il ne nécessite pas le support du framework. Mais pour une expérience développeur optimale, le support du framework est nécessaire&nbsp;:
     - Les _server functions_ permettent d'appeler du code backend depuis le frontend de manière type-safe sans avoir à déclarer d'endpoints. Mais pour supporter le pre-loading des _server functions_, le framework doit fournir au minimum des APIs pour obtenir leurs URLs. Actuellement, ces APIs sont absentes ou non documentées.
   - Les server islands d'Astro sont l'approche la plus proche pour implémenter le pattern de page divisée avec pre-loading, tout en bénéficiant d'une DX de première classe.
 
