@@ -26,4 +26,5 @@ pnpm-debug.log*
 # compressed svgs
 public/blog/web-frontend-performance/*
 public/blog/bouffe-front-2025-11-18/*.svg
+public/blog/sfeir-share-2026-04-16/*.svg
 public/thumbnails/*

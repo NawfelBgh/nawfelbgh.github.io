@@ -49,6 +49,7 @@ console.log('Compressing SVG files...');
 
 compressSvgsInDirectory('assets-src/blog/web-frontend-performance', 'public/blog/web-frontend-performance');
 compressSvgsInDirectory('assets-src/blog/bouffe-front-2025-11-18', 'public/blog/bouffe-front-2025-11-18');
+compressSvgsInDirectory('assets-src/blog/sfeir-share-2026-04-16', 'public/blog/sfeir-share-2026-04-16');
 compressSvgsInDirectory('assets-src/thumbnails', 'public/thumbnails');
 
 console.log('SVG compression completed!');
