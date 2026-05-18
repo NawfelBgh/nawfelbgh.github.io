@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant Client
+    participant ClientCache as Client Cache
+    participant Server
+
+    Client->>ClientCache: GET /page
+    ClientCache->>Server: GET /page
+    Server-->>ClientCache: Page Content
+    ClientCache-->>Client: Page Content
+
+    Client->>ClientCache: GET /resource (preload)
+    ClientCache->>Server: GET /resource
+
+    Client->>ClientCache: GET /script.js
+    ClientCache->>Server: GET /script.js
+    Server-->>ClientCache: Script Content
+    ClientCache-->>Client: Script Content
+
+    Client->>Client: Execute Script
+    Client->>ClientCache: GET /resource (fetch from script)
+
+    ClientCache->>ClientCache: Hold fetch
+    
+    Server-->>ClientCache: /resource Content
+
+    ClientCache-->>Client: /resource Content

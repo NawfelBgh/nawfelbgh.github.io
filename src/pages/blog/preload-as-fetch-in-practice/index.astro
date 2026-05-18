@@ -1,0 +1,35 @@
+---
+import BaseHead from "../../../components/BaseHead.astro";
+import { getEntry } from "astro:content";
+import { getAlternates, getThumbnailUrl } from "../../../utils/blog";
+import PageLayout from "../../../layouts/PageLayout.astro";
+import Content from "./_content.md";
+import "../../../styles/article.css";
+
+const lang = "en";
+const post = await getEntry("blog", "preload-as-fetch-in-practice");
+if (!post) throw new Error("Entry not found blog:preload-as-fetch-in-practice");
+const image = getThumbnailUrl(post);
+const alternates = getAlternates(post, lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={post.data.title}
+      description={post.data.description}
+      image={image}
+      alternates={alternates}
+    />
+  </head>
+
+  <PageLayout lang={lang} alternates={alternates}>
+    <a id="table-of-content-floating-link" href="#table-of-contents">
+      Table of contents
+    </a>
+    <article>
+      <Content />
+    </article>
+  </PageLayout>
+</html>

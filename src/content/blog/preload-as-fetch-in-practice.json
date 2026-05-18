@@ -1,0 +1,12 @@
+{
+    "title": "Preload as fetch in practice",
+    "description": "Preloading data with <link rel=\"preload\" as=\"fetch\"> is trickier than it looks. I break down which options actually work across browsers and which don't — so you don't have to.",
+    "pubDate": "2026-05-25",
+    "thumbnail": "preload-as-fetch-in-practice",
+    "i18n": {
+        "fr": {
+            "title": "Preload as fetch en pratique",
+            "description": "Précharger des données avec <link rel=\"preload\" as=\"fetch\"> est plus délicat qu'il n'y paraît. Je détaille quelles options fonctionnent vraiment selon les navigateurs et lesquelles éviter — pour vous épargner la peine de le découvrir par vous-même."
+        }
+    }
+}
