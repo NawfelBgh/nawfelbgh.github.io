@@ -109,7 +109,7 @@ main {
   grid-template-rows:
     [years] auto
     [arrow] auto
-    [year-2026-1 year-2026-last] auto
+    [year-2026-1] auto [year-2026-2 year-2026-last] auto
     [year-2023-1 year-2023-last] auto
     [year-2023-end year-2022-1 year-2022-last] auto
     [year-2022-end year-2021-1 year-2021-last] auto
@@ -390,9 +390,24 @@ ul.clients li:not(:last-child)::after {
   margin-left: 1mm;
 }
 
+.year + .event {
+  margin-top: 5mm;
+
+  & + .skills {
+    margin-top: 5mm;
+  }
+}
+
 /* 2026 events */
 .event.y-2026-1 {
-  grid-area: year-2026-1 / year-2026 / year-2023-1 / skills;
+  grid-area: year-2026-1 / year-2026 / year-2026-2 / skills;
+}
+.skills.y-2026-1 {
+  grid-area: year-2026-1 / skills / year-2026-end / columns-end;
+}
+
+.event.y-2026-2 {
+  grid-area: year-2026-2 / year-2026 / year-2023-1 / skills;
 }
 
 /* 2023 events */
